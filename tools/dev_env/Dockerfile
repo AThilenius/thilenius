@@ -45,6 +45,12 @@ RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 #===  CTAGS  ===================================================================
 RUN apt-get install -y exuberant-ctags
 
+#===  DOCKER  ==================================================================
+RUN apt-get install -y apt-transport-https ca-certificates lxc iptables
+RUN curl -sSL https://get.docker.com/ | sh
+ADD wrapdocker /usr/local/bin/
+RUN chmod +x /usr/local/bin/wrapdocker
+
 #===  VIM RC  ==================================================================
 ADD vimrc /root/vim_files/
 RUN cat /root/vim_files/vimrc >> /root/.vimrc
@@ -52,3 +58,7 @@ RUN cat /root/vim_files/vimrc >> /root/.vimrc
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/misx_files/
 RUN mv /root/misx_files/bashrc /root/.bashrc
+
+#===  CMD  =====================================================================
+VOLUME /var/lib/docker
+CMD ["wrapdocker"]
