@@ -1,0 +1,40 @@
+// Authentication Service
+//
+
+exception EmailInvalidException {
+  1: string message;
+}
+
+exception PasswordInvalidException {
+  1: string message;
+}
+
+exception AuthenticationException {
+  1: optional string failure_message,
+  2: optional i32 error_code,
+}
+
+exception TokenExpiredException { }
+
+enum TokenType {
+  PTOKEN = 1,
+  STOKEN = 2
+}
+
+struct Token {
+  1: optional TokenType token_type;
+  2: optional string token;
+}
+
+// Create: email_address, password
+// Read: PSToken
+// Delete: PToken
+// Create PToken: email_address, password
+// Create SToken: PToken
+
+service Authentication {
+  void create_user(1:string email_address, 2:string password) throws (1:
+    EmailInvalidException email_invalid, 2: PasswordInvalidException
+    password_exception);
+  
+}

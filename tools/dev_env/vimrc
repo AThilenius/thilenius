@@ -1,0 +1,103 @@
+" Alec Thilenius
+" The second part of the .vimrc file, contatining no Plugins
+
+if filereadable(expand('~/.vimrc_google'))
+  source ~/.vimrc_google
+endif
+
+" Format options (full list at ":help fo-table"; see also ":help 'fo'")
+" Change between += and -= to toggle an option
+set fo +=t  " Auto-wrap text...
+set fo +=c  " ...and comments.
+set fo +=q  " Let me format comments manually.
+set fo +=r  " Auto-continue comments if I'm still typing away in insert mode,
+set fo -=o  "  but not if I'm coming from normal mode (I find this annoying).
+set fo +=n  " Handle numbered lists properly: a lifesaver when writing emails!
+set fo +=j  " Be smart about comment leaders when joining lines.
+
+"==== General Settings =========================================================
+set autoindent
+set clipboard=unnamed,unnamedplus
+set completeopt-=preview  " disable annoying preview window
+set expandtab
+set history=500
+set ignorecase
+set mouse=a
+set shiftwidth=2
+set smartcase
+set softtabstop=2
+set tabstop=2
+set tags=tags;/
+set term=screen-256color
+set textwidth=80
+set ttymouse=xterm2
+set visualbell t_vb=""
+set wildmenu
+
+if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gnome-terminal"
+  set t_Co=256
+endif
+
+" Syntax highlighting if appropriate
+if &t_Co > 2 || has("gui_running")
+  colorscheme molokai
+  syntax on
+  set hlsearch
+  " For fast terminals can highlight search string as you type
+  set incsearch
+  " Used to get Vim to clear the background correctly in TMUX
+  set t_ut=
+endif
+
+" Enable line numbers and set color to grey.
+set number
+highlight LineNr ctermfg=grey
+
+" Enable color column at the 80 character boundary and set color to grey.
+set colorcolumn=81
+highlight ColorColumn ctermbg=grey
+
+" Remap <Leader>
+let mapleader = ","
+
+" Better scrolling keys
+nnoremap <C-j> <C-D>
+nnoremap <C-k> <c-U>
+
+"==== Plugin Settings ==========================================================
+
+" Syntastic
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_javascript_checkers = ['jshint']
+
+" YouCompleteMe
+let g:ycm_complete_in_comments = 1
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_min_num_of_chars_for_completion = 1
+let g:ycm_seed_identifiers_with_syntax = 1
+
+" ListToggle
+let g:lt_location_list_toggle_map = ',l'
+let g:lt_quickfix_list_toggle_map = ',q'
+let g:lt_height = 10
+
+" CtrlP
+let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+
+" DelimMate
+let delimitMate_autoclose            = 1
+let delimitMate_expand_cr            = 1
+let delimitMate_expand_space         = 1
+let delimitMate_expand_inside_quotes = 1
+let delimitMate_jump_expansion       = 1
+let delimitMate_smart_quotes         = 1
+
+" Undotree
+nnoremap <F5> :UndotreeToggle<cr>
+
+" Tagbar
+nmap <F8> :TagbarToggle<CR>
+
+
+filetype plugin indent on

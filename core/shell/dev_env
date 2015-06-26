@@ -1,0 +1,40 @@
+#! /bin/bash
+source $HOME/thilenius/core/shell/log.sh
+
+#===  DEV_ENV HELP  ============================================================
+function __dev_env_print_usage {
+  INFO 'dev_env'
+  INFO 'Usage: dev_env [command] --args';
+  INFO 'Commands:'
+  INFO '  docker   - docker commands'
+  WARN "[dev_env $1] is not a valid dev_env command"
+}
+
+#===  DOCKER  ==================================================================
+function __dev_env_docker {
+  if [ "$2" == "run" ]; then
+    docker run -it -v $HOME/thilenius:/root/thilenius athilenius/dev_env \
+      /bin/bash
+  elif [ "$2" == "clean" ]; then
+    INFO 'Removing untagged docker images'
+    docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+    INFO 'Removing all docker containers'
+    docker rm $(docker ps -a -q)
+  else
+    INFO 'dev_env DOCKER'
+    INFO 'Usage: dev_env docker [command]';
+    INFO 'Commands:'
+    INFO '  run    - Starts a new athilenius/dev_env container'
+    INFO '  clean  - Cleans untagged images and all containers'
+    WARN "[dev_env docker $1] is not a valid dev_env command"
+  fi
+}
+
+#===  RUN  =====================================================================
+if [ "$1" == "help" ]; then
+  __dev_env_print_usage
+elif [ "$1" == "docker" ]; then
+  __dev_env_docker $@
+else
+  __dev_env_print_usage
+fi
