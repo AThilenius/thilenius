@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# # vi: set ft=ruby :
+require 'fileutils'
+
+# Automaticly replace token on vagrant up
+if File.exists?('user-data') && ARGV[0].eql?('up')
+  require 'open-uri'
+  require 'yaml'
+  data = YAML.load(IO.readlines('user-data')[1..-1].join)
+  data['coreos']['etcd']['discovery'] = open('https://discovery.etcd.io/new').read
+  yaml = YAML.dump(data)
+  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
+end
+
+Vagrant.configure("2") do |config|
+  config.ssh.insert_key = false
+  config.vm.box = "coreos-stable"
+  config.vm.box_url = "http://stable.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json"
+  config.vm.network :private_network, ip: "10.17.8.100"
+  config.vm.synced_folder '/Users/Alec/thilenius', '/home/core/thilenius', :nfs => true, :mount_options  => ['nolock,vers=3,udp']
+
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
+  end
+
+  config.vm.provision :file, :source => File.join(File.dirname(__FILE__), "user-data"), :destination => "/tmp/vagrantfile-user-data"
+  config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+  config.vm.provision :shell, :inline => "rm -rf ~/.bashrc && cat ~/thilenius/tools/dev_env/bashrc > ~/.bashrc", :privileged => true
+end
