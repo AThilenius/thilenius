@@ -1,5 +1,5 @@
 #!/bin/bash
-source ${HOME}/thilenius/core/shell/*
+. $HOME/thilenius/core/shell/*
 
 INFO 'Installing VIM'
 apt-get install -y vim || EROR 'Failed to install VIM'

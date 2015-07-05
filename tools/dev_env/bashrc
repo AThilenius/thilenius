@@ -1,4 +1,5 @@
-PATH=$PATH:$HOME/thilenius/core/shell
+. $HOME/thilenius/core/shell/*
+PATH=$PATH:$HOME/thilenius/core/tools
 
 #===  MISX ALIASES  ============================================================
 alias rgrep='GREP_COLOR="1;37;41" LANG=C grep -r --color=auto'

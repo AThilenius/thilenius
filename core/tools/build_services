@@ -1,0 +1,51 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+# Usage: build_service --gen node --output $HOME/thilenius/... service1.thrift
+# service2.thrift
+DEFINE_string gen '' 'The language generator to use. One of [node, js, cpp]' g
+DEFINE_string output ''\
+    'The output directory. This is the full path to the generated files' o
+
+declare -A thrift_gens=(["node"]="js:node" ["js"]="js:jquery" ["cpp"]="cpp")
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+# For now, only Thrift files are handled although protobuf would be easy to add
+if [ "${FLAGS_gen}" = "" ] || [ "${FLAGS_output}" = "" ]; then
+  EROR 'You must specify a gen and output flag!'
+fi
+
+INFO "Making sure ${FLAGS_output} exists"
+mkdir -p ${FLAGS_output} || EROR "Failed to create directory ${FLAGS_output}"
+
+thrfit_inputs=""
+for service in $@; do
+  if [[ "${service}" == *.thrift ]]; then
+    if [ "${thrift_gens["${FLAGS_gen}"]}" = "" ]; then
+      EROR "${FLAGS_gen} is not a valid generator for thrift services"
+    fi
+    thrift_inputs="${thrift_inputs} ${service}"
+  else
+    EROR "Failed to find a service compiler for ${service}"
+  fi
+done
+
+if [ "${thrift_inputs}" != "" ]; then
+  docker inspect athilenius/thrift &> /dev/null ||\
+      EROR 'Failed to find the dockerfile athilenius/thrift. You may need to '`
+      `'build it first'
+  docker kill thrift_compiler &> /dev/null
+  docker rm thrift_compiler &> /dev/null
+
+  INFO "Building thrift services: [${thrift_inputs}] using ${FLAGS_gen} to "`
+      `"${FLAGS_output}"
+  thrift_command="thrift --gen ${thrift_gens["${FLAGS_gen}"]}"`
+      `" -out ${FLAGS_output} ${thrift_inputs}"
+  # Mounting $HOME to the wrong point to ensure the output gets put in the
+  # correct place when running the thrift command
+  docker run -v $HOME/thilenius:$HOME/thilenius --name thrift_compiler\
+      athilenius/thrift /bin/bash -c "${thrift_command}" || \
+      EROR 'Failed to build build thrift services in docker'
+fi

@@ -1,0 +1,23 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_string mount_point "$HOME/data/nginx/static"\
+    'The data mount point for static assets the nginx will serve' m
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+INFO 'Killing any old Docker Containers'
+docker kill forge_build 2> /dev/null
+docker rm forge_build 2> /dev/null
+
+INFO "Making sure ${FLAGS_mount_point} exsits"
+mkdir -p ${FLAGS_mount_point} ||\
+    EROR "Failed to make ${FLAGS_mount_point} directory"
+
+INFO 'Compiling *.thrift files'
+docker run -v
+
+# For now:
+# Need to compile *.thrift into ${FLAGS_mount_point}/gen-*
+

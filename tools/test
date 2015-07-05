@@ -1,0 +1,10 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_string gen '' 'The language generator to use. One of [node, js, cpp]' g
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+echo "${FLAGS_gen}"
+echo "$@"

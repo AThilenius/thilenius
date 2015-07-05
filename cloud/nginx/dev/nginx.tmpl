@@ -13,6 +13,11 @@ server {
   # Standard HTTP server on P80
   listen 80;
 
+  # Static assets in /data/nginx/static
+  location / {
+    root /data/nginx/static;
+  }
+
   {{range $dir := lsdir "/services/http"}}
   location /services/{{base $dir}}/ {
     add_header 'Access-Control-Allow-Origin' '*';

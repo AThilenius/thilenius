@@ -19,5 +19,3 @@ connection.on("error", function(err) {
 client.hello_func(function(error, result) {
    console.log("Msg from server: " + result);
 });
-
-

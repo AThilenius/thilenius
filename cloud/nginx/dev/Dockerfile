@@ -1,12 +1,10 @@
 #===============================================================================
 #===  NGINX  ===================================================================
 #===============================================================================
-FROM ubuntu:14.04
+FROM athilenius/base
 
 
 #===  NGINX  ===================================================================
-RUN apt-get update
-RUN apt-get install -y curl
 RUN apt-get install -y nginx
 
 
@@ -27,15 +25,13 @@ ADD ./nginx.tmpl /etc/confd/templates/nginx.tmpl
 #===  MISX  ====================================================================
 # Startup Scripts
 ADD ./confd-watch /usr/local/bin/confd-watch
-ADD ./register_etcd.sh /usr/local/bin/register_etcd.sh
 RUN chmod +x /usr/local/bin/confd-watch
-RUN chmod +x /usr/local/bin/register_etcd.sh
 
 # Define default command.
 CMD /bin/bash -c '\
   (\
-    /usr/local/bin/register_etcd.sh proxies/http/nginx/1 $COREOS_PUBLIC_IPV4 80\
-    &> /dev/null &\
+    $HOME/thilenius/core/tools/register_etcd proxies/http/nginx/1\
+        $COREOS_PUBLIC_IPV4 80 &> /dev/null &\
   ) && (\
     /usr/local/bin/confd-watch\
   )'

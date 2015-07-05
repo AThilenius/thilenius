@@ -1,0 +1,8 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+INFO 'Building Docker image'
+docker build -t athilenius/thrift ~/thilenius/tools/thrift ||\
+    EROR 'Failed to build Docker Image'
+
+INFO 'athilenius/thrift built successfully.'

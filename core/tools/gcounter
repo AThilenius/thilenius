@@ -1,0 +1,27 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_string key '' 'The key for the global counter' k
+DEFINE_boolean reset false 'Reset the counter to its base value' r
+DEFINE_integer base_value 4002 'The beginning value of the global counter' b
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+if [ "${FLAGS_key}" = '' ]; then
+  EROR 'You must specify a key for gclounter!'
+fi
+
+if [ ${FLAGS_reset} -eq ${FLAGS_TRUE} ] || [ ! -e "/tmp/gcounter_$FLAGS_key" ];
+then
+  echo "$FLAGS_base_value" > /tmp/gcounter_$FLAGS_key ||\
+      EROR "Failed to create keyfile: /tmp/gcounter_$FLAGS_key"
+fi
+
+read _value < /tmp/gcounter_$FLAGS_key ||\
+    EROR "Failed to read keyfile: /tmp/gcounter_$FLAGS_key"
+
+(_value=$((_value+1)) && echo "$_value" > /tmp/gcounter_$FLAGS_key) ||\
+    EROR "Failed to increment keyfile: /tmp/gcounter_$FLAGS_key"
+
+echo "$_value"

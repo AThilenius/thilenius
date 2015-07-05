@@ -1,5 +1,5 @@
 #! /bin/bash
-source $HOME/thilenius/core/shell/log.sh
+. $HOME/thilenius/core/shell/*
 
 #===  DEV HELP  ================================================================
 function __dev_print_usage {

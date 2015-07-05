@@ -1,0 +1,27 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_boolean no_cache false 'Rebuild without cahce' n
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+INFO 'Copying core to local'
+cp -a ${HOME}/thilenius/core ~/thilenius/tools/docker_base/core ||\
+        EROR 'Failed to copy thilenius core'
+
+if [ ${FLAGS_no_cache} -eq ${FLAGS_TRUE} ]; then
+  INFO 'Building Docker image WITHOUT CACHE'
+  docker build --no-cache\
+      -t athilenius/base ~/thilenius/tools/docker_base ||\
+      EROR 'Failed to build Docker Image'
+else
+  INFO 'Building Docker image'
+  docker build -t athilenius/base ~/thilenius/tools/docker_base ||\
+      EROR 'Failed to build Docker Image'
+fi
+
+INFO 'Cleaning up shared_node_modules link'
+rm -rf ~/thilenius/tools/docker_base/core
+
+INFO 'athilenius/docker_base built successfully.'

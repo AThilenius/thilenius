@@ -1,5 +1,6 @@
 #!/bin/bash
-source ${PWD/\/Scorch\/*//Scorch}/tools/shell/*
+. $HOME/thilenius/core/shell/base
+cd $HOME/thilenius/scourch/cloud/services/auth_express
 
 INFO 'Killing any old Docker Containers'
 docker kill auth_dev 2> /dev/null

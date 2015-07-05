@@ -1,0 +1,6 @@
+#!/bin/bash
+for f in $HOME/thilenius/core/shell/*; do
+  if [ "$f" != "$HOME/thilenius/core/shell/base" ]; then
+    . $f
+  fi
+done
