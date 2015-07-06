@@ -19,8 +19,7 @@ enum PermissionLevel {
   SUPER = 1,
   ADMIN = 2,
   USER = 3,
-  SECONDARY = 4,
-  UNTRUSTED = 5
+  UNTRUSTED = 4
 }
 
 service Authentication {
@@ -33,7 +32,7 @@ service Authentication {
 
   // Returns the permission level of the given token. A p_token will return the
   // permission of the user it belongs to and a s_token will always return
-  // SECONDARY if it is valid
+  // UNTRUSTED if it is valid
   PermissionLevel read_user (1:string ptoken)
     throws (1:AuthenticationException authentication_exception);
 
@@ -50,3 +49,9 @@ service Authentication {
     throws (1:AuthenticationException authentication_exception);
 
 }
+
+// DO NO SUBMIT
+service HelloSvc {
+    string hello_func(),
+}
+

@@ -1,1 +1,19 @@
 #!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_string key '' 'The etcd key that contains JSON to parse' k
+DEFINE_string field '' 'The JSON field path in etcd' f
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+# Make sure nodeJS is installed
+node -v &> /dev/null || EROR 'etcd_parser requires nodeJS'
+
+VALUE_JSON="$(curl -s -L http://172.17.42.1:4001/v2/keys/${FLAGS_key})" ||\
+    EROR "Failed to CURL the etcd server for the key ${FLAGS_key}"
+OUTPUT=$(node -pe\
+    "JSON.parse(JSON.parse(process.argv[1]).node.value).${FLAGS_field}"\
+    "${VALUE_JSON}") ||\
+    EROR "Failed to parse field [${FLAGS_field}] from JSON [${VALUE_JSON}]"
+echo "${OUTPUT}"

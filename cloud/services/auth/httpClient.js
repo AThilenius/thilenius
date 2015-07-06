@@ -1,10 +1,10 @@
 var thrift = require('thrift');
-var helloSvc = require('./gen-nodejs/HelloSvc.js');
+var authentication = require('./gen_files/Authentication.js');
 
 var options = {
    transport: thrift.TBufferedTransport,
    protocol: thrift.TJSONProtocol,
-   path: "/services/thrift/hello",
+   path: "/",
    headers: {"Connection": "close"},
    https: false
 };
