@@ -13,13 +13,12 @@ exception AuthenticationException {
   2: optional i32 error_code,
 }
 
-exception TokenExpiredException { }
-
 enum PermissionLevel {
-  SUPER = 1,
-  ADMIN = 2,
-  USER = 3,
-  UNTRUSTED = 4
+  INTERNAL = 1,
+  SUPER = 2,
+  ADMIN = 3,
+  USER = 4,
+  UNTRUSTED = 5
 }
 
 service Authentication {
@@ -49,9 +48,3 @@ service Authentication {
     throws (1:AuthenticationException authentication_exception);
 
 }
-
-// DO NO SUBMIT
-service HelloSvc {
-    string hello_func(),
-}
-

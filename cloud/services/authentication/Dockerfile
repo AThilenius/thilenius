@@ -1,5 +1,5 @@
 #===============================================================================
-#===  AUTH  ====================================================================
+#===  AUTHENTICATION  ==========================================================
 #===============================================================================
 FROM athilenius/base
 
@@ -12,11 +12,11 @@ RUN update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
 
 #===  NODE PROJECT SETUP  ======================================================
 # Install npm dependencies
-ADD package.json /root/auth/
-RUN cd /root/auth && npm install
+ADD package.json /root/authentication/
+RUN cd /root/authentication && npm install
 
-ADD gen_files /root/auth/gen_files
-ADD httpServer.js /root/auth/
+ADD gen_files /root/authentication/gen_files
+ADD app.js /root/authentication/
 
 #===  MISX  ====================================================================
 CMD /bin/bash -c '\
@@ -24,9 +24,9 @@ CMD /bin/bash -c '\
   DB_PORT=$($HOME/thilenius/core/tools/etcd_parser -k /databases/mongodb\
       -f port);\
   (\
-    $HOME/thilenius/core/tools/register_etcd services/http/auth/$SERVICE_ID\
+    $HOME/thilenius/core/tools/register_etcd\
+        services/http/authentication/$SERVICE_ID\
         $COREOS_PUBLIC_IPV4 $DOCKER_PORT &> /dev/null &\
   ) && (\
-    cd /root/auth && NODE_ENV=production DB_IP="$DB_IP" DB_PORT="$DB_PORT"\
-        node httpServer.js\
+    cd /root/authentication && DB_IP="$DB_IP" DB_PORT="$DB_PORT" node app.js\
   )'
