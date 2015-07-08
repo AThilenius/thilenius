@@ -1,16 +1,23 @@
+//==============================================================================
+//==  AUTHENTICATION SERVICE  ==================================================
+//==============================================================================
 var crypto = require('crypto');
 var mongo = require('mongoskin');
 var thrift = require('thrift');
+
 var authentication = require('./gen_files/Authentication');
 var auth_types = require('./gen_files/authentication_types');
+var std_excep_types = require('./gen_files/standard_exceptions_types');
 
+//===  MongoDB  ================================================================
 var db = mongo.db("mongodb://" + process.env.DB_IP + ":" + process.env.DB_PORT +
   "/local", {
     native_parser: true
   });
-var users = db.collection('users');
+var dbc = db.collection('auth_atoms');
 console.log("Using MongoDB at " + process.env.DB_IP + ":" + process.env.DB_PORT);
 
+//===  Service Implementation  =================================================
 var authenticationHandler = {
   create_user: function(email_address, password, result) {
     // Pre-process some fields
@@ -21,7 +28,7 @@ var authenticationHandler = {
       }));
       return;
     }
-    users.find({
+    dbc.find({
       email_address: emailAddress
     }).toArray(function(err, items) {
       if (items.length !== 0) {
@@ -37,7 +44,7 @@ var authenticationHandler = {
           password: password,
           permissions: auth_types.PermissionLevel.UNTRUSTED
         };
-        users.insert(user, function(err, records) {
+        dbc.insert(user, function(err, records) {
           result(null, null);
           console.log("New account created: " +
             JSON.stringify(user, null, 2));
@@ -48,7 +55,7 @@ var authenticationHandler = {
   },
 
   read_user: function(token, result) {
-    users.findOne({
+    dbc.findOne({
       $or: [{
         primary_token: token
       }, {
@@ -56,16 +63,24 @@ var authenticationHandler = {
       }, ]
     }, function(err, user) {
       if (err) {
-        result(new auth_types.AuthenticationException({
-          failure_message: "Internal server error",
-          error_code: 500
-        }));
+        result(new std_excep_types.InternalServerError());
         return;
       }
       if (user) {
-        var permissionsLevel = (user.primary_token !== token) ?
-          auth_types.PermissionLevel.UNTRUSTED : user.permissions;
-        result(null, permissionsLevel);
+        if (user.primary_token === token) {
+          // Primary Token
+          result(null, new auth_types.UserAtom({
+            uuid: user._id.toString(),
+            permission_level: user.permissions,
+            email_address: user.email_address
+          }));
+        } else {
+          // Secondary Token
+          result(null, new auth_types.UserAtom({
+            uuid: user._id.toString(),
+            permission_level: auth_types.PermissionLevel.UNTRUSTED
+          }));
+        }
       } else {
         result(new auth_types.AuthenticationException({
           failure_message: "Invalid token.",
@@ -76,14 +91,11 @@ var authenticationHandler = {
   },
 
   delete_user: function(ptoken, result) {
-    users.remove({
+    dbc.remove({
       primary_token: ptoken
     }, function(err, count, stat) {
       if (err) {
-        result(new auth_types.AuthenticationException({
-          failure_message: "Internal server error",
-          error_code: 500
-        }));
+        result(new std_excep_types.InternalServerError());
         return;
       }
       if (count > 0) {
@@ -100,11 +112,10 @@ var authenticationHandler = {
   create_ptoken: function(email_address, password, result) {
     // Normalize fields
     var emailAddress = email_address.replace(/ /g, '').toLowerCase();
-    console.log("Updating " + emailAddress + ", " + password);
     // Generate a crypto safe 48 byte token
     crypto.randomBytes(48, function(ex, buf) {
       var newToken = buf.toString('hex');
-      users.update({
+      dbc.update({
           email_address: emailAddress,
           password: password
         }, {
@@ -113,14 +124,8 @@ var authenticationHandler = {
           }
         },
         function(err, count, stat) {
-          console.log("err: " + JSON.stringify(err, null, 2));
-          console.log("count: " + count);
-          console.log("stat: " + JSON.stringify(stat, null, 2));
           if (err) {
-            result(new auth_types.AuthenticationException({
-              failure_message: "Internal server error",
-              error_code: 500
-            }));
+            result(new std_excep_types.InternalServerError());
             return;
           }
           if (count === 0) {
@@ -138,7 +143,7 @@ var authenticationHandler = {
   create_stoken: function(ptoken, result) {
     crypto.randomBytes(48, function(ex, buf) {
       var newToken = buf.toString('hex');
-      users.update({
+      dbc.update({
           primary_token: ptoken
         }, {
           $addToSet: {

@@ -19,7 +19,8 @@ INFO "Making sure ${FLAGS_mount_point} exsits"
 mkdir -p ${FLAGS_mount_point} ||\
     EROR "Failed to make ${FLAGS_mount_point} directory"
 
-PORT=$(gcounter -k next_port)
+# Always use default MongoDB port (to prevent orphaned services)
+PORT=27017
 INFO "Starting Docker container on port $PORT"
 CONTAINER_ID=$(docker run -d -p $PORT:27017\
     -v ${FLAGS_mount_point}:/data/mongodb --name mongo_dev -e DOCKER_PORT=$PORT\

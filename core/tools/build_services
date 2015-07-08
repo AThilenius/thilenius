@@ -4,10 +4,10 @@
 # Usage: build_service --gen node --output $HOME/thilenius/... service1.thrift
 # service2.thrift
 DEFINE_string gen '' 'The language generator to use. One of [node, js, cpp]' g
-DEFINE_string output ''\
+DEFINE_string output '' \
     'The output directory. This is the full path to the generated files' o
 
-declare -A thrift_gens=(["node"]="js:node" ["js"]="js:jquery" ["cpp"]="cpp")
+declare -A thrift_gens=(["node"]="js:node" ["js"]="js:jquery")
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
@@ -33,7 +33,7 @@ for service in $@; do
 done
 
 if [ "${thrift_inputs}" != "" ]; then
-  docker inspect athilenius/thrift &> /dev/null ||\
+  docker inspect athilenius/thrift &> /dev/null || \
       EROR 'Failed to find the dockerfile athilenius/thrift. You may need to '`
       `'build it first'
   docker kill thrift_compiler &> /dev/null
@@ -41,11 +41,17 @@ if [ "${thrift_inputs}" != "" ]; then
 
   INFO "Building thrift services: [${thrift_inputs}] using ${FLAGS_gen} to "`
       `"${FLAGS_output}"
-  thrift_command="thrift --gen ${thrift_gens["${FLAGS_gen}"]}"`
+  thrift_command="thrift -r --gen ${thrift_gens["${FLAGS_gen}"]}"`
       `" -out ${FLAGS_output} ${thrift_inputs}"
   # Mounting $HOME to the wrong point to ensure the output gets put in the
   # correct place when running the thrift command
-  docker run -v $HOME/thilenius:$HOME/thilenius --name thrift_compiler\
+  docker run -v $HOME/thilenius:$HOME/thilenius --name thrift_compiler \
       athilenius/thrift /bin/bash -c "${thrift_command}" || \
       EROR 'Failed to build build thrift services in docker'
+
+  # Also include thrift.js if using the js compiler
+  if [ "${FLAGS_gen}" = "js" ]; then
+    cp $HOME/thilenius/tools/thrift/thrift.min.js ${FLAGS_output}/thrift.js || \
+        EROR "Failed to copy thrift.min.js to ${FLAGS_output}/thrift.js"
+  fi
 fi

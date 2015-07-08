@@ -64,6 +64,9 @@ let mapleader = ","
 nnoremap <C-j> <C-D>
 nnoremap <C-k> <c-U>
 
+" Don't replace buffer on paste in visual mode
+xnoremap p pgvy
+
 "==== Plugin Settings ==========================================================
 
 " Syntastic

@@ -1,0 +1,31 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+INFO 'Compiling service files'
+build_services --gen node\
+    --out $HOME/thilenius/cloud/services/user_data/gen_files\
+    $HOME/thilenius/cloud/services_def/user_data.thrift ||\
+    EROR 'Failed to build user_data service files'
+
+INFO 'Killing any old Docker Containers'
+docker kill user_data_dev 2> /dev/null
+docker rm user_data_dev 2> /dev/null
+
+INFO 'Building Docker image'
+docker build -t athilenius/user_data:dev\
+    $HOME/thilenius/cloud/services/user_data ||\
+    EROR 'Failed to build Dockerfile'
+
+PORT=$(gcounter -k next_port)
+SERVICE_ID=$(gcounter -k cloud_services_user_data_next_id)
+INFO "Starting Docker container on port $PORT with id $SERVICE_ID"
+CONTAINER_ID=$(docker run -d -p $PORT:80 --name user_data_dev\
+    -e DOCKER_PORT=$PORT -e SERVICE_ID=$SERVICE_ID --env-file=/etc/environment\
+    athilenius/user_data:dev)
+
+INFO 'Cleaning up gen_files'
+rm -rf $HOME/thilenius/cloud/services/user_data/gen_files
+
+INFO "Started in container [$CONTAINER_ID]. Waiting a few seconds for logs"
+sleep 4
+docker logs $CONTAINER_ID
