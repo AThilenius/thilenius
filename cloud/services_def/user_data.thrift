@@ -4,15 +4,20 @@
 include "authentication.thrift"
 include "standard_exceptions.thrift"
 
+struct MinecraftAccount {
+  1: string name;
+  2: string username;
+  3: i64 added_timestamp;
+}
+
 struct UserBody {
   1: string first_name;
   2: string last_name;
+  3: set<MinecraftAccount> minecraft_accounts;
 }
 
 struct UserInfo {
   1: authentication.UserAtom user_atom;
-
-  // Not returned if the token is secondary
   2: optional UserBody user_body;
 }
 

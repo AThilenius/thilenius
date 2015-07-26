@@ -1,0 +1,8 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+INFO 'Building Docker image'
+docker build -t athilenius/npm_base ~/thilenius/tools/docker_base/npm_base ||\
+    EROR 'Failed to build Docker Image'
+
+INFO 'athilenius/npm_base built successfully.'

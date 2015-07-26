@@ -3,6 +3,9 @@
 #===============================================================================
 FROM athilenius/base
 
+#===  UPDATE apt-get  ==========================================================
+RUN apt-get update -q
+
 #===  PYTHON 2.7  ==============================================================
 RUN apt-get install -y python python-pip python-dev
 
@@ -31,10 +34,11 @@ RUN apt-get install -y clang-format-3.6
 RUN ln /usr/bin/clang-format-3.6 /usr/bin/clang-format
 
 #===  VIM PLUGINS  =============================================================
-ADD vimrc_plugins /root/vim_files/
-ADD vim_setup.sh /root/vim_files/
-RUN mv /root/vim_files/vimrc_plugins /root/.vimrc
-RUN /bin/bash /root/vim_files/vim_setup.sh
+ADD vimrc_plugins /root/env_files/
+RUN mv /root/env_files/vimrc_plugins /root/.vimrc
+RUN apt-get install -qy vim
+RUN git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+RUN vim +PluginInstall +qall
 
 #===  TERN FOR VIM  ============================================================
 RUN cd /root/.vim/bundle/tern_for_vim && npm install
@@ -44,12 +48,6 @@ RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 
 #===  CTAGS  ===================================================================
 RUN apt-get install -y exuberant-ctags
-
-#===  DOCKER  ==================================================================
-RUN apt-get install -y apt-transport-https ca-certificates lxc iptables
-RUN curl -sSL https://get.docker.com/ | sh
-ADD wrapdocker /usr/local/bin/
-RUN chmod +x /usr/local/bin/wrapdocker
 
 #===  THRIFT  ==================================================================
 RUN apt-get install -qy libboost-dev
@@ -74,13 +72,15 @@ RUN cd /tmp &&\
   make install
 
 #===  VIM RC  ==================================================================
-ADD vimrc /root/vim_files/
-RUN cat /root/vim_files/vimrc >> /root/.vimrc
+ADD vimrc /root/env_files/
+RUN cat /root/env_files/vimrc >> /root/.vimrc
+
+#===  NPM MODULES  =============================================================
+RUN npm install -g mocha
 
 #===  MISX FILES  ==============================================================
-ADD bashrc /root/misx_files/
-RUN mv /root/misx_files/bashrc /root/.bashrc
+ADD bashrc /root/env_files/
+RUN mv /root/env_files/bashrc /root/.bashrc
 
 #===  CMD  =====================================================================
-VOLUME /var/lib/docker
-CMD ["wrapdocker"]
+CMD /bin/bash

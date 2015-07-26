@@ -1,0 +1,52 @@
+#===============================================================================
+#===  DEV_ENV_LITE  ============================================================
+#===============================================================================
+FROM athilenius/base
+
+#===  UPDATE apt-get  ==========================================================
+RUN apt-get update -q
+
+#===  GIT  =====================================================================
+RUN apt-get install -qy git
+
+#===  PYTHON 2.7  ==============================================================
+RUN apt-get install -qy python
+
+#===  NODEJS / NPM  ============================================================
+RUN apt-get install -qy nodejs
+RUN apt-get install -qy nodejs-legacy
+RUN apt-get install -qy npm
+
+#===  FORMATTERS  ==============================================================
+RUN npm install -g js-beautify
+RUN npm install -g jshint
+
+#===  VIM / VIM PLUGINS  =======================================================
+ADD vimrc_plugins /root/env_files/
+RUN mv /root/env_files/vimrc_plugins /root/.vimrc
+RUN apt-get install -qy vim
+RUN git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+RUN vim +PluginInstall +qall
+
+#===  TERN FOR VIM  ============================================================
+RUN cd /root/.vim/bundle/tern_for_vim && npm install
+
+#===  YOU COMPLETE ME  =========================================================
+RUN apt-get install -y cmake
+RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh
+
+#===  CTAGS  ===================================================================
+RUN apt-get install -qy exuberant-ctags
+
+#===  VIM RC  ==================================================================
+ADD vimrc /root/env_files/
+RUN cat /root/env_files/vimrc >> /root/.vimrc
+
+#===  NPM MODULES  =============================================================
+RUN npm install -g mocha
+
+#===  MISX FILES  ==============================================================
+ADD bashrc /root/env_files/
+RUN mv /root/env_files/bashrc /root/.bashrc
+
+CMD /bin/bash

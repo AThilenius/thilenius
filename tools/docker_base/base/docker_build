@@ -7,21 +7,21 @@ FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
 
 INFO 'Copying core to local'
-cp -a ${HOME}/thilenius/core ~/thilenius/tools/docker_base/core ||\
+cp -a ${HOME}/thilenius/core ~/thilenius/tools/docker_base/base/core ||\
         EROR 'Failed to copy thilenius core'
 
 if [ ${FLAGS_no_cache} -eq ${FLAGS_TRUE} ]; then
   INFO 'Building Docker image WITHOUT CACHE'
   docker build --no-cache\
-      -t athilenius/base ~/thilenius/tools/docker_base ||\
+      -t athilenius/base ~/thilenius/tools/docker_base/base ||\
       EROR 'Failed to build Docker Image'
 else
   INFO 'Building Docker image'
-  docker build -t athilenius/base ~/thilenius/tools/docker_base ||\
+  docker build -t athilenius/base ~/thilenius/tools/docker_base/base ||\
       EROR 'Failed to build Docker Image'
 fi
 
 INFO 'Cleaning up shared_node_modules link'
-rm -rf ~/thilenius/tools/docker_base/core
+rm -rf ~/thilenius/tools/docker_base/base/core
 
-INFO 'athilenius/docker_base built successfully.'
+INFO 'athilenius/base built successfully.'
