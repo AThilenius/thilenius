@@ -1,1 +1,1 @@
-var forgeApp = angular.module('forgeApp', ['ngRoute']);
+var forgeApp = angular.module('forgeApp', [ 'ngRoute', 'ngCookies' ]);

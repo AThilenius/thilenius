@@ -1,0 +1,32 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_string mount_point "$HOME/data/nginx/static" \
+    'The data mount point for static assets the nginx will serve' m
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+INFO 'Compiling service files'
+build_services --gen js \
+    --out $HOME/thilenius/scorch/forge/gen_files \
+    $HOME/thilenius/cloud/services_def/authentication.thrift \
+    $HOME/thilenius/cloud/services_def/user_data.thrift || \
+    EROR 'Failed to build authentication service files'
+
+INFO "Making sure ${FLAGS_mount_point} exsits"
+mkdir -p ${FLAGS_mount_point} || \
+    EROR "Failed to make ${FLAGS_mount_point} directory"
+
+INFO "Clearing ${FLAGS_mount_point}"
+rm -rf ${FLAGS_mount_point}/* || EROR "Failed to clear ${FLAGS_mount_point}"
+
+INFO "Copying gen_files to ${FLAGS_mount_point}/gen_files"
+cp -r $HOME/thilenius/scorch/forge/gen_files ${FLAGS_mount_point}/gen_files || \
+    EROR "Failed to copy gen_files to ${FLAGS_mount_point}/gen_files"
+
+INFO "Copying src to ${FLAGS_mount_point}/"
+cp -r $HOME/thilenius/scorch/forge/src/* ${FLAGS_mount_point}
+
+INFO 'Cleaning up gen_files'
+rm -rf $HOME/thilenius/scorch/forge/gen_files
