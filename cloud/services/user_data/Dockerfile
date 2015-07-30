@@ -1,22 +1,20 @@
 #===============================================================================
 #===  USER DATA  ===============================================================
 #===============================================================================
-FROM athilenius/base
-
-#===  PYTHON / NODEJS  =========================================================
-RUN apt-get install -y python python-pip python-dev
-RUN /bin/bash -c -l 'apt-get install -qy nodejs'
-RUN /bin/bash -c -l 'apt-get install -qy npm'
-RUN /bin/bash -c -l 'npm update -g express'
-RUN update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
+FROM athilenius/npm_base
 
 #===  NODE PROJECT SETUP  ======================================================
 # Install npm dependencies
 ADD package.json /root/user_data/
 RUN cd /root/user_data && npm install
 
+# Modules
+ADD modules /root/user_data/modules
+
+# Project Files
 ADD gen_files /root/user_data/gen_files
 ADD app.js /root/user_data/
+ADD service_racks.js /root/user_data/
 
 #===  MISX  ====================================================================
 CMD /bin/bash -c '\
@@ -27,13 +25,16 @@ CMD /bin/bash -c '\
   LB_PORT=$($HOME/thilenius/core/tools/etcd_parser -k /proxies/http/nginx\
       -f port);\
   (\
-    $HOME/thilenius/core/tools/register_etcd\
-        services/http/user_data/$SERVICE_ID\
-        $COREOS_PUBLIC_IPV4 $DOCKER_PORT &> /dev/null &\
+      $HOME/thilenius/core/tools/register_etcd\
+          services/http/user_data/$SERVICE_ID\
+          $COREOS_PUBLIC_IPV4 $DOCKER_PORT &> /dev/null &\
   ) && (\
     cd /root/user_data && \
+    while true; do\
         DB_IP="$DB_IP" \
         DB_PORT="$DB_PORT" \
         LB_IP="$LB_IP" \
-        LB_PORT="$LB_PORT" node app.js \
+        LB_PORT="$LB_PORT" \
+        NODE_PATH=/root/user_data node app.js; \
+   done\
   )'

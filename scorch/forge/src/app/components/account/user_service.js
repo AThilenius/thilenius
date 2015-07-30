@@ -37,6 +37,12 @@ User.prototype.save = function(user_data) {
 
 };
 
+User.prototype.logout = function() {
+  this._session.logout();
+  this.has_data = false;
+  this.user_data = null;
+};
+
 forgeApp.factory('user', [
   'session',
   function(session) {

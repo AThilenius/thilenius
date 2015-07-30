@@ -7,6 +7,11 @@ build_services --gen node\
     $HOME/thilenius/cloud/services_def/user_data.thrift ||\
     EROR 'Failed to build user_data service files'
 
+INFO 'Adding modules'
+cp -r $HOME/thilenius/cloud/services/modules \
+    $HOME/thilenius/cloud/services/user_data/modules ||\
+    EROR 'Failed to copy modules'
+
 INFO 'Killing any old Docker Containers'
 docker kill user_data_dev 2> /dev/null
 docker rm user_data_dev 2> /dev/null
@@ -25,6 +30,9 @@ CONTAINER_ID=$(docker run -d -p $PORT:80 --name user_data_dev\
 
 INFO 'Cleaning up gen_files'
 rm -rf $HOME/thilenius/cloud/services/user_data/gen_files
+
+INFO 'Cleaning up modules'
+rm -rf $HOME/thilenius/cloud/services/user_data/modules
 
 INFO "Started in container [$CONTAINER_ID]. Waiting a few seconds for logs"
 sleep 4

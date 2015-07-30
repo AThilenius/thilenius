@@ -26,13 +26,13 @@
 
     <script src="app/components/app.module.js"></script>
     <script src="app/components/app.route.js"></script>
+    <script src="app/shared/js/string.js"></script>
 
     <!-- Components -->
-    <script src="app/components/home/home_controller.js"></script>
-
     <script src="app/components/account/login_controller.js"></script>
     <script src="app/components/account/session_service.js"></script>
     <script src="app/components/account/user_service.js"></script>
+    <script src="app/components/home/home_controller.js"></script>
 
     <base href="/">
 </head>
@@ -41,15 +41,13 @@
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
-                <a ng-show="!user_service.has_data" class="navbar-brand" href="/">Angular Routing Example</a>
-                <a ng-show="user_service.has_data" class="navbar-brand" href="/">{{ user_service.user_data.user_body.first_name }}</a>
+                <a ng-show="!user.has_data" class="navbar-brand" href="/">Forge</a>
+                <a ng-show="user.has_data" class="navbar-brand" href="/">{{ user.user_data.user_body.first_name.toPascalCase() }}</a>
             </div>
-
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#/"><i class="fa fa-home"></i> Home</a></li>
-                <li ng-show="user_service.has_data"><a href="#login"><i class="fa
-                    fa-shield"></i> Logout</a></li>
-                <li ng-show="!user_service.has_data"><a href="#login"><i class="fa fa-shield"></i> Login</a></li>
+                <li><a href="#/">Home</a></li>
+                <li ng-show="user.has_data"><a href="" ng-click="user.logout()">Logout</a></li>
+                <li ng-show="!user.has_data"><a href="#login">Login</a></li>
                 <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
             </ul>
         </div>

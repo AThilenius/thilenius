@@ -3,6 +3,6 @@ forgeApp.controller('homeController', [
   '$scope',
   'user',
   function($scope, user) {
-    $scope.user_service = user;
+    $scope.user = user;
   }
 ]);

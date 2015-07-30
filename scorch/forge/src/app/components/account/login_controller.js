@@ -9,8 +9,7 @@ forgeApp.controller('loginController', [
     $scope.message = 'Look! I am an login page.';
 
     $scope.login = function(username, password) {
-      if (!username || username.length === 0 || !password ||
-          password.length === 0) {
+      if (isBlank(username) || isBlank(password)) {
         $scope.error = "Missing Fields";
         $scope.is_invalid = true;
       } else {

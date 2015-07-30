@@ -32,17 +32,17 @@ for service in $@; do
   fi
 done
 
-if [ "${thrift_inputs}" != "" ]; then
+for input in ${thrift_inputs}; do
   docker inspect athilenius/thrift &> /dev/null || \
       EROR 'Failed to find the dockerfile athilenius/thrift. You may need to '`
       `'build it first'
   docker kill thrift_compiler &> /dev/null
   docker rm thrift_compiler &> /dev/null
 
-  INFO "Building thrift services: [${thrift_inputs}] using ${FLAGS_gen} to "`
+  INFO "Building thrift service: ${input} using ${FLAGS_gen} to "`
       `"${FLAGS_output}"
   thrift_command="thrift -r --gen ${thrift_gens["${FLAGS_gen}"]}"`
-      `" -out ${FLAGS_output} ${thrift_inputs}"
+      `" -out ${FLAGS_output} ${input}"
   # Mounting $HOME to the wrong point to ensure the output gets put in the
   # correct place when running the thrift command
   docker run -v $HOME/thilenius:$HOME/thilenius --name thrift_compiler \
@@ -54,4 +54,4 @@ if [ "${thrift_inputs}" != "" ]; then
     cp $HOME/thilenius/tools/thrift/thrift.min.js ${FLAGS_output}/thrift.js || \
         EROR "Failed to copy thrift.min.js to ${FLAGS_output}/thrift.js"
   fi
-fi
+done

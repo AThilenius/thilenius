@@ -22,6 +22,11 @@ Session.prototype.login = function(login, password, err, cb) {
       });
 };
 
+Session.prototype.logout = function() {
+  this.session_token = null;
+  this.$cookies.put(FORGE_COOKIE_KEY, null);
+};
+
 forgeApp.factory('session', [
   '$cookies',
   function($cookies) {
