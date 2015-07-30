@@ -1,6 +1,9 @@
 . $HOME/thilenius/core/shell/*
 PATH=$PATH:$HOME/thilenius/core/tools
 
+export CC=/usr/bin/clang
+export CXX=/usr/bin/clang++
+
 #===  MISX ALIASES  ============================================================
 alias rgrep='GREP_COLOR="1;37;41" LANG=C grep -r --color=auto'
 alias thilenius='cd $HOME/thilenius'

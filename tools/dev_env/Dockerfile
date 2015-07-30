@@ -81,6 +81,8 @@ RUN npm install -g mocha
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/
 RUN mv /root/env_files/bashrc /root/.bashrc
+ADD ycm_extra_conf.py /root/env_files/
+RUN mv /root/env_files/ycm_extra_conf.py /root/.ycm_extra_conf.py
 
 #===  CMD  =====================================================================
 CMD /bin/bash

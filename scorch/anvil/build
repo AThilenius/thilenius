@@ -1,0 +1,4 @@
+#!/bin/bash
+cmake -H. -B/root/thilenius_bin/scorch/anvil
+cd /root/thilenius_bin/scorch/anvil
+make

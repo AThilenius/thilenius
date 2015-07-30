@@ -80,8 +80,9 @@ let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 
 " YouCompleteMe
-let g:ycm_complete_in_comments = 1
 let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_complete_in_comments = 1
+let g:ycm_confirm_extra_conf = 0
 let g:ycm_min_num_of_chars_for_completion = 1
 let g:ycm_seed_identifiers_with_syntax = 1
 
