@@ -49,28 +49,6 @@ RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 #===  CTAGS  ===================================================================
 RUN apt-get install -y exuberant-ctags
 
-#===  THRIFT  ==================================================================
-RUN apt-get install -qy libboost-dev
-RUN apt-get install -qy libboost-test-dev
-RUN apt-get install -qy libboost-program-options-dev
-RUN apt-get install -qy libboost-system-dev
-RUN apt-get install -qy libboost-filesystem-dev
-RUN apt-get install -qy libevent-dev
-RUN apt-get install -qy automake
-RUN apt-get install -qy libtool
-RUN apt-get install -qy flex
-RUN apt-get install -qy bison
-RUN apt-get install -qy pkg-config
-RUN apt-get install -qy g++
-RUN apt-get install -qy libssl-dev
-RUN cd /tmp &&\
-  curl http://archive.apache.org/dist/thrift/0.9.2/thrift-0.9.2.tar.gz | tar zx\
-  &&\
-  cd thrift-0.9.2/ &&\
-  ./configure &&\
-  make &&\
-  make install
-
 #===  VIM RC  ==================================================================
 ADD vimrc /root/env_files/
 RUN cat /root/env_files/vimrc >> /root/.vimrc
@@ -81,8 +59,6 @@ RUN npm install -g mocha
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/
 RUN mv /root/env_files/bashrc /root/.bashrc
-ADD ycm_extra_conf.py /root/env_files/
-RUN mv /root/env_files/ycm_extra_conf.py /root/.ycm_extra_conf.py
 
 #===  CMD  =====================================================================
 CMD /bin/bash

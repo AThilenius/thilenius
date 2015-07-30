@@ -1,12 +1,16 @@
 cmake_minimum_required (VERSION 2.6)
 project (anvil)
 
+set (
+  CMAKE_EXPORT_COMPILE_COMMANDS ON
+)
+
 include_directories (
-  "/root/thilenius/libs/cpp"
+  "/root/thilenius"
 )
 
 add_subdirectory (
-  /root/thilenius/libs/cpp/base /root/thilenius_bin/scorch/anvil/lib_cpp_base
+  /root/thilenius/base /root/thilenius_bin/scorch/anvil/base
 )
 
 add_executable (
