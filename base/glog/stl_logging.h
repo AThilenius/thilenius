@@ -168,7 +168,7 @@ inline void PrintSequence(std::ostream& out, Iter begin, Iter end) {
 //   void MakeCheckOpValueString(strstream* ss, const T& v) {
 //     (*ss) << v;
 //   }
-// Because 'glog/logging.h' is included before 'glog/stl_logging.h',
+// Because 'logging.h' is included before 'stl_logging.h',
 // subsequent CHECK_EQ(v1, v2) for vector<...> typed variable v1 and v2 can only
 // find these operator definitions via ADL.
 //
