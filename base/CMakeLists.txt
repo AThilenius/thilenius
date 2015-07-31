@@ -5,9 +5,10 @@ set (
   CMAKE_EXPORT_COMPILE_COMMANDS ON
 )
 
-add_subdirectory (
-  /root/thilenius/base/gflags /root/thilenius_bin/scorch/anvil/base/gflags
-)
+add_subdirectory (/root/thilenius/base/gflags)
+add_subdirectory (/root/thilenius/base/glog)
+add_subdirectory (/root/thilenius/base/gmock)
+add_subdirectory (/root/thilenius/base/gtest)
 
 add_library (
   base
@@ -16,5 +17,8 @@ add_library (
 
 target_link_libraries (
   base
-  gflags
+  libgflags
+  libglog
+  libgmock
+  libgtest
 )

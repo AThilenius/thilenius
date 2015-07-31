@@ -2,3 +2,4 @@
 cmake -H. -B/root/thilenius_bin/scorch/anvil
 cd /root/thilenius_bin/scorch/anvil
 make
+/root/thilenius_bin/scorch/anvil/anvil

@@ -9,9 +9,7 @@ include_directories (
   "/root/thilenius"
 )
 
-add_subdirectory (
-  /root/thilenius/base /root/thilenius_bin/scorch/anvil/base
-)
+add_subdirectory (/root/thilenius/base /root/thilenius_bin/scorch/anvil/base)
 
 add_executable (
   anvil
