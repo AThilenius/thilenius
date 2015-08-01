@@ -10,6 +10,8 @@ include_directories (
 )
 
 add_subdirectory (/root/thilenius/base /root/thilenius_bin/scorch/anvil/base)
+add_subdirectory (/root/thilenius/third_party/thrift
+                  /root/thilenius_bin/scorch/anvil/third_party/thrift)
 
 add_executable (
   anvil
@@ -19,4 +21,5 @@ add_executable (
 target_link_libraries (
   anvil
   base
+  thrift
 )
