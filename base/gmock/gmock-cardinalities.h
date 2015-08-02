@@ -40,7 +40,7 @@
 
 #include <limits.h>
 #include <ostream>  // NOLINT
-#include "gmock-port.h"
+#include "internal/gmock-port.h"
 #include "/root/thilenius/base/gtest/gtest.h"
 
 namespace testing {

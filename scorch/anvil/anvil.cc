@@ -2,36 +2,30 @@
 #include <memory>
 #include <string>
 
-#include "/root/thilenius/base/gflags/gflags.h"
-#include "/root/thilenius/base/glog/logging.h"
-#include "/root/thilenius/base/gtest/gtest.h"
-#include "/root/thilenius/base/string.h"
-#include "/root/thilenius/third_party/thrift/protocol/TBinaryProtocol.h"
-#include "/root/thilenius/third_party/thrift/transport/TSocket.h"
-#include "/root/thilenius/third_party/thrift/transport/TTransportUtils.h"
+#include "base/gflags/gflags.h"
+#include "base/glog/logging.h"
+#include "base/gmock/gmock.h"
+#include "base/gtest/gtest.h"
+#include "base/macros.h"
+#include "base/string.h"
+#include "third_party/thrift/protocol/TBinaryProtocol.h"
+#include "third_party/thrift/transport/TSocket.h"
+#include "third_party/thrift/transport/TTransportUtils.h"
+#include "scorch/anvil/anvil.h"
 
 DEFINE_string(test, "Defaul value", "A test flag!");
 
-TEST(FactorialTest, Zero) { EXPECT_EQ(1, 1); }
+namespace thilenius {
+namespace scorch {
+namespace anvil {
 
-int main(int argc, char **argv) {
-  // Google Flags
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-
-  // GoogleLog
-  google::InitGoogleLogging(argv[0]);
-  FLAGS_colorlogtostderr = true;
-  FLAGS_logtostderr = true;
-
-  // GoogleTest
-  ::testing::InitGoogleTest(&argc, argv);
-
-  LOG(INFO) << "Hello from GLOG";
-  std::shared_ptr<apache::thrift::transport::TSocket> socket(
-      new apache::thrift::transport::TSocket("localhost", 9090));
-
-  std::shared_ptr<std::string> test_ptr (new std::string("Hello, World!"));
-  std::cout << *test_ptr << std::endl;
-
-  return RUN_ALL_TESTS();
+AnvilRunner::AnvilRunner(int argc, char** argv)
+    : argc_(argc), argv_(argv) {
+  INIT_GOOGLE(argc_, argv_);
 }
+
+int AnvilRunner::Execute() { return RUN_ALL_TESTS(); }
+
+}  // namespace anvil
+}  // namespace scorch
+}  // namespace thilenius

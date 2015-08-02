@@ -72,7 +72,7 @@
 #define GMOCK_INCLUDE_GMOCK_GMOCK_GENERATED_NICE_STRICT_H_
 
 #include "gmock-spec-builders.h"
-#include "gmock-port.h"
+#include "internal/gmock-port.h"
 
 namespace testing {
 

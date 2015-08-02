@@ -1,0 +1,5 @@
+#!/bin/bash
+cmake -H. -B/root/thilenius_bin/experimental/sample_assignment
+cd /root/thilenius_bin/experimental/sample_assignment
+make
+/root/thilenius_bin/experimental/sample_assignment/sample_assignment

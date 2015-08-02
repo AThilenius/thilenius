@@ -43,8 +43,8 @@
 #include <algorithm>
 #include <string>
 
-#include "gmock-internal-utils.h"
-#include "gmock-port.h"
+#include "internal/gmock-internal-utils.h"
+#include "internal/gmock-port.h"
 
 namespace testing {
 

@@ -1,5 +1,6 @@
-// Fixed missing tr1 errors
+#include <tr1/tuple>
 #define GTEST_HAS_TR1_TUPLE 0
+// Fixed missing tr1 errors
 
 // Copyright 2005, Google Inc.
 // All rights reserved.

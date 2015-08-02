@@ -73,8 +73,8 @@
 #include "gmock-actions.h"
 #include "gmock-cardinalities.h"
 #include "gmock-matchers.h"
-#include "gmock-internal-utils.h"
-#include "gmock-port.h"
+#include "internal/gmock-internal-utils.h"
+#include "internal/gmock-port.h"
 #include "/root/thilenius/base/gtest/gtest.h"
 
 namespace testing {
@@ -1778,7 +1778,7 @@ inline Expectation::Expectation(internal::ExpectationBase& exp)  // NOLINT
 // A separate macro is required to avoid compile errors when the name
 // of the method used in call is a result of macro expansion.
 // See CompilesWithMethodNameExpandedFromMacro tests in
-// gmock-spec-builders_test.cc for more details.
+// internal/gmock-spec-builders_test.cc for more details.
 #define GMOCK_ON_CALL_IMPL_(obj, call) \
     ((obj).gmock_##call).InternalDefaultActionSetAt(__FILE__, __LINE__, \
                                                     #obj, #call)

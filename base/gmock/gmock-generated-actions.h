@@ -39,7 +39,7 @@
 #define GMOCK_INCLUDE_GMOCK_GMOCK_GENERATED_ACTIONS_H_
 
 #include "gmock-actions.h"
-#include "gmock-port.h"
+#include "internal/gmock-port.h"
 
 namespace testing {
 namespace internal {

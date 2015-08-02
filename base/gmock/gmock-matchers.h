@@ -48,8 +48,8 @@
 #include <utility>
 #include <vector>
 
-#include "gmock-internal-utils.h"
-#include "gmock-port.h"
+#include "internal/gmock-internal-utils.h"
+#include "internal/gmock-port.h"
 #include "/root/thilenius/base/gtest/gtest.h"
 
 #if GTEST_LANG_CXX11
@@ -3305,7 +3305,7 @@ class ElementsAreArrayMatcher {
 // that are the print-out of the matcher's parameters.
 GTEST_API_ string FormatMatcherDescription(bool negation,
                                            const char* matcher_name,
-                                           const Strings& param_values);
+                                           const std::vector<std::string>& param_values);
 
 }  // namespace internal
 

@@ -41,7 +41,7 @@
 #define GMOCK_INCLUDE_GMOCK_GMOCK_GENERATED_FUNCTION_MOCKERS_H_
 
 #include "gmock-spec-builders.h"
-#include "gmock-internal-utils.h"
+#include "internal/gmock-internal-utils.h"
 
 namespace testing {
 namespace internal {

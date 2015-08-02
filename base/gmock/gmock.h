@@ -1,3 +1,5 @@
+// Make sure GTest is included first
+#include "/root/thilenius/base/gtest/gtest.h"
 // Copyright 2007, Google Inc.
 // All rights reserved.
 //
@@ -64,7 +66,7 @@
 #include "gmock-matchers.h"
 #include "gmock-more-actions.h"
 #include "gmock-more-matchers.h"
-#include "gmock-internal-utils.h"
+#include "internal/gmock-internal-utils.h"
 
 namespace testing {
 
