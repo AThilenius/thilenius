@@ -1,13 +1,14 @@
 #include <iostream>
-#include "base/gflags/gflags.h"
-#include "base/glog/logging.h"
-#include "base/gmock/gmock.h"
-#include "base/gtest/gtest.h"
-#include "base/string.h"
-#include "third_party/thrift/Thrift.h"
-#include "third_party/thrift/protocol/TBinaryProtocol.h"
-#include "third_party/thrift/transport/TSocket.h"
-#include "third_party/thrift/transport/TTransportUtils.h"
+#include <memory>
+#include <string>
+
+#include "/root/thilenius/base/gflags/gflags.h"
+#include "/root/thilenius/base/glog/logging.h"
+#include "/root/thilenius/base/gtest/gtest.h"
+#include "/root/thilenius/base/string.h"
+#include "/root/thilenius/third_party/thrift/protocol/TBinaryProtocol.h"
+#include "/root/thilenius/third_party/thrift/transport/TSocket.h"
+#include "/root/thilenius/third_party/thrift/transport/TTransportUtils.h"
 
 DEFINE_string(test, "Defaul value", "A test flag!");
 
@@ -22,12 +23,15 @@ int main(int argc, char **argv) {
   FLAGS_colorlogtostderr = true;
   FLAGS_logtostderr = true;
 
-  // GoogleTest / GoogleMcok
-  ::testing::InitGoogleMock(&argc, argv);
+  // GoogleTest
   ::testing::InitGoogleTest(&argc, argv);
 
   LOG(INFO) << "Hello from GLOG";
-  new apache::thrift::transport::TSocket("localhost", 9090);
+  std::shared_ptr<apache::thrift::transport::TSocket> socket(
+      new apache::thrift::transport::TSocket("localhost", 9090));
+
+  std::shared_ptr<std::string> test_ptr (new std::string("Hello, World!"));
+  std::cout << *test_ptr << std::endl;
 
   return RUN_ALL_TESTS();
 }

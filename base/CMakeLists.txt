@@ -7,7 +7,6 @@ set (
 
 add_subdirectory (/root/thilenius/base/gflags)
 add_subdirectory (/root/thilenius/base/glog)
-add_subdirectory (/root/thilenius/base/gmock)
 add_subdirectory (/root/thilenius/base/gtest)
 
 add_library (
@@ -19,6 +18,5 @@ target_link_libraries (
   base
   libgflags
   libglog
-  libgmock
   libgtest
 )
