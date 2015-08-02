@@ -15,7 +15,7 @@ RUN apt-get install -qy nodejs-legacy
 RUN apt-get install -qy npm
 
 #===  CLANG  ===================================================================
-RUN apt-get install -y clang
+RUN apt-get install -y libc++-dev libc++abi-dev clang-3.6 lldb-3.6
 
 #===  GIT  =====================================================================
 RUN apt-get install -y git
@@ -48,6 +48,12 @@ RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 
 #===  CTAGS  ===================================================================
 RUN apt-get install -y exuberant-ctags
+
+#===  BOOST  ===================================================================
+RUN apt-get install -y libboost-dev libboost-test-dev libboost-program-options-dev
+
+#===  LIB EVENT  ===============================================================
+RUN apt-get install -y libevent-dev
 
 #===  VIM RC  ==================================================================
 ADD vimrc /root/env_files/
