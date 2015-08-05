@@ -22,6 +22,10 @@ class MockLinkedList : public LinkedList {
 TEST(FirstAssignment, ShouldPass) {
 }
 
+TEST(FirstAssignment, ShouldNotPass) {
+  FAIL() << "Yuuuup";
+}
+
 TEST(SecondAssignment, UnknownExceptionTest) {
   throw "Unknown exception";
 }
@@ -35,6 +39,7 @@ TEST(SecondAssignment, ShouldPass) {
 
 int main(int argc, char** argv) {
    Anvil anvil(&argc, &argv);
+   anvil.SetPoints("FirstAssignment", 0, 10);
    anvil.SetPoints("SecondAssignment", 10, 10);
    return anvil.Execute();
 }

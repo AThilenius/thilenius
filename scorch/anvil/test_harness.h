@@ -9,6 +9,8 @@
 #include <unordered_map>
 
 #include "base/macros.h"
+#include "scorch/anvil/anvil_snapshot_constants.h"
+#include "scorch/anvil/anvil_snapshot_types.h"
 
 namespace thilenius {
 namespace scorch {
@@ -24,6 +26,7 @@ class TestHarness {
   DISALLOW_COPY_AND_ASSIGN(TestHarness);
 
   void PrintToStderr();
+  ::anvil::snapshot::RunReport GetRunReport();
 
   const std::unordered_map<std::string, std::tuple<int, int>> points_map_;
   int points_denominator_total_;

@@ -23,6 +23,7 @@ add_custom_command(
     /root/thilenius/scorch/anvil/anvil_snapshot.thrift
   DEPENDS
     libthrift
+    /root/thilenius/scorch/anvil/anvil_snapshot.thrift
 )
 
 add_library (
