@@ -1,5 +1,10 @@
 #!/bin/bash
-cmake -H. -B/root/thilenius_bin/scorch/anvil
+. $HOME/thilenius/core/shell/base
+
+INFO 'Running CMAKE'
+cmake -H. -B/root/thilenius_bin/scorch/anvil || EROR 'CMake command failed.'
+
 cd /root/thilenius_bin/scorch/anvil
-make
-/root/thilenius_bin/scorch/anvil/anvil
+
+INFO 'Running GNU Make'
+make || EROR 'MAKE command failed.'

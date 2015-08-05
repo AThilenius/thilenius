@@ -93,8 +93,13 @@ set_target_properties(libglog PROPERTIES
 include_directories("${source_dir}/include")
 
 #===  BASE  ====================================================================
+include_directories("/root/thilenius")
+
 add_library (
   base
+  /root/thilenius/base/file.cc
+  /root/thilenius/base/log.cc
+  /root/thilenius/base/path.cc
   /root/thilenius/base/string.cc
 )
 

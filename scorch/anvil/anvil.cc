@@ -1,30 +1,38 @@
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
+#include "scorch/anvil/anvil.h"
+
 #include <iostream>
 #include <memory>
 #include <string>
 
 #include "base/gflags/gflags.h"
-#include "base/glog/logging.h"
 #include "base/gmock/gmock.h"
 #include "base/gtest/gtest.h"
-#include "base/macros.h"
-#include "base/string.h"
-#include "third_party/thrift/protocol/TBinaryProtocol.h"
-#include "third_party/thrift/transport/TSocket.h"
-#include "third_party/thrift/transport/TTransportUtils.h"
-#include "scorch/anvil/anvil.h"
-
-DEFINE_string(test, "Defaul value", "A test flag!");
+#include "scorch/anvil/test_harness.h"
 
 namespace thilenius {
 namespace scorch {
 namespace anvil {
 
-AnvilRunner::AnvilRunner(int argc, char** argv)
-    : argc_(argc), argv_(argv) {
-  INIT_GOOGLE(argc_, argv_);
+Anvil::Anvil(int* argc, char*** argv) : argc_(argc), argv_(argv) {
+  gflags::ParseCommandLineFlags(argc, argv, true);
+  testing::InitGoogleTest(argc, *argv);
+  testing::InitGoogleMock(argc, *argv);
 }
 
-int AnvilRunner::Execute() { return RUN_ALL_TESTS(); }
+Anvil& Anvil::SetPoints(const std::string& test_name, int denominator,
+                   int points_possible) {
+  points_[test_name] = std::tuple<int, int>(denominator, points_possible);
+  return *this;
+}
+
+int Anvil::Execute() {
+  TestHarness harness(points_);
+  harness.RunAllTests();
+  return 0;
+}
 
 }  // namespace anvil
 }  // namespace scorch

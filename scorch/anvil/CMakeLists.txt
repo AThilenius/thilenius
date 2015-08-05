@@ -6,15 +6,32 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories (
   "/root/thilenius/"
+  "/root/thilenius_gen"
 )
 
-add_subdirectory (/root/thilenius/base /root/thilenius_bin/scorch/anvil/base)
+add_subdirectory (/root/thilenius/base /root/thilenius_bin/base)
 add_subdirectory (/root/thilenius/third_party/thrift
-                  /root/thilenius_bin/scorch/anvil/third_party/thrift)
+                  /root/thilenius_bin/third_party/thrift)
+
+file(MAKE_DIRECTORY /root/thilenius_gen/scorch/anvil)
+add_custom_command(
+  OUTPUT
+    /root/thilenius_gen/scorch/anvil/anvil_snapshot_constants.cpp
+    /root/thilenius_gen/scorch/anvil/anvil_snapshot_types.cpp
+  COMMAND
+    thrift -r --gen cpp -out /root/thilenius_gen/scorch/anvil
+    /root/thilenius/scorch/anvil/anvil_snapshot.thrift
+  DEPENDS
+    libthrift
+)
 
 add_library (
   anvil
   /root/thilenius/scorch/anvil/anvil.cc
+  /root/thilenius/scorch/anvil/anvil_snapshot.cc
+  /root/thilenius/scorch/anvil/test_harness.cc
+  /root/thilenius_gen/scorch/anvil/anvil_snapshot_constants.cpp
+  /root/thilenius_gen/scorch/anvil/anvil_snapshot_types.cpp
 )
 
 target_link_libraries (

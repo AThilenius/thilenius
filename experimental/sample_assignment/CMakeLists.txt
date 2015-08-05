@@ -6,6 +6,7 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories (
   "/root/thilenius/"
+  "/root/thilenius_gen"
 )
 
 add_subdirectory (/root/thilenius/scorch/anvil /root/thilenius_bin/scorch/anvil)

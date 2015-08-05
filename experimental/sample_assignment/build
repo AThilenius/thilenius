@@ -1,5 +1,14 @@
 #!/bin/bash
-cmake -H. -B/root/thilenius_bin/experimental/sample_assignment
+. $HOME/thilenius/core/shell/base
+
+INFO 'Running CMAKE'
+cmake -H. -B/root/thilenius_bin/experimental/sample_assignment || \
+    EROR 'CMake command failed.'
+
 cd /root/thilenius_bin/experimental/sample_assignment
-make
+
+INFO 'Running GNU Make'
+make || EROR 'MAKE command failed.'
+
+INFO 'Running Executable'
 /root/thilenius_bin/experimental/sample_assignment/sample_assignment

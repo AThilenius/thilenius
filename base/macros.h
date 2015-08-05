@@ -12,4 +12,8 @@
   testing::InitGoogleTest(&argc, argv); \
   testing::InitGoogleMock(&argc, argv);
 
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&);   \
+  void operator=(const TypeName&)
+
 #endif // BASE_MACROS_H_

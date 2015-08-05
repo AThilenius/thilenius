@@ -1,6 +1,7 @@
 #!/bin/bash
-rm -rf ~/thilenius_bin
-cmake -H. -B/root/thilenius_bin/experimental/sample_assignment
-cd /root/thilenius_bin/experimental/sample_assignment
-make
-/root/thilenius_bin/experimental/sample_assignment/sample_assignment
+. $HOME/thilenius/core/shell/base
+
+INFO 'Clearing thilenius_bin and thilenius_gen'
+rm -rf ~/thilenius_bin ~/thilenius_gen
+
+./build

@@ -1,6 +1,7 @@
 #!/bin/bash
-rm -rf ~/thilenius_bin
-cmake -H. -B/root/thilenius_bin/scorch/anvil
-cd /root/thilenius_bin/scorch/anvil
-make
-/root/thilenius_bin/scorch/anvil/anvil
+. $HOME/thilenius/core/shell/base
+
+INFO 'Clearing thilenius_bin and thilenius_gen'
+rm -rf ~/thilenius_bin ~/thilenius_gen
+
+./build

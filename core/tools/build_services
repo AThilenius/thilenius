@@ -7,7 +7,7 @@ DEFINE_string gen '' 'The language generator to use. One of [node, js, cpp]' g
 DEFINE_string output '' \
     'The output directory. This is the full path to the generated files' o
 
-declare -A thrift_gens=(["node"]="js:node" ["js"]="js:jquery")
+declare -A thrift_gens=(["node"]="js:node" ["js"]="js:jquery" ["cpp"]="cpp")
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"

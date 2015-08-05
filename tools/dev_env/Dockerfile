@@ -66,5 +66,8 @@ RUN npm install -g mocha
 ADD bashrc /root/env_files/
 RUN mv /root/env_files/bashrc /root/.bashrc
 
+ADD clang-format /root/env_files/
+RUN mv /root/env_files/clang-format /root/.clang-format
+
 #===  CMD  =====================================================================
 CMD /bin/bash
