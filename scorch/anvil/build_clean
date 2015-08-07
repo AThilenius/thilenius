@@ -1,7 +1,0 @@
-#!/bin/bash
-. $HOME/thilenius/core/shell/base
-
-INFO 'Clearing thilenius_bin and thilenius_gen'
-rm -rf ~/thilenius_bin ~/thilenius_gen
-
-./build

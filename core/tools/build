@@ -1,0 +1,77 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+DEFINE_boolean run false 'Run the executable after a successful build' r
+DEFINE_boolean run_tests false 'Run tests after a successful build' t
+DEFINE_boolean clean false 'Clean the bin and gen dirs before building' c
+DEFINE_boolean clean_all false 'Removes all bin and gen files before building' d
+DEFINE_boolean verbose false 'Use verbose output' v
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+# Check for CMakeLists.txt
+if [ ! -e "CMakeLists.txt"  ]; then
+  EROR 'Failed to find CMakeLists.txt'
+fi
+
+# Compute relative path
+PWD=$(pwd)
+if [[ $PWD != /root/thilenius*  ]]; then
+  EROR 'You must be inside /root/thilenius to use build'
+fi
+
+RPATH=${PWD#/root/thilenius/}
+RPATH=${RPATH#/root/thilenius}
+PWDD=${PWD##*/}
+
+if [ ${FLAGS_verbose} -eq ${FLAGS_TRUE} ]; then
+  INFO "    name: $PWDD"
+  INFO "bin path: /root/thilenius_bin/$RPATH"
+  INFO "gen path: /root/thilenius_gen/$RPATH"
+fi
+
+# Clean
+if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
+  INFO "Deleteing: /root/thilenius_bin/$RPATH"
+  INFO "           /root/thilenius_gen/$RPATH"
+  rm -rf /root/thilenius_bin/$RPATH
+  rm -rf /root/thilenius_gen/$RPATH
+fi
+
+# Clean All
+if [ ${FLAGS_clean_all} -eq ${FLAGS_TRUE} ]; then
+  INFO "Deleteing: /root/thilenius_bin"
+  INFO "           /root/thilenius_gen"
+  rm -rf /root/thilenius_bin
+  rm -rf /root/thilenius_gen
+fi
+
+# Build
+INFO 'Running CMake'
+cmake -H. -B/root/thilenius_bin/$RPATH || EROR 'CMake command failed.'
+
+INFO 'Running Make'
+cd /root/thilenius_bin/$RPATH
+make || EROR 'Make command failed.'
+INFO 'Building completed successfully.'
+
+# Run
+if [ ${FLAGS_run} -eq ${FLAGS_TRUE} ]; then
+  if [ ! -e "/root/thilenius_bin/$RPATH/$PWDD" ]; then
+    WARN "No executable found at /root/thilenius_bin/$RPATH/$PWDD"
+  else
+    INFO "Running executable /root/thilenius_bin/$RPATH/$PWDD"
+    /root/thilenius_bin/$RPATH/$PWDD
+  fi
+fi
+
+# Test
+if [ ${FLAGS_run_tests} -eq ${FLAGS_TRUE} ]; then
+  if [ ! -e "/root/thilenius_bin/$RPATH/${PWDD}_test" ]; then
+    WARN "No tests found at /root/thilenius_bin/$RPATH/${PWDD}_test"
+  else
+    INFO "Running tests at /root/thilenius_bin/$RPATH/${PWDD}_test"
+    /root/thilenius_bin/$RPATH/${PWDD}_test
+  fi
+fi

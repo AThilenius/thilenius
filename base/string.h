@@ -82,6 +82,14 @@ std::string StrCat(Strings&&... strings) {
   return result;
 }
 
+bool Empty(const std::string& str);
+
+bool Blank(const std::string& str);
+
+bool BeginsWith(const std::string& str, const std::string& other_str);
+
+bool EndsWith(const std::string& str, const std::string& other_str);
+
 }  // namespace base
 }  // namespace thilenius
 

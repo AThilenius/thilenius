@@ -11,7 +11,9 @@ namespace base {
 
 class Path {
  public:
-   static std::string ExecutablePath();
+  static std::string ExecutablePath();
+  static std::string Combine(const std::string& left, const std::string& right);
+  static std::string RelativeToAbsolutePath(const std::string& path);
 };
 
 }  // namespace base

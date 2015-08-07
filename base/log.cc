@@ -3,6 +3,11 @@
 
 #include "base/log.h"
 
+#include <iostream>
+#ifdef __linux__
+#include <execinfo.h>
+#endif
+
 namespace thilenius {
 namespace base {
 
@@ -38,11 +43,11 @@ std::ostream& operator<<(std::ostream& stream, ConsoleColor color) {
   return stream;
 }
 
-Log::Log(LogLevel log_level) {
+Log::Log(LogLevel log_level) : is_fatal_(false) {
   switch (log_level) {
     case LogLevel::INFO: {
-      stream_buffer_ << ConsoleColor::GREEN
-                     << "[INFO]" << ConsoleColor::WHITE << ": ";
+      stream_buffer_ << ConsoleColor::GREEN << "[INFO]" << ConsoleColor::WHITE
+                     << ": ";
       break;
     }
     case LogLevel::WARNING: {
@@ -53,13 +58,40 @@ Log::Log(LogLevel log_level) {
       stream_buffer_ << ConsoleColor::RED << "[EROR]: ";
       break;
     }
+    case LogLevel::FATAL: {
+      // Set the fatal flag for stack tracing and exiting
+      is_fatal_ = true;
+      std::cout << ConsoleColor::RED
+                << "A fatal ::thilenius::base::log  was raised." << std::endl;
+      std::cout.flush();
+      stream_buffer_ << ConsoleColor::RED << "[FATL]: ";
+      break;
+    }
   }
 }
 
 Log::~Log() {
   stream_buffer_ << ConsoleColor::WHITE << std::endl;
-  fprintf(stderr, "%s", stream_buffer_.str().c_str());
-  fflush(stderr);
+  if (is_fatal_) {
+    // Run a stack trace if on linux
+#ifdef __linux__
+    void* buffer[10];
+    size_t number_pointers = backtrace(buffer, 10);
+    char** strings = backtrace_symbols(buffer, number_pointers);
+    if (strings != nullptr) {
+      for (int i = 0; i < number_pointers; i++) {
+        std::cout << ConsoleColor::WHITE << strings[i] << std::endl;
+      }
+    }
+    free(strings);
+#endif
+    fprintf(stderr, "%s", stream_buffer_.str().c_str());
+    fflush(stderr);
+    exit(EXIT_FAILURE);
+  } else {
+    fprintf(stderr, "%s", stream_buffer_.str().c_str());
+    fflush(stderr);
+  }
 }
 
 std::ostringstream& Log::GetOStringStream() { return stream_buffer_; }

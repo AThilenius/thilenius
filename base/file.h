@@ -14,6 +14,7 @@ class File {
  public:
   static bool Exists(const std::string& path);
   static bool Delete(const std::string& path);
+  static std::string ReadContentsOrDie(const std::string& path);
 };
 
 }  // namespace base
