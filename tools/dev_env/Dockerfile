@@ -50,7 +50,9 @@ RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 RUN apt-get install -y exuberant-ctags
 
 #===  BOOST  ===================================================================
-RUN apt-get install -y libboost-dev libboost-test-dev libboost-program-options-dev
+RUN mkdir /root/boost
+ADD boost/CMakeLists.txt /root/
+RUN cd /root && cd boost && cmake .. && make || echo "\033[0;31mBoost failed to build, continuing anyway."
 
 #===  LIB EVENT  ===============================================================
 RUN apt-get install -y libevent-dev

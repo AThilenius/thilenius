@@ -110,6 +110,7 @@ include_directories("/root/thilenius")
 
 add_library (
   base
+  /root/thilenius/base/directory.cc
   /root/thilenius/base/file.cc
   /root/thilenius/base/log.cc
   /root/thilenius/base/path.cc
@@ -119,16 +120,20 @@ add_library (
 
 target_link_libraries (
   base
+  boost_filesystem
+  boost_system
   libgflags
-  libgtest
-  libgmock
   libglog
+  libgmock
+  libgtest
 )
 
 #===  BASE LIB  ================================================================
 add_executable (
   base_test
+  /root/thilenius/base/directory_test.cc
   /root/thilenius/base/file_test.cc
+  /root/thilenius/base/path_test.cc
   /root/thilenius/base/string_test.cc
 )
 

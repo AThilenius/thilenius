@@ -36,6 +36,5 @@ struct AnvilSnapshot {
   2: string user_token;
   3: string previous_md5;
   4: list<AnvilSourceFile> snapshot_files;
-  5: list<AnvilSourceFile> frozen_files;
-  6: RunReport run_report;
+  5: RunReport run_report;
 }

@@ -23,8 +23,22 @@ Anvil::Anvil(int* argc, char*** argv) : argc_(argc), argv_(argv) {
 }
 
 Anvil& Anvil::SetPoints(const std::string& test_name, int denominator,
-                   int points_possible) {
+                        int points_possible) {
   points_[test_name] = std::tuple<int, int>(denominator, points_possible);
+  return *this;
+}
+
+Anvil& Anvil::AddUserSource(const std::string& relative_path,
+                            const std::string& md5) {
+  user_source_files_.push_back(
+      std::tuple<std::string, std::string>(relative_path, md5));
+  return *this;
+}
+
+Anvil& Anvil::AddFrozenSource(const std::string& relative_path,
+                              const std::string& md5) {
+  frozen_source_files_.push_back(
+      std::tuple<std::string, std::string>(relative_path, md5));
   return *this;
 }
 

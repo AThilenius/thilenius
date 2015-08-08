@@ -4,6 +4,7 @@
 #ifndef BASE_PATH_H_
 #define BASE_PATH_H_
 
+#include <ctime>
 #include <string>
 
 namespace thilenius {
@@ -11,9 +12,13 @@ namespace base {
 
 class Path {
  public:
-  static std::string ExecutablePath();
+  static std::string Absolute(const std::string& relative_path);
   static std::string Combine(const std::string& left, const std::string& right);
-  static std::string RelativeToAbsolutePath(const std::string& path);
+  static std::string CurrentPath();
+  static bool Exists(const std::string& path);
+  static bool IsDirectory(const std::string& path);
+  static bool IsRegularFile(const std::string& path);
+  static std::time_t LastWriteTime(const std::string& path);
 };
 
 }  // namespace base

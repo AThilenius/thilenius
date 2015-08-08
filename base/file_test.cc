@@ -1,40 +1,98 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
+#include <chrono>
+#include <cstdio>
+#include <fstream>
+#include <thread>
+
 #include "base/file.h"
 #include "base/gtest/gtest.h"
+#include "base/string.h"
 
 namespace thilenius {
 namespace base {
 namespace {
 
-TEST(Existance, ShouldExist) {
-  EXPECT_TRUE(File::Exists("/root/thilenius/base/file_test.cc"))
+class FileTest : public testing::Test {
+ protected:
+  FileTest()
+      : file_cont_("Hello, World!"),
+        full_path_("/root/thilenius_bin/base/test_file.txt"),
+        rel_path_("test_file.txt") {}
+
+  virtual void SetUp() { CreateFile(); }
+
+  virtual void TearDown() { RemoveFile(); }
+
+  void CreateFile() {
+    std::remove(rel_path_.c_str());
+    std::ofstream test_file(rel_path_);
+    test_file << file_cont_;
+  }
+
+  void RemoveFile() { std::remove(rel_path_.c_str()); }
+
+  std::string ReadFile() {
+    std::ifstream file_stream(rel_path_);
+    std::string file_contents((std::istreambuf_iterator<char>(file_stream)),
+                              std::istreambuf_iterator<char>());
+    return std::move(file_contents);
+  }
+
+  std::string file_cont_;
+  std::string full_path_;
+  std::string rel_path_;
+};
+
+TEST_F(FileTest, AppendToFileTest) {
+  std::string append_text = ":Appended Test.";
+  std::string full_text = StrCat(file_cont_, append_text);
+  EXPECT_TRUE(File::AppendToFile(rel_path_, append_text));
+  EXPECT_EQ(ReadFile(), full_text)
+      << "Append did not correctly append to an existing file.";
+  RemoveFile();
+  EXPECT_TRUE(File::AppendToFile(rel_path_, append_text));
+  EXPECT_EQ(ReadFile(), append_text)
+      << "Append did not correctly append to a new file.";
+}
+
+TEST_F(FileTest, ExistsTest) {
+  EXPECT_TRUE(File::Exists(rel_path_))
       << "File::Exists returned false for a file that that exists.";
-}
-
-TEST(Existance, RelativePaths) {
-  // Remember that the executable is at /root/thilenius_bin/base/
-  EXPECT_TRUE(File::Exists("Makefile"))
-      << "File::Exists returned false for a relative file that that exists.";
-}
-
-TEST(Existance, ShouldNotExist) {
+  EXPECT_TRUE(File::Exists(full_path_))
+      << "File::Exists returned false for a file that that exists.";
   EXPECT_FALSE(File::Exists("this_file_does_not_exist"))
       << "File::Exists returned true for a file that does not exist.";
 }
 
-TEST(ReadContents, DeathTest) {
+TEST_F(FileTest, LastWriteTimeTest) {
+  RemoveFile();
+  time_t before_write;
+  std::time(&before_write);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  {
+    std::ofstream file_stream(rel_path_);
+    file_stream << "An Update";
+  }
+  time_t update_time = File::LastWriteTime(rel_path_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  time_t after_time;
+  std::time(&after_time);
+  EXPECT_LE(before_write, update_time);
+  EXPECT_LE(update_time, after_time);
+}
+
+TEST_F(FileTest, ReadContentsOrDieTest) {
+  EXPECT_TRUE(File::ReadContentsOrDie(rel_path_).length() != 0)
+      << "File::ReadContentsOrDie returned a zero length string for an "
+         "existing text file.";
+  EXPECT_TRUE(File::ReadContentsOrDie(full_path_).length() != 0)
+      << "File::ReadContentsOrDie returned a zero length string for an "
+         "existing text file.";
   EXPECT_EXIT(File::ReadContentsOrDie("file_does_not_exist"),
               ::testing::ExitedWithCode(EXIT_FAILURE),
               ".*Failed to find file.*");
-}
-
-TEST(ReadContents, ReadThisTest) {
-  EXPECT_TRUE(File::ReadContentsOrDie("/root/thilenius/base/file_test.cc")
-                  .length() != 0)
-      << "File::ReadContentsOrDie returned a zero length string for an "
-         "existing text file.";
 }
 
 }  // namespace

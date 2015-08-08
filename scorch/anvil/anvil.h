@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "base/macros.h"
 
@@ -22,6 +23,14 @@ class Anvil {
   Anvil& SetPoints(const std::string& test_name, int denominator,
                    int points_possible);
 
+  // Adds a source file that can be modified by the user
+  Anvil& AddUserSource(const std::string& relative_path,
+                       const std::string& md5);
+
+  // Adds a source file that cannot be modified by the user
+  Anvil& AddFrozenSource(const std::string& relative_path,
+                         const std::string& md5);
+
   // Execute the configured Anvil stack
   int Execute();
 
@@ -31,6 +40,8 @@ class Anvil {
   int* argc_;
   char*** argv_;
   std::unordered_map<std::string, std::tuple<int, int>> points_;
+  std::vector<std::tuple<std::string, std::string>> user_source_files_;
+  std::vector<std::tuple<std::string, std::string>> frozen_source_files_;
 };  // class Anvil
 
 }  // namespace anvil

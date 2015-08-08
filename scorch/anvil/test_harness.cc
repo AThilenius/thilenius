@@ -11,8 +11,8 @@
 #include "third_party/thrift/protocol/TJSONProtocol.h"
 #include "third_party/thrift/transport/TBufferTransports.h"
 
-using ::testing::EmptyTestEventListener;
-using ::testing::InitGoogleTest;
+using ::apache::thrift::protocol::TJSONProtocol;
+using ::apache::thrift::transport::TMemoryBuffer;
 using ::testing::Test;
 using ::testing::TestCase;
 using ::testing::TestEventListeners;
@@ -20,8 +20,6 @@ using ::testing::TestInfo;
 using ::testing::TestPartResult;
 using ::testing::UnitTest;
 using ::thilenius::base::ConsoleColor;
-using ::apache::thrift::transport::TMemoryBuffer;
-using ::apache::thrift::protocol::TJSONProtocol;
 
 namespace thilenius {
 namespace scorch {
@@ -43,7 +41,7 @@ void TestHarness::RunAllTests() {
   UnitTest& unit_test = *UnitTest::GetInstance();
   TestEventListeners& listeners = unit_test.listeners();
   delete listeners.Release(listeners.default_result_printer());
-
+  // Run it and report results to console
   int ret_val = RUN_ALL_TESTS();
   PrintToStderr();
   ::anvil::snapshot::RunReport run_report = GetRunReport();

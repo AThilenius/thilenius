@@ -8,8 +8,12 @@ namespace scorch {
 namespace anvil {
 
 // static
-AnvilSnapshot AnvilSnapshot::Load (const std::string& path) {
-
+AnvilSnapshot AnvilSnapshot::Generate(
+    const std::vector<std::tuple<std::string, std::string>>& user_files,
+    const std::vector<std::tuple<std::string, std::string>>& frozen_files) {
+  AnvilSnapshot snapshot;
+  // Snapshot user files
+  return std::move(snapshot);
 }
 
 }  // namespace anvil

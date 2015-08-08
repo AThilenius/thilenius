@@ -6,10 +6,81 @@
 #include <iostream>
 #ifdef __linux__
 #include <execinfo.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <execinfo.h>
+#include <cxxabi.h>
 #endif
 
 namespace thilenius {
 namespace base {
+
+namespace {
+
+#ifdef __linux__
+// This is taken from: http://panthema.net/2008/0901-stacktrace-demangled/
+/** Print a demangled stack backtrace of the caller function to FILE* out. */
+void PrintStackTrace(FILE* out = stderr, unsigned int max_frames = 63) {
+  fprintf(out, "[FATAL]: Stack trace:\n");
+  // storage array for stack trace address data
+  void* addrlist[max_frames + 1];
+  // retrieve current stack addresses
+  int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+  if (addrlen == 0) {
+    fprintf(out, "  <empty, possibly corrupt>\n");
+    return;
+  }
+  // resolve addresses into strings containing "filename(function+address)",
+  // this array must be free()-ed
+  char** symbollist = backtrace_symbols(addrlist, addrlen);
+  // allocate string which will be filled with the demangled function name
+  size_t funcnamesize = 256;
+  char* funcname = (char*)malloc(funcnamesize);
+  // iterate over the returned symbol lines. skip the first, it is the
+  // address of this function.
+  for (int i = 2; i < addrlen; i++) {
+    char* begin_name = 0, * begin_offset = 0, * end_offset = 0;
+    // find parentheses and +address offset surrounding the mangled name:
+    // ./module(function+0x15c) [0x8048a6d]
+    for (char* p = symbollist[i]; *p; ++p) {
+      if (*p == '(')
+        begin_name = p;
+      else if (*p == '+')
+        begin_offset = p;
+      else if (*p == ')' && begin_offset) {
+        end_offset = p;
+        break;
+      }
+    }
+    if (begin_name && begin_offset && end_offset && begin_name < begin_offset) {
+      *begin_name++ = '\0';
+      *begin_offset++ = '\0';
+      *end_offset = '\0';
+      // mangled name is now in [begin_name, begin_offset) and caller
+      // offset in [begin_offset, end_offset). now apply
+      // __cxa_demangle():
+      int status;
+      char* ret =
+          abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
+      if (status == 0) {
+        funcname = ret;  // use possibly realloc()-ed string
+        fprintf(out, "[FATAL]:  %s: %s\n", symbollist[i], funcname);
+      } else {
+        // demangling failed. Output function name as a C function with
+        // no arguments.
+        fprintf(out, "[FATAL]:  %s: %s()\n", symbollist[i], begin_name);
+      }
+    } else {
+      // couldn't parse the line? print the whole line.
+      fprintf(out, "[FATAL]:  %s\n", symbollist[i]);
+    }
+  }
+  free(funcname);
+  free(symbollist);
+}
+#endif  // __linux__
+
+}  // namespace
 
 std::ostream& operator<<(std::ostream& stream, ConsoleColor color) {
 #if !defined(DISABLE_COLORS)
@@ -61,10 +132,7 @@ Log::Log(LogLevel log_level) : is_fatal_(false) {
     case LogLevel::FATAL: {
       // Set the fatal flag for stack tracing and exiting
       is_fatal_ = true;
-      std::cout << ConsoleColor::RED
-                << "A fatal ::thilenius::base::log  was raised." << std::endl;
-      std::cout.flush();
-      stream_buffer_ << ConsoleColor::RED << "[FATL]: ";
+      stream_buffer_ << ConsoleColor::RED << "[FATAL]: ";
       break;
     }
   }
@@ -73,17 +141,9 @@ Log::Log(LogLevel log_level) : is_fatal_(false) {
 Log::~Log() {
   stream_buffer_ << ConsoleColor::WHITE << std::endl;
   if (is_fatal_) {
-    // Run a stack trace if on linux
+// Run a stack trace if on linux
 #ifdef __linux__
-    void* buffer[10];
-    size_t number_pointers = backtrace(buffer, 10);
-    char** strings = backtrace_symbols(buffer, number_pointers);
-    if (strings != nullptr) {
-      for (int i = 0; i < number_pointers; i++) {
-        std::cout << ConsoleColor::WHITE << strings[i] << std::endl;
-      }
-    }
-    free(strings);
+    PrintStackTrace();
 #endif
     fprintf(stderr, "%s", stream_buffer_.str().c_str());
     fflush(stderr);
