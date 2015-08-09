@@ -49,11 +49,11 @@ TEST_F(FileTest, AppendToFileTest) {
   std::string append_text = ":Appended Test.";
   std::string full_text = StrCat(file_cont_, append_text);
   EXPECT_TRUE(File::AppendToFile(rel_path_, append_text));
-  EXPECT_EQ(ReadFile(), full_text)
+  EXPECT_EQ(full_text, ReadFile())
       << "Append did not correctly append to an existing file.";
   RemoveFile();
   EXPECT_TRUE(File::AppendToFile(rel_path_, append_text));
-  EXPECT_EQ(ReadFile(), append_text)
+  EXPECT_EQ(append_text, ReadFile())
       << "Append did not correctly append to a new file.";
 }
 
@@ -64,6 +64,15 @@ TEST_F(FileTest, ExistsTest) {
       << "File::Exists returned false for a file that that exists.";
   EXPECT_FALSE(File::Exists("this_file_does_not_exist"))
       << "File::Exists returned true for a file that does not exist.";
+}
+
+TEST_F(FileTest, MD5OrDieTest) {
+  std::string md5 = "65a8e27d8879283831b664bd8b7f0ad4";
+  EXPECT_EQ(md5, File::MD5OrDie(rel_path_));
+  EXPECT_EQ(md5, File::MD5OrDie(full_path_));
+  EXPECT_EXIT(File::MD5OrDie("file_does_not_exist"),
+              ::testing::ExitedWithCode(EXIT_FAILURE),
+              ".*Failed to find file.*");
 }
 
 TEST_F(FileTest, LastWriteTimeTest) {
@@ -81,6 +90,11 @@ TEST_F(FileTest, LastWriteTimeTest) {
   std::time(&after_time);
   EXPECT_LE(before_write, update_time);
   EXPECT_LE(update_time, after_time);
+}
+
+TEST_F(FileTest, SizeTest) {
+  EXPECT_EQ(File::Size(rel_path_), 13);
+  EXPECT_EQ(File::Size(full_path_), 13);
 }
 
 TEST_F(FileTest, ReadContentsOrDieTest) {

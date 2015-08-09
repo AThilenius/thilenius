@@ -122,6 +122,7 @@ target_link_libraries (
   base
   boost_filesystem
   boost_system
+  crypto
   libgflags
   libglog
   libgmock

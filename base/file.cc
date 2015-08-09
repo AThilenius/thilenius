@@ -4,7 +4,16 @@
 #include "base/file.h"
 
 #include <boost/filesystem.hpp>
+#include <fcntl.h>
 #include <fstream>
+#include <iomanip>
+#include <openssl/md5.h>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 #include "base/log.h"
 
@@ -26,6 +35,28 @@ bool File::Exists(const std::string& file) {
 
 time_t File::LastWriteTime(const std::string& file) {
   return ::boost::filesystem::last_write_time(file);
+}
+
+std::string File::MD5OrDie(const std::string& file) {
+  if (!File::Exists(file)) {
+    LOG(FATAL) << "Failed to find file: " << file;
+  }
+  uint8 result[MD5_DIGEST_LENGTH];
+  int file_descript = open(file.c_str(), O_RDONLY);
+  if (!file_descript) {
+    LOG(FATAL) << "Failed to find file: " << file;
+  }
+  int64 file_size = File::Size(file);
+  char* file_buffer = static_cast<char*>(
+      mmap(0, file_size, PROT_READ, MAP_SHARED, file_descript, 0));
+  ::MD5((unsigned char*)file_buffer, file_size, result);
+  munmap(file_buffer, file_size);
+  std::ostringstream sout;
+  sout << std::hex << std::setfill('0');
+  for (const auto& c : result) {
+    sout << std::setw(2) << (int)c;
+  }
+  return sout.str();
 }
 
 std::string File::ReadContentsOrDie(const std::string& path) {
@@ -54,6 +85,10 @@ bool File::Rename(const std::string& file, const std::string& new_file) {
   }
   ::boost::filesystem::rename(file, new_file);
   return true;
+}
+
+int64 File::Size(const std::string& file) {
+  return static_cast<int64>(::boost::filesystem::file_size(file));
 }
 
 bool File::WriteToFile(const std::string& file, const std::string& content) {
