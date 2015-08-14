@@ -57,6 +57,12 @@ RUN cd /root && cd boost && cmake .. && make || echo "\033[0;31mBoost failed to 
 #===  LIB EVENT  ===============================================================
 RUN apt-get install -y libevent-dev
 
+#===  SCONS  ===================================================================
+RUN apt-get install -y scons
+
+#===  CURL-DEV  ================================================================
+RUN apt-get install -y libcurl4-openssl-dev
+
 #===  VIM RC  ==================================================================
 ADD vimrc /root/env_files/
 RUN cat /root/env_files/vimrc >> /root/.vimrc

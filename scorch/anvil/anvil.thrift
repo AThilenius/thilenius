@@ -1,13 +1,9 @@
 //==============================================================================
 //==  ANVIL PROJECT  ===========================================================
 //==============================================================================
-namespace cpp anvil.snapshot
+include "scorch/cloud/crucible/crucible.thrift"
 
-// TODO(athilenius): Move this over to SourceControl service defs
-struct AnvilSourceFile {
-  1: string realative_path;
-  2: string md5;
-}
+namespace cpp anvil
 
 struct Test {
   1: bool did_pass;
@@ -24,17 +20,22 @@ struct TestCase {
   6: list<Test> tests;
 }
 
-struct RunReport {
+struct TestRunReport {
   1: i32 total_points_earned;
   2: i32 total_points_possible;
   3: i32 total_points_denominator;
   4: list<TestCase> test_cases;
 }
 
-struct AnvilSnapshot {
+struct ProjectState {
   1: string project_uuid;
   2: string user_token;
-  3: string previous_md5;
-  4: list<AnvilSourceFile> snapshot_files;
-  5: RunReport run_report;
+  3: string last_commit_hash;
+}
+
+struct AnvilRunReport {
+  1: ProjectState project_state;
+  2: list<crucible.SourceFile> source_files;
+  3: list<crucible.FileInfo> frozen_files;
+  4: TestRunReport test_run_report;
 }

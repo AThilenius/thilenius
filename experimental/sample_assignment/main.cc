@@ -1,3 +1,6 @@
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -19,27 +22,22 @@ class MockLinkedList : public LinkedList {
   MOCK_METHOD0(Pop, int(void));
 };
 
-TEST(FirstAssignment, ShouldPass) {
-}
+TEST(FirstAssignment, ShouldPass) {}
 
-TEST(FirstAssignment, ShouldNotPass) {
-  FAIL() << "Yuuuup";
-}
+TEST(FirstAssignment, ShouldNotPass) { FAIL() << "Yuuuup"; }
 
-TEST(SecondAssignment, UnknownExceptionTest) {
-  throw "Unknown exception";
-}
+TEST(SecondAssignment, UnknownExceptionTest) { throw "Unknown exception"; }
 
-TEST(SecondAssignment, AssertTest) {
-  ASSERT_EQ(1, 2) << "An error message!";
-}
+TEST(SecondAssignment, AssertTest) { ASSERT_EQ(1, 2) << "An error message!"; }
 
-TEST(SecondAssignment, ShouldPass) {
-}
+TEST(SecondAssignment, ShouldPass) {}
 
 int main(int argc, char** argv) {
-   Anvil anvil(&argc, &argv);
-   anvil.SetPoints("FirstAssignment", 0, 10);
-   anvil.SetPoints("SecondAssignment", 10, 10);
-   return anvil.Execute();
+  Anvil anvil(&argc, &argv);
+  anvil.SetPoints("FirstAssignment", 0, 10);
+  anvil.SetPoints("SecondAssignment", 10, 10);
+  anvil.AddUserSource("linked_list.cc");
+  anvil.AddFrozenSource("linked_list.h");
+  anvil.Execute();
+  return EXIT_SUCCESS;
 }
