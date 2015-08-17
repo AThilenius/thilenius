@@ -1,5 +1,25 @@
 cmake_minimum_required (VERSION 2.6)
 
+find_package (Boost
+  REQUIRED
+  COMPONENTS filesystem program_options system thread
+)
+include_directories (${Boost_INCLUDE_DIRS})
+link_directories (${Boost_LIBRARY_DIRS})
+
+set (MONGOCLIENT_SCONS_FLAGS
+  ${MONGOCLIENT_SCONS_FLAGS}
+  --warn=no-missing-sconscript
+  --cache
+  --cpppath=${Boost_INCLUDE_DIRS}
+  --libpath=${Boost_LIBRARY_DIRS}
+  --warn=no-all
+  --cc=${CMAKE_C_COMPILER}
+  --cxx=${CMAKE_CXX_COMPILER}
+  --c++11=on
+  --prefix=/usr
+)
+
 add_subdirectory (/root/thilenius/third_party/curl
                   /root/thilenius_bin/third_party/curl)
 
@@ -13,8 +33,9 @@ ExternalProject_Add(
   GIT_REPOSITORY https://github.com/mongodb/mongo-cxx-driver.git
   GIT_TAG legacy
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND scons ${mongo_cxx_drive_PREFIX}-prefix/src/mongo_cxx_driver --cache --prefix=/usr install || echo "Failed to build, continuing anyway."
+  UPDATE_COMMAND ""
+  BUILD_COMMAND scons ${MONGOCLIENT_SCONS_FLAGS} install
+  INSTALL_COMMAND ""
   BUILD_IN_SOURCE 1
   DEPENDS
     libcurl

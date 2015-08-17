@@ -4,38 +4,86 @@
 #include "scorch/cloud/crucible/crucible_handler.h"
 
 #include "base/gflags/gflags.h"
+#include "base/log.h"
+#include "base/string.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 
-DEFINE_string(source_path, "/data/static_assert/crucible",
-              "The root path of the saved files");
+DEFINE_string(mongo_ip, "192.168.59.103", "The MongoDB instance ip address.");
+DEFINE_string(mongo_port, "27017", "The MongoDB instance port number.");
+
+using ::thilenius::base::StrCat;
 
 namespace thilenius {
 namespace scorch {
 namespace cloud {
 namespace crucible {
 
-void CrucibleHandler::CloneCrucibleBaseRepoFromGit(
-    ::crucible::RepoBase& _return, const std::string& git_url,
-    const std::string& git_path) {}
+// TABLE - repos
+// STRUCTURE -
+// {
+//   repo_uuid,
+//   base_repo_uuid,
+//   user_uuid,
+//   creation_timestamp
+//   commits: [
+//     {
+//       commit_uuid,
+//       user_uuid,
+//       timestamp,
+//       added_files: [ FILE.. ],
+//       modified_files: [ FILE... ],
+//       removed_files: [ FILE... ]
+//     }, ...
+//   ]
+// }
 
-void CrucibleHandler::GetRepoInfoFromBase(::crucible::RepoInfo& _return,
-                                          const std::string& user_uuid,
-                                          const std::string& base_uuid) {}
+CrucibleHandler::CrucibleHandler() {
+  try {
+    LOG(INFO) << "Connecting to MongoDB at " << FLAGS_mongo_ip << ":"
+              << FLAGS_mongo_port;
+    mongo_connection_.connect(StrCat(FLAGS_mongo_ip, ":", FLAGS_mongo_port));
+  } catch (const mongo::DBException& e) {
+    LOG(FATAL) << "MongoDB Driver failed to connect to " << FLAGS_mongo_ip
+               << ":" << FLAGS_mongo_port;
+  }
+}
 
-void CrucibleHandler::CommitSnapshot(::crucible::RepoInfo& _return,
-                                     const std::string& repo_uuid,
-                                     const ::crucible::Snapshot& snapshot) {}
+void CrucibleHandler::CreateNewRepo(::crucible::RepoInfo& _return,
+                                    const std::string& user_uuid,
+                                    const std::string& repo_name) {
+  // Your implementation goes here
+  LOG(INFO) << "CreateNewRepo";
+  _return = ::crucible::RepoInfo();
+}
 
-void CrucibleHandler::GetSnapshot(::crucible::Snapshot& _return,
-                                  const std::string& snapshot_uuid) {}
+void CrucibleHandler::CreateForkedRepo(::crucible::RepoInfo& _return,
+                                       const std::string& user_uuid,
+                                       const std::string& base_repo_uuid) {
+  // Your implementation goes here
+  LOG(INFO) << "CreateForkedRepo";
+}
 
-void CrucibleHandler::GetSnapshotAsTar(::crucible::ExternalFile& _return,
-                                       const std::string& snapshot_id) {}
+void CrucibleHandler::GetAllRepoInfo(std::vector<::crucible::RepoInfo>& _return,
+                                     const std::string& user_uuid) {
+  // Your implementation goes here
+  LOG(INFO) << "GetAllRepoInfo";
+}
+
+void CrucibleHandler::CommitAndDownstream(
+    ::crucible::RepoInfo& _return, const std::string& repo_uuid,
+    const ::crucible::ChangeList& change_list) {
+  // Your implementation goes here
+  LOG(INFO) << "CommitAndDownstream";
+}
+
+void CrucibleHandler::GetRepo(::crucible::Repo& _return,
+                              const std::string& repo_uuid) {
+  // Your implementation goes here
+  LOG(INFO) << "GetRepo";
+}
 
 }  // namespace crucible
 }  // namespace cloud
 }  // namespace scorch
 }  // namespace thilenius
-
-int main() {}

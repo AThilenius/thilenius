@@ -3,70 +3,81 @@
 //==============================================================================
 namespace cpp crucible
 
+// Represents only the memtadata of a file
 struct FileInfo {
   1: string realative_path;
   2: string md5;
   3: i64 modify_timestamp;
 }
 
-struct SourceFile {
+// Represents a file (including it's contents)
+struct File {
   1: FileInfo file_info;
-  2: string contents;
+  // Union (one of)
+  2: optional string text_source;
+  3: optional binary binary_source;
+  4: optional string url_source;
 }
 
-struct ExternalFile {
-  1: FileInfo file_info;
-  2: string url;
+// Onlt the metadata for a commit
+struct ChangeListInfo {
+  1: string commit_uuid;
+  2: string user_uuid;
+  3: i64 timestamp;
+  4: list<FileInfo> added_files;
+  5: list<FileInfo> modified_files;
+  6: list<FileInfo> removed_files;
 }
 
-struct RepoBase {
-  1: string uuid;
-  2: string source_url;
-  3: string source_path;
-  4: i64 last_clone_timestamp;
+// Represents an entire commit, and all data needed to fulfil the ChangeList
+struct ChangeList {
+  1: ChangeListInfo commit_info;
+  2: list<File> added_modified_files;
 }
 
+// The metadata of a repo
 struct RepoInfo {
-  1: RepoBase base_id;
-  2: string user_id;
+  1: string repo_uuid;
+  2: string user_uuid;
   3: i64 creation_timestamp;
-  4: list<SnapshotInfo> snapshot_infos;
+  4: list<ChangeListInfo> change_list_infos;
+
+  // Only set if this repo was created as a fork
+  5: optional string base_repo_uuid;
 }
 
-struct SnapshotInfo {
-  1: string snapshot_uuid;
-  2: string source_repo_uuid;
-  3: list<FileInfo> updated_files;
-
-  // Not used by commiting code
-  4: i64 creation_timestamp;
-  5: optional i32 additions;
-  6: optional i32 removals;
-  7: optional i32 modifications;
+// Represents an entire repo, including all commits (akin to a git repo)
+struct Repo {
+  1: RepoInfo repo_info;
+  2: list<ChangeList> commits;
 }
 
-// The Snapshot info plus ALL non-frozen files.
+// Represents an entire repo as it existed at the point in time
 struct Snapshot {
-  1: SnapshotInfo snapshot_info;
-  2: list<SourceFile> source_files;
+  1: RepoInfo repo_info;
+  2: ChangeListInfo commit_info;
+  3: list<File> files;
 }
 
 service Crucible {
+  // CREATE
+  // repo_uuid: Create a blank repo (user_uuid, repo_name)
+  RepoInfo CreateNewRepo (1:string user_uuid, 2:string repo_name);
 
-  // Clone a git repo into a base image
-  RepoBase CloneCrucibleBaseRepoFromGit (1:string git_url, 2:string git_path);
+  // repo_uuid: Fork repo (repo_uuid)
+  RepoInfo CreateForkedRepo (1:string user_uuid, 2:string base_repo_uuid);
 
-  // Gets (or creates) a repo from the base_uuid and returns it's meta
-  // information
-  RepoInfo GetRepoInfoFromBase (1:string user_uuid, 2:string base_uuid);
+  // QUERY
+  // list<repo_meta>: Find All Repos (user_uuid)
+  list<RepoInfo> GetAllRepoInfo (1:string user_uuid);
 
-  // Commits a snapshot to a repo by UUID
-  RepoInfo CommitSnapshot (1:string repo_uuid, 2:Snapshot snapshot);
+  // MODIFY
+  // RepoMeta: Commit and Upstream (repo_uuid, adds_removes_modifies)
+  RepoInfo CommitAndDownstream (1:string repo_uuid, 2:ChangeList change_list);
 
-  // Returns all non-frozen files for that snapshot
-  Snapshot GetSnapshot (1:string snapshot_uuid);
+  // DOWNLOAD
+  // repo Get repo snapshot (commit_uuid)
+  Repo GetRepo (1:string repo_uuid);
 
-  // Generates a tar file from a snapshot and returns an ExternalFile with a url
-  ExternalFile GetSnapshotAsTar (1:string snapshot_id);
-
+  // Not sure how I want to do snapshots yet...
 }

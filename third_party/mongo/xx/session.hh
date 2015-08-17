@@ -8,7 +8,6 @@
 #define MONGOXX_SESSION_HH
 
 #include "mongo/client/dbclient.h"
-#include "mongo/client/connpool.h"
 
 #include <string>
 #include <tr1/memory>

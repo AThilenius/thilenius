@@ -23,8 +23,10 @@ mkdir -p ${FLAGS_mount_point} ||\
 PORT=27017
 INFO "Starting Docker container on port $PORT"
 CONTAINER_ID=$(docker run -d -p $PORT:27017\
-    -v ${FLAGS_mount_point}:/data/mongodb --name mongo_dev -e DOCKER_PORT=$PORT\
-    --env-file=/etc/environment athilenius/mongo:dev)
+    --name mongo_dev -e DOCKER_PORT=$PORT\
+    athilenius/mongo:dev)
+# Removed because I can't mound an OSX file for mongo
+# -v ${FLAGS_mount_point}:/data/mongodb
 
 INFO "Started in container [$CONTAINER_ID]. Waiting a few seconds for logs"
 sleep 4

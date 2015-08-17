@@ -12,10 +12,4 @@ RUN apt-get install -y mongodb-org
 RUN rm -rf /var/lib/apt/lists/*
 
 #===  MISX  ====================================================================
-CMD /bin/bash -c '\
-  (\
-    $HOME/thilenius/core/tools/register_etcd databases/mongodb\
-        $COREOS_PUBLIC_IPV4 $DOCKER_PORT &> /dev/null &\
-  ) && (\
-    mongod --dbpath /data/mongodb\
-  )'
+CMD /bin/bash -c 'mkdir -p /data/mongodb && mongod --dbpath=/data/mongodb'

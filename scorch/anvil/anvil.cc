@@ -15,8 +15,6 @@
 #include "scorch/anvil/test_harness.h"
 #include "third_party/thrift/protocol/TJSONProtocol.h"
 #include "third_party/thrift/transport/TFileTransport.h"
-// DO NOT SUBMIT
-#include <mongo/client/dbclient.h>
 
 DEFINE_string(project_state_path, "project_state.json",
               "The filename of the anvil ProjectState");
@@ -53,11 +51,7 @@ void SetProjectStatePath(const std::string& path) {}
 void Anvil::Execute() {
   TestHarness harness(points_);
   harness.RunAllTests();
-
-  // DO NOT SUBMIT
-  //::mongo::client::initialize();
-  //::mongo::DBClientConnection c;
-  //c.connect("10.17.8.100");
+  harness.PrintToStderr();
 }
 
 ::anvil::AnvilRunReport Anvil::GenerateAnvilRunReport() {

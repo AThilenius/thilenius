@@ -5,6 +5,7 @@
 #define SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_HANDLER_H_
 
 #include "scorch/cloud/crucible/Crucible.h"
+#include "third_party/mongo/client/dbclient.h"
 
 namespace thilenius {
 namespace scorch {
@@ -13,23 +14,27 @@ namespace crucible {
 
 class CrucibleHandler : virtual public ::crucible::CrucibleIf {
  public:
-  void CloneCrucibleBaseRepoFromGit(::crucible::RepoBase& _return,
-                                    const std::string& git_url,
-                                    const std::string& git_path);
+  CrucibleHandler();
 
-  void GetRepoInfoFromBase(::crucible::RepoInfo& _return,
-                           const std::string& user_uuid,
-                           const std::string& base_uuid);
+  void CreateNewRepo(::crucible::RepoInfo& _return,
+                     const std::string& user_uuid,
+                     const std::string& repo_name);
 
-  void CommitSnapshot(::crucible::RepoInfo& _return,
-                      const std::string& repo_uuid,
-                      const ::crucible::Snapshot& snapshot);
+  void CreateForkedRepo(::crucible::RepoInfo& _return,
+                        const std::string& user_uuid,
+                        const std::string& base_repo_uuid);
 
-  void GetSnapshot(::crucible::Snapshot& _return,
-                   const std::string& snapshot_uuid);
+  void GetAllRepoInfo(std::vector<::crucible::RepoInfo>& _return,
+                      const std::string& user_uuid);
 
-  void GetSnapshotAsTar(::crucible::ExternalFile& _return,
-                        const std::string& snapshot_id);
+  void CommitAndDownstream(::crucible::RepoInfo& _return,
+                           const std::string& repo_uuid,
+                           const ::crucible::ChangeList& change_list);
+
+  void GetRepo(::crucible::Repo& _return, const std::string& repo_uuid);
+
+ private:
+  ::mongo::DBClientConnection mongo_connection_;
 };
 
 }  // namespace crucible

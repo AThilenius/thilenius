@@ -4,14 +4,21 @@ project (crucible)
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package(
+  Boost 1.58.0 COMPONENTS
+  regex
+  system
+  thread
+)
+
 include_directories (
   "/root/thilenius/"
-  "/root/thilenius_gen"
+  "/root/thilenius_gen/"
 )
 
 add_subdirectory (/root/thilenius/base /root/thilenius_bin/base)
-add_subdirectory (/root/thilenius/third_party/mongo_xx
-                  /root/thilenius_bin/third_party/mongo_xx)
+add_subdirectory (/root/thilenius/third_party/mongo
+                  /root/thilenius_bin/third_party/mongo)
 add_subdirectory (/root/thilenius/third_party/thrift
                   /root/thilenius_bin/third_party/thrift)
 
@@ -30,7 +37,7 @@ add_custom_command(
     /root/thilenius/scorch/cloud/crucible/crucible.thrift
 )
 
-add_library (
+add_executable (
   crucible
   /root/thilenius/scorch/cloud/crucible/crucible.cc
   /root/thilenius/scorch/cloud/crucible/crucible_handler.cc
@@ -41,6 +48,7 @@ add_library (
 
 target_link_libraries (
   crucible
+  ${Boost_LIBRARIES}
   base
   libmongoclient
   libthrift

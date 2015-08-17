@@ -1,13 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (anvil)
 
-find_package(
-  Boost 1.58.0 COMPONENTS
-  regex
-  system
-  thread
-)
-
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -42,6 +35,5 @@ add_library (
 
 target_link_libraries (
   anvil
-  ${Boost_LIBRARIES}
   crucible
 )
