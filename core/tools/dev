@@ -1,40 +1,43 @@
 #! /bin/bash
-. $HOME/thilenius/core/shell/*
+. $HOME/thilenius/core/shell/base
 
-#===  DEV HELP  ================================================================
-function __dev_print_usage {
-  INFO 'dev'
-  INFO 'Usage: dev [command] --args';
-  INFO 'Commands:'
-  INFO '  docker   - docker commands'
-  WARN "[dev $1] is not a valid dev command"
-}
+DEFINE_boolean clean false 'Clean all docker images and containers' c
+DEFINE_boolean new false \
+  'Creates a new container even if one is already exists' n
 
-#===  DOCKER  ==================================================================
-function __dev_docker {
-  if [ "$2" == "run" ]; then
-    docker run --privileged -it -v $HOME/thilenius:/root/thilenius\
-        -v /var/lib/docker:/var/lib/docker athilenius/dev_env #CMD: wrapdocker
-  elif [ "$2" == "clean" ]; then
-    INFO 'Removing untagged docker images'
-    docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
-    INFO 'Removing all docker containers'
-    docker rm $(docker ps -a -q)
-  else
-    INFO 'dev DOCKER'
-    INFO 'Usage: dev docker [command]';
-    INFO 'Commands:'
-    INFO '  run    - Starts a new athilenius/dev container'
-    INFO '  clean  - Cleans untagged images and all containers'
-    WARN "[dev docker $1] is not a valid dev command"
-  fi
-}
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
 
-#===  RUN  =====================================================================
-if [ "$1" == "help" ]; then
-  __dev_print_usage
-elif [ "$1" == "docker" ]; then
-  __dev_docker $@
+# Check that we aren't already in a container
+docker --version &> /dev/null || EROR 'You are already in a container'
+
+if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
+  INFO 'Removing untagged docker images'
+  docker rmi $(docker images | grep "^<none>" | awk '{print $3}')
+  INFO 'Removing all docker containers'
+  docker rm $(docker ps -a -q)
 else
-  __dev_print_usage
+  if [ ${FLAGS_new} -eq ${FLAGS_TRUE} ]; then
+    WARN "Creating a new dev container."
+    docker run --privileged -it -v $HOME/thilenius:/root/thilenius\
+        athilenius/dev_env
+  else
+    # Esiting container
+    RUNNING_ID=$(docker ps | grep 'athilenius/dev_env' | awk '{print $1}')
+    if [ "$RUNNING_ID" != '' ]; then
+      INFO "dev_env image already running in container [$RUNNING_ID], joining..."
+      docker exec -it $RUNNING_ID /bin/bash
+    else
+      # Not running, see if we have an old one
+      OLD_ID=$(docker ps -a | grep -m 1 'athilenius/dev_env' | awk '{print $1}')
+      if [ "$OLD_ID" != '' ]; then
+        INFO "Old dev_env container found [$OLD_ID], restarting..."
+        docker start -ai $OLD_ID
+      else
+        WARN "Creating a new dev container."
+        docker run --privileged -it -v $HOME/thilenius:/root/thilenius\
+            athilenius/dev_env
+      fi
+    fi
+  fi
 fi

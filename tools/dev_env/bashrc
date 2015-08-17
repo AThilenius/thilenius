@@ -7,4 +7,4 @@ export CXX=/usr/bin/clang++-3.6
 #===  MISX ALIASES  ============================================================
 alias rgrep='GREP_COLOR="1;37;41" LANG=C grep -r --color=auto'
 alias thilenius='cd $HOME/thilenius'
-alias ls='ls --color=auto'
+alias ls='ls -hla --color=auto'

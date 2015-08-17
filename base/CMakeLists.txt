@@ -129,7 +129,7 @@ target_link_libraries (
   libgtest
 )
 
-#===  BASE LIB  ================================================================
+#===  BASE TESTS  ==============================================================
 add_executable (
   base_test
   /root/thilenius/base/directory_test.cc
