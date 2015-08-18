@@ -3,9 +3,6 @@
 
 #include "base/string.h"
 
-namespace thilenius {
-namespace base {
-
 bool Empty(const std::string& str) { return str.length() == 0; }
 
 bool Blank(const std::string& str) {
@@ -32,6 +29,3 @@ bool EndsWith(const std::string& str, const std::string& other_str) {
     return false;
   }
 }
-
-}  // namespace base
-}  // namespace thilenius

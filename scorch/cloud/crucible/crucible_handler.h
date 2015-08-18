@@ -5,6 +5,7 @@
 #define SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_HANDLER_H_
 
 #include "scorch/cloud/crucible/Crucible.h"
+#include "scorch/cloud/crucible/crucible_model.h"
 #include "third_party/mongo/client/dbclient.h"
 
 namespace thilenius {
@@ -16,25 +17,24 @@ class CrucibleHandler : virtual public ::crucible::CrucibleIf {
  public:
   CrucibleHandler();
 
-  void CreateNewRepo(::crucible::RepoInfo& _return,
-                     const std::string& user_uuid,
+  void CreateNewRepo(::crucible::Repo& _return, const std::string& user_uuid,
                      const std::string& repo_name);
 
-  void CreateForkedRepo(::crucible::RepoInfo& _return,
-                        const std::string& user_uuid,
+  void CreateForkedRepo(::crucible::Repo& _return, const std::string& user_uuid,
                         const std::string& base_repo_uuid);
 
-  void GetAllRepoInfo(std::vector<::crucible::RepoInfo>& _return,
-                      const std::string& user_uuid);
+  void GetRepoHeadersByUser(std::vector<::crucible::RepoHeader>& _return,
+                            const std::string& user_uuid);
 
-  void CommitAndDownstream(::crucible::RepoInfo& _return,
+  void GetRepoById(::crucible::Repo& _return, const std::string& repo_uuid);
+
+  void CommitAndDownstream(::crucible::ChangeList& _return,
                            const std::string& repo_uuid,
                            const ::crucible::ChangeList& change_list);
 
-  void GetRepo(::crucible::Repo& _return, const std::string& repo_uuid);
-
  private:
   ::mongo::DBClientConnection mongo_connection_;
+  CrucibleModel model_;
 };
 
 }  // namespace crucible

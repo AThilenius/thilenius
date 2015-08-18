@@ -3,6 +3,8 @@
 //==============================================================================
 namespace cpp crucible
 
+include "utils/differencer/differencer.thrift"
+
 // Represents only the memtadata of a file
 struct FileInfo {
   1: string realative_path;
@@ -19,65 +21,55 @@ struct File {
   4: optional string url_source;
 }
 
-// Onlt the metadata for a commit
-struct ChangeListInfo {
-  1: string commit_uuid;
-  2: string user_uuid;
-  3: i64 timestamp;
-  4: list<FileInfo> added_files;
-  5: list<FileInfo> modified_files;
-  6: list<FileInfo> removed_files;
+struct FileDelta {
+  1: FileInfo file_info;
+  2: list<differencer.Patch> patches;
 }
 
 // Represents an entire commit, and all data needed to fulfil the ChangeList
 struct ChangeList {
-  1: ChangeListInfo commit_info;
-  2: list<File> added_modified_files;
-}
-
-// The metadata of a repo
-struct RepoInfo {
-  1: string repo_uuid;
+  1: string change_list_uuid;
   2: string user_uuid;
-  3: i64 creation_timestamp;
-  4: list<ChangeListInfo> change_list_infos;
-
-  // Only set if this repo was created as a fork
-  5: optional string base_repo_uuid;
+  3: i64 timestamp;
+  4: list<File> added_files;
+  5: list<FileDelta> modified_files;
+  6: list<FileInfo> removed_files;
 }
 
-// Represents an entire repo, including all commits (akin to a git repo)
+// Only the meta information of a repo. Used for sending a list of all repos to
+// the client without needing to download everything.
+struct RepoHeader {
+  1: string repo_uuid;
+  2: optional string base_repo_uuid;
+  3: string user_uuid;
+  4: string repo_name;
+  5: i64 creation_timestamp;
+}
+
+// Represents an entire repo
 struct Repo {
-  1: RepoInfo repo_info;
-  2: list<ChangeList> commits;
+  1: RepoHeader repo_header;
+  2: list<ChangeList> change_lists;
 }
 
 // Represents an entire repo as it existed at the point in time
 struct Snapshot {
-  1: RepoInfo repo_info;
-  2: ChangeListInfo commit_info;
+  1: RepoHeader repo_info;
+  2: ChangeList from_change_list;
   3: list<File> files;
 }
 
 service Crucible {
   // CREATE
-  // repo_uuid: Create a blank repo (user_uuid, repo_name)
-  RepoInfo CreateNewRepo (1:string user_uuid, 2:string repo_name);
-
-  // repo_uuid: Fork repo (repo_uuid)
-  RepoInfo CreateForkedRepo (1:string user_uuid, 2:string base_repo_uuid);
+  Repo CreateNewRepo (1:string user_uuid, 2:string repo_name);
+  Repo CreateForkedRepo (1:string user_uuid, 2:string base_repo_uuid);
 
   // QUERY
-  // list<repo_meta>: Find All Repos (user_uuid)
-  list<RepoInfo> GetAllRepoInfo (1:string user_uuid);
+  list<RepoHeader> GetRepoHeadersByUser (1:string user_uuid);
+  Repo GetRepoById (1:string repo_uuid);
 
   // MODIFY
-  // RepoMeta: Commit and Upstream (repo_uuid, adds_removes_modifies)
-  RepoInfo CommitAndDownstream (1:string repo_uuid, 2:ChangeList change_list);
-
-  // DOWNLOAD
-  // repo Get repo snapshot (commit_uuid)
-  Repo GetRepo (1:string repo_uuid);
+  ChangeList CommitAndDownstream (1:string repo_uuid, 2:ChangeList change_list);
 
   // Not sure how I want to do snapshots yet...
 }

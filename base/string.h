@@ -7,8 +7,7 @@
 #include <cstring>
 #include <string>
 
-namespace thilenius {
-namespace base {
+// No namespace
 
 namespace str_cat_detail {
 
@@ -89,8 +88,5 @@ bool Blank(const std::string& str);
 bool BeginsWith(const std::string& str, const std::string& other_str);
 
 bool EndsWith(const std::string& str, const std::string& other_str);
-
-}  // namespace base
-}  // namespace thilenius
 
 #endif  // BASE_STRING_H_

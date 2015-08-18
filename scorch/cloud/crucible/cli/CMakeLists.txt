@@ -35,6 +35,8 @@ add_executable (
   /root/thilenius_gen/scorch/cloud/crucible/cli/Crucible.cpp
   /root/thilenius_gen/scorch/cloud/crucible/cli/crucible_constants.cpp
   /root/thilenius_gen/scorch/cloud/crucible/cli/crucible_types.cpp
+  /root/thilenius_gen/utils/differencer/differencer_constants.cpp
+  /root/thilenius_gen/utils/differencer/differencer_types.cpp
 )
 
 target_link_libraries (
@@ -50,6 +52,8 @@ add_executable (
   /root/thilenius_gen/scorch/cloud/crucible/cli/Crucible.cpp
   /root/thilenius_gen/scorch/cloud/crucible/cli/crucible_constants.cpp
   /root/thilenius_gen/scorch/cloud/crucible/cli/crucible_types.cpp
+  /root/thilenius_gen/utils/differencer/differencer_constants.cpp
+  /root/thilenius_gen/utils/differencer/differencer_types.cpp
 )
 
 target_link_libraries (
@@ -65,6 +69,8 @@ add_executable (
   /root/thilenius_gen/scorch/cloud/crucible/cli/Crucible.cpp
   /root/thilenius_gen/scorch/cloud/crucible/cli/crucible_constants.cpp
   /root/thilenius_gen/scorch/cloud/crucible/cli/crucible_types.cpp
+  /root/thilenius_gen/utils/differencer/differencer_constants.cpp
+  /root/thilenius_gen/utils/differencer/differencer_types.cpp
 )
 
 target_link_libraries (

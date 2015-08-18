@@ -4,7 +4,7 @@
 #include "utils/differencer/differencer.h"
 
 #include "base/log.h"
-#include "third_party/diff_match_patch.h"
+#include "utils/differencer/diff_match_patch.h"
 
 namespace thilenius {
 namespace utils {

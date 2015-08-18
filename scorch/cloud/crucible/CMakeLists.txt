@@ -35,15 +35,19 @@ add_custom_command(
   DEPENDS
     libthrift
     /root/thilenius/scorch/cloud/crucible/crucible.thrift
+    /root/thilenius/utils/differencer/differencer.thrift
 )
 
 add_executable (
   crucible
   /root/thilenius/scorch/cloud/crucible/crucible.cc
   /root/thilenius/scorch/cloud/crucible/crucible_handler.cc
+  /root/thilenius/scorch/cloud/crucible/crucible_model.cc
   /root/thilenius_gen/scorch/cloud/crucible/Crucible.cpp
   /root/thilenius_gen/scorch/cloud/crucible/crucible_constants.cpp
   /root/thilenius_gen/scorch/cloud/crucible/crucible_types.cpp
+  /root/thilenius_gen/scorch/cloud/crucible/differencer_constants.cpp
+  /root/thilenius_gen/scorch/cloud/crucible/differencer_types.cpp
 )
 
 target_link_libraries (

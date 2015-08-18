@@ -51,8 +51,8 @@ RUN apt-get install -y exuberant-ctags
 
 #===  BOOST  ===================================================================
 RUN mkdir /root/boost
-ADD boost/CMakeLists.txt /root/
-RUN cd /root && cd boost && cmake .. && make || echo "\033[0;31mBoost failed to build, continuing anyway."
+ADD boost/CMakeLists_.txt /root/boost/
+RUN cd /root/boost && mv CMakeLists_.txt CMakeLists.txt && cmake . && make || echo "\033[0;31mBoost failed to build, continuing anyway."
 
 #===  LIB EVENT  ===============================================================
 RUN apt-get install -y libevent-dev

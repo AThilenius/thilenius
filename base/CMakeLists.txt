@@ -116,6 +116,7 @@ add_library (
   /root/thilenius/base/path.cc
   /root/thilenius/base/string.cc
   /root/thilenius/base/text_file.cc
+  /root/thilenius/base/time.cc
 )
 
 target_link_libraries (
