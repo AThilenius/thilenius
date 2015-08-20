@@ -68,18 +68,29 @@ struct Snapshot {
   3: list<File> files;
 }
 
+exception OperationFailure {
+  1: string user_message;
+}
+
 service Crucible {
   // CREATE
-  Repo CreateNewRepo (1:string user_uuid, 2:string repo_name);
-  Repo CreateForkedRepo (1:string user_uuid, 2:string base_repo_uuid);
+  Repo CreateNewRepo (1:string user_uuid, 2:string repo_name)
+      throws (1: OperationFailure operation_failure);
+  Repo CreateForkedRepo (1:string user_uuid, 2:string base_repo_uuid)
+      throws (1: OperationFailure operation_failure);
 
   // QUERY
-  list<RepoHeader> GetRepoHeadersByUser (1:string user_uuid);
-  Repo GetRepoById (1:string repo_uuid);
-  RepoHeader GetRepoHeaderById (1:string repo_uuid);
+  list<RepoHeader> GetRepoHeadersByUser (1:string user_uuid)
+      throws (1: OperationFailure operation_failure);
+  Repo GetRepoById (1:string repo_uuid)
+      throws (1: OperationFailure operation_failure);
+  RepoHeader GetRepoHeaderById (1:string repo_uuid)
+      throws (1: OperationFailure operation_failure);
 
   // MODIFY
-  ChangeList CommitAndDownstream (1:string repo_uuid, 2:ChangeList change_list);
+  ChangeList CommitAndDownstream (1:RepoHeader repo_header,
+                                  2:ChangeList change_list)
+      throws (1: OperationFailure operation_failure);
 
   // Not sure how I want to do snapshots yet...
 }

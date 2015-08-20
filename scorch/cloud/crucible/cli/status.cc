@@ -55,6 +55,10 @@ int Status(const std::string root_path, const std::vector<std::string>& args) {
       LOG(INFO) << "  - " << file_info.realative_path;
     }
   }
+  if (pending.added_files.size() == 0 && pending.modified_files.size() == 0 &&
+      pending.removed_files.size() == 0) {
+    LOG(INFO) << "No modified files. All files up to date.";
+  }
   return 0;
 }
 

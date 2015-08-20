@@ -34,7 +34,7 @@ class CrucibleHandler : virtual public ::crucible::CrucibleIf {
                          const std::string& repo_uuid);
 
   void CommitAndDownstream(::crucible::ChangeList& _return,
-                           const std::string& repo_uuid,
+                           const ::crucible::RepoHeader& repo_header,
                            const ::crucible::ChangeList& change_list);
 
  private:

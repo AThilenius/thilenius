@@ -3,12 +3,8 @@
 
 #include "scorch/cloud/crucible/server/crucible_handler.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 #include "base/gflags/gflags.h"
+#include "base/guid.h"
 #include "base/json.h"
 #include "base/log.h"
 #include "base/string.h"
@@ -21,6 +17,7 @@ DEFINE_string(mongo_port, "27017", "The MongoDB instance port number.");
 DEFINE_string(mongo_table, "crucible.repos",
               "The MongoDB database and table name to use.");
 
+using ::thilenius::base::Guid;
 using ::thilenius::base::Time;
 
 namespace thilenius {
@@ -47,12 +44,14 @@ void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
   // Make sure the repo doesn't already exit
   ::crucible::Repo repo;
   if (model_.FindRepoByUserIdAndRepoName(&repo, user_uuid, repo_name)) {
-    _return = std::move(repo);
+    ::crucible::OperationFailure op_failure;
+    op_failure.user_message =
+        "A repo with that username and repo name already exists";
+    throw op_failure;
   } else {
     // Create a new one
     ::crucible::RepoHeader repo_header;
-    repo_header.repo_uuid =
-        boost::lexical_cast<std::string>(::boost::uuids::random_generator()());
+    repo_header.repo_uuid = Guid::NewGuid();
     repo_header.user_uuid = user_uuid;
     repo_header.repo_name = repo_name;
     repo_header.creation_timestamp = Time::EpochMilliseconds();
@@ -74,8 +73,7 @@ void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
 
 void CrucibleHandler::GetRepoHeadersByUser(
     std::vector<::crucible::RepoHeader>& _return,
-    const std::string& user_uuid) {
-}
+    const std::string& user_uuid) {}
 
 void CrucibleHandler::GetRepoById(::crucible::Repo& _return,
                                   const std::string& repo_uuid) {
@@ -84,21 +82,46 @@ void CrucibleHandler::GetRepoById(::crucible::Repo& _return,
 }
 
 void CrucibleHandler::GetRepoHeaderById(::crucible::RepoHeader& _return,
-                         const std::string& repo_uuid) {
+                                        const std::string& repo_uuid) {
   ::crucible::Repo repo;
   if (!model_.FindRepoById(&repo, repo_uuid)) {
-    // TODO(athilenius) Throw a thrift exception here.
-    _return = repo.repo_header;
+    ::crucible::OperationFailure op_failure;
+    op_failure.user_message =
+        StrCat("Failed to find a repo with ID: ", repo_uuid);
+    throw op_failure;
   } else {
     _return = repo.repo_header;
   }
 }
 
 void CrucibleHandler::CommitAndDownstream(
-    ::crucible::ChangeList& _return, const std::string& repo_uuid,
+    ::crucible::ChangeList& _return, const ::crucible::RepoHeader& repo_header,
     const ::crucible::ChangeList& change_list) {
-  // Your implementation goes here
-  printf("CommitAndDownstream\n");
+  ::crucible::Repo repo;
+  if (!model_.FindRepoById(&repo, repo_header.repo_uuid)) {
+    ::crucible::OperationFailure op_failure;
+    op_failure.user_message =
+        StrCat("Failed to find a repo with ID: ", repo_header.repo_uuid);
+    throw op_failure;
+  } else {
+    if (repo_header.latest_change_list_uuid !=
+        repo.repo_header.latest_change_list_uuid) {
+      ::crucible::OperationFailure op_failure;
+      op_failure.user_message =
+          "Your repo is behind head. You must sync before commiting.";
+      throw op_failure;
+    } else {
+      // TODO(athilenius) Need to downstream as well
+      ::crucible::ChangeList new_change_list = change_list;
+      new_change_list.change_list_uuid = Guid::NewGuid();
+      new_change_list.timestamp = Time::EpochMilliseconds();
+      repo.change_lists.push_back(new_change_list);
+      repo.repo_header.latest_change_list_uuid =
+          new_change_list.change_list_uuid;
+      model_.SaveRepo(repo);
+      _return = std::move(new_change_list);
+    }
+  }
 }
 
 }  // namespace server

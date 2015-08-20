@@ -25,23 +25,28 @@ class CrucibleRepo {
 
   static CrucibleRepo LoadFromDirectoryOrDie(const std::string& path);
 
-  RepoSyncStatus GetSyncStatus();
+  std::string GetRepoId() const;
+
+  RepoSyncStatus GetSyncStatus() const;
 
   // Gets all pending (added, modified, or removed) files, as they differ from
   // GetFileInfosForHeader
-  ::crucible::ChangeList GetPending();
+  ::crucible::ChangeList GetPending() const;
 
   // Runs though all diffs and computes what files should be active in head,
   // returned as a map of realative file names to FileInfo
-  std::map<std::string, ::crucible::FileInfo> GetFileInfosForHead();
+  std::map<std::string, ::crucible::FileInfo> GetFileInfosForHead() const;
 
-  std::string ReconstructFileFromDiffs(const std::string& relative_path);
+  // Reconstructs a single file (by relative path) from diffs
+  std::string ReconstructFileFromDiffs(const std::string& relative_path) const;
+
+  ::crucible::ChangeList Commit();
 
  private:
-  ::crucible::File CrucibleFileFromDiskFile(const std::string& full_path,
-                                            const std::string& relative_path);
+  ::crucible::File CrucibleFileFromDiskFile(
+      const std::string& full_path, const std::string& relative_path) const;
   ::crucible::FileDelta CrucibleFileDeltaFromDisk(
-      const std::string& full_path, const std::string& relative_path);
+      const std::string& full_path, const std::string& relative_path) const;
 
   std::string path_;
   ::crucible::Repo repo_;

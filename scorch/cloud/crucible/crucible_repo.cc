@@ -68,7 +68,15 @@ CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
   Directory::Create(crucible_dir_path);
   CrucibleRepo repo;
   repo.path_ = path;
-  http_client_.ConnectOrDie()->CreateNewRepo(repo.repo_, user_name, repo_name);
+  try {
+    http_client_.ConnectOrDie()->CreateNewRepo(repo.repo_, user_name,
+                                               repo_name);
+  } catch (::crucible::OperationFailure op_failure) {
+    LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
+  } catch (...) {
+    LOG(FATAL) << "In CreateNewRepo, Crucible server threw an unhandled "
+                  "exception.";
+  }
   // Also write it out to file
   ::nlohmann::json repo_json = crucible_mapper_.RepoToJson(repo.repo_);
   File::WriteToFile(crucible_repo_json_path, repo_json.dump(2));
@@ -93,10 +101,21 @@ CrucibleRepo CrucibleRepo::LoadFromDirectoryOrDie(const std::string& path) {
   return std::move(crucible_repo);
 }
 
-RepoSyncStatus CrucibleRepo::GetSyncStatus() {
+std::string CrucibleRepo::GetRepoId() const {
+  return repo_.repo_header.repo_uuid;
+}
+
+RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
   ::crucible::RepoHeader repo_header;
-  http_client_.ConnectOrDie()->GetRepoHeaderById(repo_header,
-                                                 repo_.repo_header.repo_uuid);
+  try {
+    http_client_.ConnectOrDie()->GetRepoHeaderById(repo_header,
+                                                   repo_.repo_header.repo_uuid);
+  } catch (::crucible::OperationFailure op_failure) {
+    LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
+  } catch (...) {
+    LOG(FATAL) << "In GetRepoHeaderById, Crucible server threw an unhandled "
+                  "exception.";
+  }
   if (repo_header.latest_change_list_uuid !=
       repo_.repo_header.latest_change_list_uuid) {
     return RepoSyncStatus::BEHIND_HEAD;
@@ -104,7 +123,7 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() {
   return RepoSyncStatus::HEAD;
 }
 
-::crucible::ChangeList CrucibleRepo::GetPending() {
+::crucible::ChangeList CrucibleRepo::GetPending() const {
   std::string crucible_dir_path = Path::Combine(path_, FLAGS_crucible_dir_name);
   std::map<std::string, ::crucible::FileInfo> header_infos =
       GetFileInfosForHead();
@@ -128,7 +147,7 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() {
   }
   // Added / Modified files
   for (const auto& full_path : all_files) {
-    std::string file = Path::RelativePath(full_path, crucible_dir_path);
+    std::string file = Path::RelativePath(full_path, path_);
     auto iter = header_infos.find(file);
     if (iter == header_infos.end()) {
       // It's a new file, add it to the change list
@@ -147,7 +166,7 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() {
   // Removed files
   std::set<std::string> relative_all_files;
   for (const auto& full_path : all_files) {
-    relative_all_files.insert(Path::RelativePath(full_path, crucible_dir_path));
+    relative_all_files.insert(Path::RelativePath(full_path, path_));
   }
   for (const auto& header_info : header_infos) {
     if (relative_all_files.find(header_info.first) ==
@@ -161,8 +180,8 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() {
   return std::move(change_list);
 }
 
-std::map<std::string, ::crucible::FileInfo>
-CrucibleRepo::GetFileInfosForHead() {
+std::map<std::string, ::crucible::FileInfo> CrucibleRepo::GetFileInfosForHead()
+    const {
   std::map<std::string, ::crucible::FileInfo> active_files;
   for (const auto& change_list : repo_.change_lists) {
     for (const auto& file : change_list.added_files) {
@@ -180,7 +199,7 @@ CrucibleRepo::GetFileInfosForHead() {
 }
 
 std::string CrucibleRepo::ReconstructFileFromDiffs(
-    const std::string& relative_path) {
+    const std::string& relative_path) const {
   std::string contents;
   for (const auto& change_list : repo_.change_lists) {
     // Added in this CL
@@ -207,19 +226,20 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
 }
 
 ::crucible::File CrucibleRepo::CrucibleFileFromDiskFile(
-    const std::string& full_path, const std::string& relative_path) {
+    const std::string& full_path, const std::string& relative_path) const {
   ::crucible::File file;
   file.file_info.realative_path = relative_path;
   file.file_info.md5 = File::MD5OrDie(full_path);
   file.file_info.modify_timestamp = File::LastWriteTime(full_path);
   // TODO(athilenius) Binary files not yet handled
   file.file_type = ::crucible::FileType::TEXT;
-  file.text_source = File::ReadContentsOrDie(full_path);
+  // file.text_source = File::ReadContentsOrDie(full_path);
+  file.__set_text_source(File::ReadContentsOrDie(full_path));
   return std::move(file);
 }
 
 ::crucible::FileDelta CrucibleRepo::CrucibleFileDeltaFromDisk(
-    const std::string& full_path, const std::string& relative_path) {
+    const std::string& full_path, const std::string& relative_path) const {
   ::crucible::FileDelta file_delta;
   file_delta.file_info.realative_path = relative_path;
   file_delta.file_info.md5 = File::MD5OrDie(full_path);
@@ -228,6 +248,29 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   file_delta.patches = differencer_.PatchesFromStrings(
       old_content, File::ReadContentsOrDie(full_path));
   return std::move(file_delta);
+}
+
+::crucible::ChangeList CrucibleRepo::Commit() {
+  std::string crucible_dir_path = Path::Combine(path_, FLAGS_crucible_dir_name);
+  std::string crucible_repo_json_path =
+      Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
+  ::crucible::ChangeList old_change_list = GetPending();
+  ::crucible::ChangeList new_change_list;
+  try {
+    http_client_.ConnectOrDie()->CommitAndDownstream(
+        new_change_list, repo_.repo_header, old_change_list);
+  } catch (::crucible::OperationFailure op_failure) {
+    LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
+  } catch (...) {
+    LOG(FATAL) << "In CommitAndDownstream, Crucible server threw an unhandled "
+                  "exception.";
+  }
+  repo_.repo_header.latest_change_list_uuid = new_change_list.change_list_uuid;
+  repo_.change_lists.push_back(new_change_list);
+  // Save it to disk
+  ::nlohmann::json repo_json = crucible_mapper_.RepoToJson(repo_);
+  File::WriteToFile(crucible_repo_json_path, repo_json.dump(2));
+  return std::move(new_change_list);
 }
 
 }  // namespace crucible

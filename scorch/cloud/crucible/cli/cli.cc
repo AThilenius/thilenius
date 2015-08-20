@@ -8,6 +8,7 @@
 #include "base/gflags/gflags.h"
 #include "base/log.h"
 #include "base/path.h"
+#include "scorch/cloud/crucible/cli/commit.h"
 #include "scorch/cloud/crucible/cli/create.h"
 #include "scorch/cloud/crucible/cli/status.h"
 
@@ -22,7 +23,9 @@ int main(int argc, char** argv) {
   std::string root_path = Path::CurrentPath();
   std::string command = argv[1];
   std::vector<std::string> args = Arguments::ToVector(argc - 2, &argv[2]);
-  if (command == "create") {
+  if (command == "commit") {
+    return ::thilenius::scorch::cloud::crucible::cli::Commit(root_path, args);
+  } else if (command == "create") {
     return ::thilenius::scorch::cloud::crucible::cli::Create(root_path, args);
   } else if (command == "status") {
     return ::thilenius::scorch::cloud::crucible::cli::Status(root_path, args);

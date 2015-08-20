@@ -37,14 +37,17 @@ int64 CrucibleMapper::JsonToTimestamp(
       case 1: {
         file.file_type = ::crucible::FileType::TEXT;
         file.text_source = file_json["text_source"].get<std::string>();
+        break;
       }
       case 2: {
         file.file_type = ::crucible::FileType::BINARY;
         file.binary_source = file_json["binary_source"].get<std::string>();
+        break;
       }
       case 3: {
         file.file_type = ::crucible::FileType::URL;
         file.url_source = file_json["url_source"].get<std::string>();
+        break;
       }
     }
     change_list.added_files.emplace_back(std::move(file));
@@ -113,18 +116,22 @@ int64 CrucibleMapper::JsonToTimestamp(
           {"modify_timestamp", file.file_info.modify_timestamp}}}};
     switch (file.file_type) {
       case ::crucible::FileType::TEXT: {
+        file_json["file_type"] = 1;
         file_json["text_source"] = file.text_source;
         break;
       }
       case ::crucible::FileType::BINARY: {
+        file_json["file_type"] = 2;
         file_json["binary_source"] = file.binary_source;
         break;
       }
       case ::crucible::FileType::URL: {
+        file_json["file_type"] = 3;
         file_json["url_source"] = file.url_source;
         break;
       }
       default: {
+        file_json["file_type"] = 0;
         LOG(WARNING) << "Unknown Crucible FileType while converting Crucible "
                         "Repo to JSON";
       }
