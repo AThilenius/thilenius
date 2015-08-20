@@ -42,8 +42,8 @@ class Anvil : public AnvilInterface {
   ::anvil::AnvilRunReport GenerateAnvilRunReport();
   ::anvil::ProjectState LoadProjectState();
   ::anvil::TestRunReport RunUnitTests();
-  std::vector<::crucible::FileInfo> LoadFrozenFiles();
-  std::vector<::crucible::SourceFile> LoadSourceFiles();
+  //std::vector<::crucible::FileInfo> LoadFrozenFiles();
+  //std::vector<::crucible::SourceFile> LoadSourceFiles();
 
   int* argc_;
   char*** argv_;

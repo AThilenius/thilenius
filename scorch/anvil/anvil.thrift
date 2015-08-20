@@ -35,7 +35,5 @@ struct ProjectState {
 
 struct AnvilRunReport {
   1: ProjectState project_state;
-  2: list<crucible.SourceFile> source_files;
-  3: list<crucible.FileInfo> frozen_files;
-  4: TestRunReport test_run_report;
+  2: TestRunReport test_run_report;
 }

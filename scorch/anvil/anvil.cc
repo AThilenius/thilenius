@@ -57,8 +57,8 @@ void Anvil::Execute() {
 ::anvil::AnvilRunReport Anvil::GenerateAnvilRunReport() {
   ::anvil::AnvilRunReport anvil_run_report;
   anvil_run_report.project_state = LoadProjectState();
-  anvil_run_report.source_files = LoadSourceFiles();
-  anvil_run_report.frozen_files = LoadFrozenFiles();
+  //anvil_run_report.source_files = LoadSourceFiles();
+  //anvil_run_report.frozen_files = LoadFrozenFiles();
   anvil_run_report.test_run_report = RunUnitTests();
   return std::move(anvil_run_report);
 }
@@ -85,32 +85,32 @@ void Anvil::Execute() {
   return std::move(test_harness.GetTestRunReport());
 }
 
-std::vector<::crucible::FileInfo> Anvil::LoadFrozenFiles() {
-  std::vector<::crucible::FileInfo> frozen_files;
-  // MD5 all frozen files
-  for (const auto& frozen_file : frozen_files_) {
-    ::crucible::FileInfo file;
-    file.realative_path = frozen_file;
-    file.md5 = File::MD5OrDie(frozen_file);
-    file.modify_timestamp = File::LastWriteTime(frozen_file);
-    frozen_files.push_back(std::move(file));
-  }
-  return std::move(frozen_files);
-}
+//std::vector<::crucible::FileInfo> Anvil::LoadFrozenFiles() {
+  //std::vector<::crucible::FileInfo> frozen_files;
+  //// MD5 all frozen files
+  //for (const auto& frozen_file : frozen_files_) {
+    //::crucible::FileInfo file;
+    //file.realative_path = frozen_file;
+    //file.md5 = File::MD5OrDie(frozen_file);
+    //file.modify_timestamp = File::LastWriteTime(frozen_file);
+    //frozen_files.push_back(std::move(file));
+  //}
+  //return std::move(frozen_files);
+//}
 
-std::vector<::crucible::SourceFile> Anvil::LoadSourceFiles() {
-  std::vector<::crucible::SourceFile> source_files;
-  // Load and MD5 all user files
-  for (const auto& user_file : user_source_files_) {
-    ::crucible::SourceFile source_file;
-    source_file.file_info.realative_path = user_file;
-    source_file.file_info.md5 = File::MD5OrDie(user_file);
-    source_file.file_info.modify_timestamp = File::LastWriteTime(user_file);
-    source_file.contents = File::ReadContentsOrDie(user_file);
-    source_files.push_back(std::move(source_file));
-  }
-  return std::move(source_files);
-}
+//std::vector<::crucible::SourceFile> Anvil::LoadSourceFiles() {
+  //std::vector<::crucible::SourceFile> source_files;
+  //// Load and MD5 all user files
+  //for (const auto& user_file : user_source_files_) {
+    //::crucible::SourceFile source_file;
+    //source_file.file_info.realative_path = user_file;
+    //source_file.file_info.md5 = File::MD5OrDie(user_file);
+    //source_file.file_info.modify_timestamp = File::LastWriteTime(user_file);
+    //source_file.contents = File::ReadContentsOrDie(user_file);
+    //source_files.push_back(std::move(source_file));
+  //}
+  //return std::move(source_files);
+//}
 
 }  // namespace anvil
 }  // namespace scorch

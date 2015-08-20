@@ -9,8 +9,9 @@ include_directories (
   "/root/thilenius_gen"
 )
 
-add_subdirectory (/root/thilenius/scorch/cloud/crucible
-                  /root/thilenius_bin/scorch/cloud/crucible)
+add_subdirectory (/root/thilenius/base /root/thilenius_bin/base)
+add_subdirectory (/root/thilenius/third_party/thrift
+                  /root/thilenius_bin/third_party/thrift)
 
 file(MAKE_DIRECTORY /root/thilenius_gen/scorch/anvil)
 add_custom_command(
@@ -35,5 +36,6 @@ add_library (
 
 target_link_libraries (
   anvil
-  crucible
+  base
+  libthrift
 )
