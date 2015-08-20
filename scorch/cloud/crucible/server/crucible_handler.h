@@ -1,10 +1,11 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
-#ifndef SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_HANDLER_H_
-#define SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_HANDLER_H_
+#ifndef SCORCH_CLOUD_CRUCIBLE_SERVER_CRUCIBLE_HANDLER_H_
+#define SCORCH_CLOUD_CRUCIBLE_SERVER_CRUCIBLE_HANDLER_H_
 
 #include "scorch/cloud/crucible/Crucible.h"
+#include "scorch/cloud/crucible/crucible_mapper.h"
 #include "scorch/cloud/crucible/crucible_model.h"
 #include "third_party/mongo/client/dbclient.h"
 
@@ -12,6 +13,7 @@ namespace thilenius {
 namespace scorch {
 namespace cloud {
 namespace crucible {
+namespace server {
 
 class CrucibleHandler : virtual public ::crucible::CrucibleIf {
  public:
@@ -28,6 +30,9 @@ class CrucibleHandler : virtual public ::crucible::CrucibleIf {
 
   void GetRepoById(::crucible::Repo& _return, const std::string& repo_uuid);
 
+  void GetRepoHeaderById(::crucible::RepoHeader& _return,
+                         const std::string& repo_uuid);
+
   void CommitAndDownstream(::crucible::ChangeList& _return,
                            const std::string& repo_uuid,
                            const ::crucible::ChangeList& change_list);
@@ -35,11 +40,13 @@ class CrucibleHandler : virtual public ::crucible::CrucibleIf {
  private:
   ::mongo::DBClientConnection mongo_connection_;
   CrucibleModel model_;
+  CrucibleMapper crucible_mapper_;
 };
 
+}  // namespace server
 }  // namespace crucible
 }  // namespace cloud
 }  // namespace scorch
 }  // namespace thilenius
 
-#endif  // SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_HANDLER_H_
+#endif  // SCORCH_CLOUD_CRUCIBLE_SERVER_CRUCIBLE_HANDLER_H_

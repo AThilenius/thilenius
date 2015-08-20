@@ -12,13 +12,21 @@ struct FileInfo {
   3: i64 modify_timestamp;
 }
 
+enum FileType {
+  UNKNOWN,
+  TEXT,
+  BINARY,
+  URL
+}
+
 // Represents a file (including it's contents)
 struct File {
   1: FileInfo file_info;
+  2: FileType file_type;
   // Union (one of)
-  2: optional string text_source;
-  3: optional binary binary_source;
-  4: optional string url_source;
+  3: optional string text_source;
+  4: optional binary binary_source;
+  5: optional string url_source;
 }
 
 struct FileDelta {
@@ -44,6 +52,7 @@ struct RepoHeader {
   3: string user_uuid;
   4: string repo_name;
   5: i64 creation_timestamp;
+  6: string latest_change_list_uuid;
 }
 
 // Represents an entire repo
@@ -67,6 +76,7 @@ service Crucible {
   // QUERY
   list<RepoHeader> GetRepoHeadersByUser (1:string user_uuid);
   Repo GetRepoById (1:string repo_uuid);
+  RepoHeader GetRepoHeaderById (1:string repo_uuid);
 
   // MODIFY
   ChangeList CommitAndDownstream (1:string repo_uuid, 2:ChangeList change_list);

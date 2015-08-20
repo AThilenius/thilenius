@@ -4,8 +4,8 @@
 #ifndef SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_MODEL_H_
 #define SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_MODEL_H_
 
-#include "base/json.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
+#include "scorch/cloud/crucible/crucible_mapper.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 #include "third_party/mongo/client/dbclient.h"
 
@@ -39,9 +39,6 @@ class CrucibleModel {
                 const std::string table)
       : connection_(connection), table_(table) {}
 
-  static ::crucible::Repo BsonObjToRepo(const ::mongo::BSONObj& bson_obj);
-  static ::nlohmann::json RepoToJson(const ::crucible::Repo& repo);
-
   // Querying
   bool FindRepoById(::crucible::Repo* repo, const std::string& repo_uuid);
 
@@ -58,6 +55,7 @@ class CrucibleModel {
   bool SaveRepo(const ::crucible::Repo repo);
 
  private:
+  CrucibleMapper crucible_mapper_;
   ::mongo::DBClientConnection& connection_;
   const std::string table_;
 };

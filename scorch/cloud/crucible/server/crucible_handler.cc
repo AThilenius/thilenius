@@ -1,7 +1,7 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
-#include "scorch/cloud/crucible/crucible_handler.h"
+#include "scorch/cloud/crucible/server/crucible_handler.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -27,6 +27,7 @@ namespace thilenius {
 namespace scorch {
 namespace cloud {
 namespace crucible {
+namespace server {
 
 CrucibleHandler::CrucibleHandler()
     : model_(mongo_connection_, FLAGS_mongo_table) {
@@ -61,7 +62,7 @@ void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
     _return = repo;
   }
   LOG(INFO) << "CreateNewRepo returning: "
-            << CrucibleModel::RepoToJson(_return).dump(2);
+            << crucible_mapper_.RepoToJson(_return).dump(2);
 }
 
 void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
@@ -74,14 +75,23 @@ void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
 void CrucibleHandler::GetRepoHeadersByUser(
     std::vector<::crucible::RepoHeader>& _return,
     const std::string& user_uuid) {
-  // Your implementation goes here
-  printf("GetRepoHeadersByUser\n");
 }
 
 void CrucibleHandler::GetRepoById(::crucible::Repo& _return,
                                   const std::string& repo_uuid) {
   // Your implementation goes here
   printf("GetRepoById\n");
+}
+
+void CrucibleHandler::GetRepoHeaderById(::crucible::RepoHeader& _return,
+                         const std::string& repo_uuid) {
+  ::crucible::Repo repo;
+  if (!model_.FindRepoById(&repo, repo_uuid)) {
+    // TODO(athilenius) Throw a thrift exception here.
+    _return = repo.repo_header;
+  } else {
+    _return = repo.repo_header;
+  }
 }
 
 void CrucibleHandler::CommitAndDownstream(
@@ -91,6 +101,7 @@ void CrucibleHandler::CommitAndDownstream(
   printf("CommitAndDownstream\n");
 }
 
+}  // namespace server
 }  // namespace crucible
 }  // namespace cloud
 }  // namespace scorch
