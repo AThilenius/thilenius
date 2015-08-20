@@ -30,6 +30,7 @@ add_custom_command(
 add_library (
   differencer
   /root/thilenius/utils/differencer/differencer.cc
+  /root/thilenius/utils/differencer/differencer_mapper.cc
   /root/thilenius_gen/utils/differencer/differencer_constants.cpp
   /root/thilenius_gen/utils/differencer/differencer_types.cpp
 )

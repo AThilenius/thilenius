@@ -46,6 +46,19 @@ TEST(String, EndsWithTest) {
   EXPECT_FALSE(EndsWith("Hello, world", "worl"));
 }
 
+TEST(String, RemoveFrombeginEnd) {
+  // Beginning
+  EXPECT_EQ("", String::RemoveFromBeginning("", "_2_"));
+  EXPECT_EQ("_2_", String::RemoveFromBeginning("_2_", ""));
+  EXPECT_EQ("_2_", String::RemoveFromBeginning("_1__2_", "_1_"));
+  EXPECT_EQ("_1__2_", String::RemoveFromBeginning("_1__2_", "_2_"));
+  // End
+  EXPECT_EQ("", String::RemoveFromEnd("", "_2_"));
+  EXPECT_EQ("_2_", String::RemoveFromEnd("_2_", ""));
+  EXPECT_EQ("_1_", String::RemoveFromEnd("_1__2_", "_2_"));
+  EXPECT_EQ("_1__2_", String::RemoveFromEnd("_1__2_", "_1_"));
+}
+
 }  // namespace
 }  // namespace base
 }  // namespace thilenius

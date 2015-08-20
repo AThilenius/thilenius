@@ -3,9 +3,28 @@
 
 #include "base/string.h"
 
-bool Empty(const std::string& str) { return str.length() == 0; }
+using ::thilenius::base::String;
 
-bool Blank(const std::string& str) {
+bool Empty(const std::string& str) { return String::Empty(str); }
+
+bool Blank(const std::string& str) { return String::Blank(str); }
+
+bool BeginsWith(const std::string& str, const std::string& other_str) {
+  return String::BeginsWith(str, other_str);
+}
+
+bool EndsWith(const std::string& str, const std::string& other_str) {
+  return String::EndsWith(str, other_str);
+}
+
+namespace thilenius {
+namespace base {
+
+bool String::BeginsWith(const std::string& str, const std::string& other_str) {
+  return str.compare(0, other_str.length(), other_str) == 0;
+}
+
+bool String::Blank(const std::string& str) {
   if (str.length() == 0) {
     return true;
   }
@@ -17,11 +36,9 @@ bool Blank(const std::string& str) {
   return true;
 }
 
-bool BeginsWith(const std::string& str, const std::string& other_str) {
-  return str.compare(0, other_str.length(), other_str) == 0;
-}
+bool String::Empty(const std::string& str) { return str.length() == 0; }
 
-bool EndsWith(const std::string& str, const std::string& other_str) {
+bool String::EndsWith(const std::string& str, const std::string& other_str) {
   if (str.length() >= other_str.length()) {
     return str.compare(str.length() - other_str.length(), other_str.length(),
                        other_str) == 0;
@@ -29,3 +46,25 @@ bool EndsWith(const std::string& str, const std::string& other_str) {
     return false;
   }
 }
+
+std::string String::RemoveFromBeginning(const std::string& from_string,
+                                        const std::string& value) {
+  if (!String::BeginsWith(from_string, value) || String::Blank(value) ||
+      String::Blank(from_string)) {
+    return from_string;
+  }
+  return from_string.substr(value.length(),
+                            from_string.length() - value.length());
+}
+
+std::string String::RemoveFromEnd(const std::string& from_string,
+                                  const std::string& value) {
+  if (!String::EndsWith(from_string, value) || String::Blank(value) ||
+      String::Blank(from_string)) {
+    return from_string;
+  }
+  return from_string.substr(0, from_string.length() - value.length());
+}
+
+} // namespace base
+} // namespace thilenius

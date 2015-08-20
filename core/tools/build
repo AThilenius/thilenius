@@ -62,8 +62,10 @@ if [ ${FLAGS_run} -eq ${FLAGS_TRUE} ]; then
   if [ ! -e "/root/thilenius_bin/$RPATH/$PWDD" ]; then
     WARN "No executable found at /root/thilenius_bin/$RPATH/$PWDD"
   else
-    INFO "Running executable /root/thilenius_bin/$RPATH/$PWDD"
-    /root/thilenius_bin/$RPATH/$PWDD
+    INFO "Running executable /root/thilenius_bin/$RPATH/$PWDD ${@:1}"
+    pushd /root/thilenius/$RPATH
+    /root/thilenius_bin/$RPATH/$PWDD ${@:1}
+    popd
   fi
 fi
 

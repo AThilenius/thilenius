@@ -110,6 +110,7 @@ include_directories("/root/thilenius")
 
 add_library (
   base
+  /root/thilenius/base/arguments.cc
   /root/thilenius/base/directory.cc
   /root/thilenius/base/file.cc
   /root/thilenius/base/log.cc

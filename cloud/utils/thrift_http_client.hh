@@ -22,7 +22,8 @@ class ThriftHttpClient {
  public:
   typedef std::shared_ptr<T> ClientPtr;
   ThriftHttpClient(const std::string& ip, int port, const std::string& route)
-      : transport_(
+      : connected_(false),
+        transport_(
             new ::apache::thrift::transport::THttpClient(ip, port, route)),
         protocol_(new ::apache::thrift::protocol::TJSONProtocol(transport_)),
         client_(new T(protocol_)) {}
@@ -30,15 +31,19 @@ class ThriftHttpClient {
   ~ThriftHttpClient() { transport_->close(); }
 
   ClientPtr ConnectOrDie() {
-    try {
-      transport_->open();
-    } catch (::apache::thrift::TException& tx) {
-      LOG(FATAL) << "Failed to connect to Thrift HTTP Server!";
+    if (!connected_) {
+      try {
+        transport_->open();
+        connected_ = true;
+      } catch (::apache::thrift::TException& tx) {
+        LOG(FATAL) << "Failed to connect to Thrift HTTP Server!";
+      }
     }
     return client_;
   }
 
  private:
+  bool connected_;
   ::boost::shared_ptr<::apache::thrift::transport::TTransport> transport_;
   ::boost::shared_ptr<::apache::thrift::protocol::TProtocol> protocol_;
   std::shared_ptr<T> client_;

@@ -19,6 +19,10 @@ class Path {
   static bool IsDirectory(const std::string& path);
   static bool IsRegularFile(const std::string& path);
   static std::time_t LastWriteTime(const std::string& path);
+  static std::string ParentPath(const std::string& path);
+  static std::string WithoutEdgeSlashes(const std::string& path);
+  static std::string RelativePath(const std::string& full_path,
+                                  const std::string head_path);
 };
 
 }  // namespace base

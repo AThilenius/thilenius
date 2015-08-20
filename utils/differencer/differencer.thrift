@@ -4,6 +4,7 @@
 namespace cpp differencer
 
 enum DiffType {
+  UNKNOWN,
   INSERT,
   DELETE,
   EQUAL

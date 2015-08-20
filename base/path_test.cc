@@ -43,8 +43,7 @@ TEST_F(PathTest, Combine) {
             "/starts/with/slash/starts/with/slash");
   EXPECT_EQ(Path::Combine("ends/with/slash/", "ends/with/slash/"),
             "ends/with/slash/ends/with/slash/");
-  EXPECT_EQ(Path::Combine("too/many/", "/slashes"),
-            "too/many/slashes");
+  EXPECT_EQ(Path::Combine("too/many/", "/slashes"), "too/many/slashes");
 }
 
 TEST_F(PathTest, CurrentPathTest) {
@@ -71,6 +70,23 @@ TEST_F(PathTest, IsRegularFileTest) {
   EXPECT_FALSE(Path::IsRegularFile("/"));
   EXPECT_FALSE(Path::IsRegularFile("/this/path/does/not/exist"));
   EXPECT_TRUE(Path::IsRegularFile(full_path_));
+}
+
+TEST_F(PathTest, ParentPath) {
+  EXPECT_EQ("some/path", Path::ParentPath("some/path/file.txt"));
+  EXPECT_EQ("some/path", Path::ParentPath("some/path/file_no_ext"));
+}
+
+TEST_F(PathTest, WithoutSlashesTest) {
+  EXPECT_EQ("some/path", Path::WithoutEdgeSlashes("//some/path///"));
+}
+
+TEST_F(PathTest, RelativePathTest) {
+  EXPECT_EQ("the/final/path",
+            Path::RelativePath("/the/root/the/final/path", "/the/root/"));
+  EXPECT_EQ("the/final/path",
+            Path::RelativePath("//the/root/the/final/path//", "the/root"));
+  EXPECT_EQ("the/full/path", Path::RelativePath("/the/full/path", "/dne/"));
 }
 
 }  // namespace

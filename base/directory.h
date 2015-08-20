@@ -24,6 +24,11 @@ class Directory {
   static std::vector<std::string> GetChildrenDirectories(
       const std::string& dir);
   static std::vector<std::string> GetChildrenFiles(const std::string& dir);
+  static std::vector<std::string> GetChildrenRecursive(const std::string& dir);
+  static std::vector<std::string> GetChildrenDirectoriesRecursive(
+      const std::string& dir);
+  static std::vector<std::string> GetChildrenFilesRecursive(
+      const std::string& dir);
 };
 
 }  // namespace base

@@ -79,5 +79,42 @@ std::vector<std::string> Directory::GetChildrenFiles(const std::string& dir) {
   return std::move(sub_files);
 }
 
+std::vector<std::string> Directory::GetChildrenRecursive(
+    const std::string& dir) {
+  std::vector<std::string> sub_items = GetChildren(dir);
+  for (const auto& item : sub_items) {
+    if (Path::IsDirectory(item)) {
+      std::vector<std::string> recursive_items = GetChildrenRecursive(item);
+      sub_items.insert(sub_items.end(), recursive_items.begin(),
+                       recursive_items.end());
+    }
+  }
+  return std::move(sub_items);
+}
+
+std::vector<std::string> Directory::GetChildrenDirectoriesRecursive(
+    const std::string& dir) {
+  std::vector<std::string> sub_items = GetChildrenDirectories(dir);
+  for (const auto& item : sub_items) {
+    std::vector<std::string> recursive_items =
+        GetChildrenDirectoriesRecursive(item);
+    sub_items.insert(sub_items.end(), recursive_items.begin(),
+                     recursive_items.end());
+  }
+  return std::move(sub_items);
+}
+
+std::vector<std::string> Directory::GetChildrenFilesRecursive(
+    const std::string& dir) {
+  std::vector<std::string> sub_items = GetChildrenFiles(dir);
+  for (const auto& sub_dir : GetChildrenDirectories(dir)) {
+    std::vector<std::string> recursive_items =
+        GetChildrenFilesRecursive(sub_dir);
+    sub_items.insert(sub_items.end(), recursive_items.begin(),
+                     recursive_items.end());
+  }
+  return std::move(sub_items);
+}
+
 }  // namespace base
 }  // namespace thilenius
