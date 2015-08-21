@@ -113,6 +113,7 @@ add_library (
   /root/thilenius/base/arguments.cc
   /root/thilenius/base/directory.cc
   /root/thilenius/base/file.cc
+  /root/thilenius/base/guid.cc
   /root/thilenius/base/log.cc
   /root/thilenius/base/path.cc
   /root/thilenius/base/string.cc
