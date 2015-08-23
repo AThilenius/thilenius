@@ -4,6 +4,8 @@
 #include "base/path.h"
 
 #include <boost/filesystem.hpp>
+#include <limits.h>
+#include <unistd.h>
 
 #include "string.h"
 
@@ -25,6 +27,16 @@ std::string Path::Combine(const std::string& left, const std::string& right) {
 
 std::string Path::CurrentPath() {
   return ::boost::filesystem::current_path().string();
+}
+
+std::string Path::ExecutablePath() {
+  char buff[PATH_MAX];
+  ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
+  if (len != -1) {
+    buff[len] = '\0';
+    return std::string(buff);
+  }
+  return "";
 }
 
 bool Path::Exists(const std::string& path) {

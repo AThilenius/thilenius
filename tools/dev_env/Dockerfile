@@ -16,6 +16,8 @@ RUN apt-get install -qy npm
 
 #===  CLANG  ===================================================================
 RUN apt-get install -y libc++-dev libc++abi-dev clang-3.6 lldb-3.6
+RUN ln -s /usr/bin/clang-3.6 /usr/bin/clang
+RUN ln -s /usr/bin/clang++-3.6 /usr/bin/clang++
 
 #===  GIT  =====================================================================
 RUN apt-get install -y git
@@ -49,10 +51,29 @@ RUN cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 #===  CTAGS  ===================================================================
 RUN apt-get install -y exuberant-ctags
 
-#===  BOOST  ===================================================================
+#===  WGET  ====================================================================
+RUN apt-get install -y wget
+
+#===  UNZIP  ===================================================================
+RUN apt-get install -y unzip
+
+#===  BOOST + BOOST PROCESS ====================================================
 RUN mkdir /root/boost
 ADD boost/CMakeLists_.txt /root/boost/
-RUN cd /root/boost && mv CMakeLists_.txt CMakeLists.txt && cmake . && make || echo "\033[0;31mBoost failed to build, continuing anyway."
+RUN cd /root/boost && \
+    mv CMakeLists_.txt CMakeLists.txt && cmake . && \
+    make || echo "\033[0;31mBoost failed to build, continuing anyway."
+RUN mkdir /root/boost_process && \
+    cd /root/boost_process && \
+    wget http://www.highscore.de/boost/process.zip \
+    unzip process.zip \
+    cp -r boost/* /usr/include/boost
+# Fix for:
+# http://stackoverflow.com/questions/8926715/missing-exception-in-boost-process
+RUN sed -i -e \
+    's#<boost/filesystem/path.hpp>#<boost/filesystem/operations.hpp>#g' \
+    /usr/include/boost/process/operations.hpp
+RUN rm -rf /root/boost /root/boost_process
 
 #===  LIB EVENT  ===============================================================
 RUN apt-get install -y libevent-dev

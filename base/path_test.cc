@@ -50,6 +50,10 @@ TEST_F(PathTest, CurrentPathTest) {
   EXPECT_EQ(Path::CurrentPath(), "/root/thilenius_bin/base");
 }
 
+TEST_F(PathTest, ExecutablePath) {
+  EXPECT_EQ("/root/thilenius_bin/base/base_test", Path::ExecutablePath());
+}
+
 TEST_F(PathTest, ExistsTest) {
   EXPECT_TRUE(Path::Exists("/root/thilenius"));
   EXPECT_TRUE(Path::Exists(full_path_));

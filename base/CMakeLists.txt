@@ -105,17 +105,24 @@ set_target_properties(libglog PROPERTIES
 # I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
 include_directories("${source_dir}/include")
 
+#===  CURL, ZLIB  ==============================================================
+add_subdirectory (/root/thilenius/base/curl)
+
 #===  BASE LIB  ================================================================
 include_directories("/root/thilenius")
 
 add_library (
   base
   /root/thilenius/base/arguments.cc
+  /root/thilenius/base/auto_update.cc
+  /root/thilenius/base/dependency.cc
   /root/thilenius/base/directory.cc
   /root/thilenius/base/file.cc
   /root/thilenius/base/guid.cc
+  /root/thilenius/base/http.cc
   /root/thilenius/base/log.cc
   /root/thilenius/base/path.cc
+  /root/thilenius/base/process.cc
   /root/thilenius/base/string.cc
   /root/thilenius/base/text_file.cc
   /root/thilenius/base/time.cc
@@ -126,19 +133,26 @@ target_link_libraries (
   boost_filesystem
   boost_system
   crypto
+  libcurl
   libgflags
   libglog
   libgmock
   libgtest
+  libz
+  ssl
 )
 
 #===  BASE TESTS  ==============================================================
 add_executable (
   base_test
+  /root/thilenius/base/dependency_test.cc
   /root/thilenius/base/directory_test.cc
   /root/thilenius/base/file_test.cc
+  /root/thilenius/base/http_test.cc
   /root/thilenius/base/path_test.cc
+  /root/thilenius/base/process_test.cc
   /root/thilenius/base/string_test.cc
+  /root/thilenius/base/value_of_test.cc
 )
 
 target_link_libraries (

@@ -15,6 +15,7 @@ class Path {
   static std::string Absolute(const std::string& relative_path);
   static std::string Combine(const std::string& left, const std::string& right);
   static std::string CurrentPath();
+  static std::string ExecutablePath();
   static bool Exists(const std::string& path);
   static bool IsDirectory(const std::string& path);
   static bool IsRegularFile(const std::string& path);
