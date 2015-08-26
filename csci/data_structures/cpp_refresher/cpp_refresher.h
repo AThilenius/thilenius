@@ -7,8 +7,24 @@
 #include <string>
 #include <typeinfo>
 
+#include "scorch/testing_framework/test_runner.h"
+
+class UberClass {
+ public:
+  UberClass() : uber_member(-1), method_called(false) {}
+
+  void UberMethod() { method_called = true; }
+
+  int uber_member;
+
+ private:
+  bool method_called;
+  friend void CPlusPlusRefresher(UTTestRunner*);
+};
+
 void PointersTestAddCall(const std::string& type_name);
 int PrintHelloWorldHarness();
+void BaseMethodCalled();
 
 template <typename T>
 void UberFunction(T val) {
@@ -25,13 +41,13 @@ void CallUberFunctions();
 
 void Loops(int number_of_times);
 
+void UseingObjects(UberClass& uber_class_1, UberClass* uber_class_2,
+                   UberClass** uber_class_3);
+
+void InPlaceReverse(char* str);
+
 namespace uber_namespace {
 void OtherUberFunction();
 }
-
-class Base {
- public:
-  void foo(int f) { }
-};
 
 #endif  // CSCI_DATA_STRUCTURES_CPP_REFRESHER_CPP_REFRESHER_H_

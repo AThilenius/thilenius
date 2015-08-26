@@ -11,6 +11,7 @@
 #undef delete
 
 #include <chrono>
+#include <iomanip>
 #include <math.h>
 #include <mutex>
 #include <signal.h>
@@ -156,8 +157,10 @@ void UTTestRunner::RunSuite(std::string suiteName,
         int earned_percent =
             GetPercent(test.PointsEarned(), test.points_denominator);
         PrintRatioColor(earned_percent);
-        std::cout << test.PointsEarned() << "/" << test.points_denominator
-                  << Blue << " - " << test.Name << std::endl;
+        std::cout << std::setw(3) << std::right << test.PointsEarned()
+                  << std::setw(3) << std::left << " / " << std::setw(3)
+                  << std::left << test.points_denominator << std::setw(0)
+                  << std::left << Blue << " - " << test.Name << std::endl;
       }
       std::cout << Blue << "|" << std::endl;
       std::cout << Blue << "[";

@@ -1,10 +1,6 @@
-//
-//  UTTestRunner.h
-//  UTFramework
-//
-//  Created by Alec Thilenius on 4/20/15.
-//  Copyright (c) 2015 Thilenius. All rights reserved.
-//
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
 #pragma once
 
 #include <functional>
@@ -19,8 +15,8 @@
 extern const char* __file__;
 extern size_t __line__;
 
-// void* operator new(size_t size);
-// void operator delete(void* ptr) noexcept;
+ void* operator new(size_t size);
+ void operator delete(void* ptr) noexcept;
 
 #define new (__file__ = __FILE__, __line__ = __LINE__) && 0 ? NULL : new
 #define delete (__file__ = __FILE__, __line__ = __LINE__), delete

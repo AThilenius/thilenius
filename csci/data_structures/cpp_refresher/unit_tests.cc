@@ -1,6 +1,7 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
+#include <algorithm>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
@@ -17,15 +18,25 @@ namespace {
 
 bool other_uber_function_called = false;
 int does_loopy_things_count = 0;
-std::unordered_set<std::string> type_call_set_;
 int last_new_size_ = 0;
-void* last_new_ptr_ = nullptr;
+std::unordered_set<std::string> type_call_set_;
 void* last_delete_ptr_ = nullptr;
+void* last_new_ptr_ = nullptr;
+bool base_method_called = false;
 
 }  // namespace
 
 void PointersTestAddCall(const std::string& type_name) {
   type_call_set_.insert(type_name);
+}
+
+void DoesAwesomeLoopyThings() { does_loopy_things_count++; }
+
+void BaseMethodCalled() { base_method_called = true; }
+
+namespace uber_namespace {
+
+void OtherUberFunction() { other_uber_function_called = true; }
 }
 
 int PrintHelloWorldHarness() {
@@ -38,32 +49,34 @@ int PrintHelloWorldHarness() {
   return count;
 }
 
-void DoesAwesomeLoopyThings() { does_loopy_things_count++; }
-
-namespace uber_namespace {
-void OtherUberFunction() { other_uber_function_called = true; }
+std::string GetRandomString() {
+  std::string random_string;
+  srand(time(NULL));
+  int size = 10 + (rand() % 100);
+  for (int i = 0; i < size; i++) {
+    random_string += static_cast<char>(65 + (std::rand() % 24));
+  }
+  return std::move(random_string);
 }
 
-// namespace {
-
-std::string GetRandomString() {
-  std::string string;
-  int size = 2 + (std::rand() % 20);
-  string.reserve(size);
-  for (int i = 0; i < size; i++) {
-    string[i] = 65 + (std::rand() % 24);
-  }
-  return std::move(string);
+void LoopsTestHelper(UTTestRunner* runner, int count) {
+  does_loopy_things_count = 0;
+  Loops(count);
+  runner->IsTrue(
+      does_loopy_things_count == count,
+      "DoesAwesomeLoopyThings called " + std::to_string(count) + " times.",
+      "Your loop should have run " + std::to_string(count) + " times, not " +
+          std::to_string(does_loopy_things_count) + " times");
 }
 
 SUITE(CPlusPlusRefresher) {
-  TEST("PrintHelloWorld", 5, 0) {
+  TEST("Print Hello, world", 10, 10) {
     int number_of_chars_couted = PrintHelloWorldHarness();
     runner->IsTrue(number_of_chars_couted > 0, "Was something printed",
                    "You need to print something to cout");
   }
 
-  TEST("Call the UberFunction with different types", 20, 20) {
+  TEST("Call the UberFunction with different types", 25, 25) {
     CallUberFunctions();
     runner->IsTrue(
         type_call_set_.find(typeid(int).name()) != type_call_set_.end(),
@@ -89,92 +102,71 @@ SUITE(CPlusPlusRefresher) {
         "You need to call the "
         "function \"UberFunction\" "
         "with a char* argument");
+    runner->IsTrue(other_uber_function_called,
+                   "Called OtherUberFunction in the uber_namespace namespace",
+                   "You need to call the function OtherUberFunction in the "
+                   "uber_namespace namespace");
   }
 
-  // TEST("CallDoesAwesomeLoopyThings1Times") {
-  // does_loopy_things_count = 0;
-  // Loops(1);
-  // EXPECT_EQ(1, does_loopy_things_count)
-  //<< "\"DoesAwesomeLoopyThings\" should have been called once.";
-  //}
+  TEST("Call DoesAwesomeLoopyThings N times", 20, 20) {
+    srand(time(NULL));
+    LoopsTestHelper(runner, 1);
+    LoopsTestHelper(runner, rand() % 100);
+  }
 
-  // TEST("CallDoesAwesomeLoopyThings42Times") {
-  // does_loopy_things_count = 0;
-  // Loops(42);
-  // EXPECT_EQ(42, does_loopy_things_count)
-  //<< "\"DoesAwesomeLoopyThings\" should have been called 42 times.";
-  //}
+  static std::string array = GetRandomString();
+  runner->GetConfig()->MinMemory = (array.length() + 1) * sizeof(char);
+  runner->GetConfig()->MaxMemory = (array.length() + 1) * sizeof(char);
+  runner->GetConfig()->LeakCheck = true;
+  TEST("Copy an array to the heap", 25, 25) {
+    CopyArrayOnHeap(array.c_str());
+    std::string alloc_size =
+        std::to_string((array.length() + 1) * sizeof(char));
+    runner->IsTrue(
+        true, "Allocate and free " + alloc_size + " bytes using new / delete",
+        "");
+  }
 
-  // TEST("CallDoesAwesomeLoopyThings69Times") {
-  // does_loopy_things_count = 0;
-  // Loops(69);
-  // EXPECT_EQ(69, does_loopy_things_count)
-  //<< "\"DoesAwesomeLoopyThings\" should have been called 69 times.";
-  // does_loopy_things_count = 0;
-  //}
+  TEST("Create a class method called UberMethod", 20, 20) {
+    base_method_called = false;
+    UberClass uber_c1;
+    UberClass uber_c2;
+    UberClass uber_c3;
+    UberClass* uber_c3_ptr = &uber_c3;
+    UseingObjects(uber_c1, &uber_c2, &uber_c3_ptr);
+    runner->IsTrue(uber_c1.method_called, "Call UberMethod on uber_class_1",
+                   "You need to call UberMethod on the uber_class_1 instance");
+    runner->IsTrue(uber_c1.uber_member == 42,
+                   "Set the uber_member on uber_class_1 to 42",
+                   "You need to set the member uber_member to 42");
+    runner->IsTrue(uber_c2.method_called, "Call UberMethod on uber_class_2",
+                   "You need to call UberMethod on the uber_class_2 instance");
+    runner->IsTrue(uber_c2.uber_member == 42,
+                   "Set the uber_member on uber_class_2 to 42",
+                   "You need to set the member uber_member to 42");
+    runner->IsTrue(uber_c3.method_called, "Call UberMethod on uber_class_3",
+                   "You need to call UberMethod on the uber_class_3 instance");
+    runner->IsTrue(uber_c3.uber_member == 42,
+                   "Set the uber_member on uber_class_3 to 42",
+                   "You need to set the member uber_member to 42");
+  }
 
-  // TEST("CallDoesAwesomeLoopyThingsNegativeTimes") {
-  // does_loopy_things_count = 0;
-  // Loops(-1);
-  // EXPECT_EQ(0, does_loopy_things_count)
-  //<< "\"DoesAwesomeLoopyThings\" should not have been called when a "
-  //"negative number was passed in for the number of times.";
-  //}
-
-  // TEST("NewCorrectSize") {
-  // int size = std::rand() % 100;
-  // char* array = new char[size];
-  // for (int i = 0; i < size; i++) {
-  // array[i] = 1 + (rand() % 100);
-  //}
-  // array[size - 1] = 0;
-  // last_new_size_ = 0;
-  // CopyArrayOnHeap(array);
-  // int new_call_size = last_new_size_;
-  // EXPECT_EQ(size, new_call_size)
-  //<< "You should have allocated " << size
-  //<< " bytes because that's how big the char[] was";
-  //}
-
-  // TEST("DeleteCorrectPointer") {
-  // std::string random_string = GetRandomString();
-  // last_new_ptr_ = nullptr;
-  // last_delete_ptr_ = nullptr;
-  // CopyArrayOnHeap(random_string.c_str());
-  // void* last_new_ptr = last_new_ptr_;
-  // void* last_delete_ptr = last_delete_ptr_;
-  // EXPECT_EQ(last_new_ptr, last_delete_ptr)
-  //<< "You need to call delete on memory that was allocated on the heap";
-  //}
-
-  // TEST("CopiedStringCorrectly") {
-  // std::string random_string = GetRandomString();
-  // last_new_size_ = 0;
-  // last_new_ptr_ = nullptr;
-  // last_delete_ptr_ = nullptr;
-  // CopyArrayOnHeap(random_string.c_str());
-  // int last_new_size = last_new_size_;
-  // void* last_new_ptr = last_new_ptr_;
-  // void* last_delete_ptr = last_delete_ptr_;
-  // EXPECT_EQ(last_new_ptr, last_delete_ptr)
-  //<< "You need to make sure you're allocating and deleteing memory "
-  //"correctly before doing this step";
-  // EXPECT_EQ(last_new_ptr, last_delete_ptr)
-  //<< "You need to make sure you're allocating the correct amount of "
-  //"memory "
-  //"before doing this step";
-  // if (last_new_ptr != last_delete_ptr ||
-  // last_new_size != random_string.size()) {
-  // return;
-  //}
-  // std::string string_copy =
-  // std::string(static_cast<char*>(last_delete_ptr), random_string.size());
-  // EXPECT_EQ(random_string, string_copy)
-  //<< "You did not correctly copy the char*";
-  //}
+  static std::string forward = GetRandomString();
+  static std::string backward = forward;
+  static char* c_buffer = new char[forward.length() + 1];
+  runner->GetConfig()->MaxMemory = 0;
+  TEST("In place string reversal", 5, 0) {
+    backward = forward;
+    std::reverse(backward.begin(), backward.end());
+    forward.copy(c_buffer, forward.length(), 0);
+    c_buffer[forward.length()] = 0;
+    InPlaceReverse(c_buffer);
+    runner->IsTrue(
+        std::string(c_buffer) == backward,
+        "Reverse the order of the string without allocating new memory",
+        "You need to reverse the order of the string");
+  }
 }
-
-//}  // namespace
 
 int main(int argc, const char* argv[]) {
   UTTestRunner runner;

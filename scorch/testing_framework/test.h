@@ -1,13 +1,7 @@
-//
-//  UTTest.h
-//  UTFramework
-//
-//  Created by Alec Thilenius on 4/20/15.
-//  Copyright (c) 2015 Thilenius. All rights reserved.
-//
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include <unordered_map>
 

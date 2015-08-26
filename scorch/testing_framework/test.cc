@@ -120,6 +120,9 @@ int UTTest::PointsEarned() {
       passed_conditions += 1;
     }
   }
+  if (Conditions.size() == 0) {
+    return points_possible;
+  }
   return round(static_cast<float>(points_possible) *
                static_cast<float>(passed_conditions) /
                static_cast<float>(Conditions.size()));
