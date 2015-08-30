@@ -78,8 +78,8 @@ CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
                   "exception.";
   }
   // Also write it out to file
-  ::nlohmann::json repo_json = crucible_mapper_.RepoToJson(repo.repo_);
-  File::WriteToFile(crucible_repo_json_path, repo_json.dump(2));
+  std::string json = crucible_mapper_.repo_mapper.to_json(repo.repo_);
+  File::WriteToFile(crucible_repo_json_path, json);
   return std::move(repo);
 }
 
@@ -97,7 +97,7 @@ CrucibleRepo CrucibleRepo::LoadFromDirectoryOrDie(const std::string& path) {
   CrucibleRepo crucible_repo;
   crucible_repo.path_ = path;
   crucible_repo.repo_ =
-      std::move(crucible_mapper_.JsonToRepo(::nlohmann::json::parse(json)));
+      crucible_mapper_.repo_mapper.from_bson(::mongo::fromjson(json));
   return std::move(crucible_repo);
 }
 
@@ -129,7 +129,7 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
       GetFileInfosForHead();
   ::crucible::ChangeList change_list;
   change_list.user_uuid = repo_.repo_header.user_uuid;
-  change_list.timestamp = Time::EpochMilliseconds();
+  change_list.timestamp = std::to_string(Time::EpochMilliseconds());
   // First find all files (Glob them)
   std::set<std::string> all_files;
   for (const auto& full_path : Directory::GetChildrenFiles(path_)) {
@@ -172,8 +172,8 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
     if (relative_all_files.find(header_info.first) ==
         relative_all_files.end()) {
       ::crucible::FileInfo file_info;
-      file_info.realative_path = header_info.first;
-      file_info.modify_timestamp = Time::EpochMilliseconds();
+      file_info.relative_path = header_info.first;
+      file_info.modify_timestamp = std::to_string(Time::EpochMilliseconds());
       change_list.removed_files.emplace_back(std::move(file_info));
     }
   }
@@ -185,13 +185,13 @@ std::map<std::string, ::crucible::FileInfo> CrucibleRepo::GetFileInfosForHead()
   std::map<std::string, ::crucible::FileInfo> active_files;
   for (const auto& change_list : repo_.change_lists) {
     for (const auto& file : change_list.added_files) {
-      active_files[file.file_info.realative_path] = file.file_info;
+      active_files[file.file_info.relative_path] = file.file_info;
     }
     for (const auto& file_delta : change_list.modified_files) {
-      active_files[file_delta.file_info.realative_path] = file_delta.file_info;
+      active_files[file_delta.file_info.relative_path] = file_delta.file_info;
     }
     for (const auto& file_info : change_list.removed_files) {
-      auto iter = active_files.find(file_info.realative_path);
+      auto iter = active_files.find(file_info.relative_path);
       active_files.erase(iter);
     }
   }
@@ -204,20 +204,20 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   for (const auto& change_list : repo_.change_lists) {
     // Added in this CL
     for (const auto& file : change_list.added_files) {
-      if (file.file_info.realative_path == relative_path) {
-        contents = file.text_source;
+      if (file.file_info.relative_path == relative_path) {
+        contents = file.source;
         break;
       }
     }
     // Modified in this CL
     for (const auto& file_delta : change_list.modified_files) {
-      if (file_delta.file_info.realative_path == relative_path) {
+      if (file_delta.file_info.relative_path == relative_path) {
         contents = differencer_.ApplyPatches(contents, file_delta.patches);
       }
     }
     // Removed in this CL
     for (const auto& file_info : change_list.removed_files) {
-      if (file_info.realative_path == relative_path) {
+      if (file_info.relative_path == relative_path) {
         contents = "";
       }
     }
@@ -228,22 +228,22 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
 ::crucible::File CrucibleRepo::CrucibleFileFromDiskFile(
     const std::string& full_path, const std::string& relative_path) const {
   ::crucible::File file;
-  file.file_info.realative_path = relative_path;
+  file.file_info.relative_path = relative_path;
   file.file_info.md5 = File::MD5OrDie(full_path);
-  file.file_info.modify_timestamp = File::LastWriteTime(full_path);
-  // TODO(athilenius) Binary files not yet handled
-  file.file_type = ::crucible::FileType::TEXT;
-  // file.text_source = File::ReadContentsOrDie(full_path);
-  file.__set_text_source(File::ReadContentsOrDie(full_path));
+  file.file_info.modify_timestamp =
+      std::to_string(File::LastWriteTime(full_path));
+  file.file_type = constants_.FILE_TYPE_TEXT;
+  file.source = File::ReadContentsOrDie(full_path);
   return std::move(file);
 }
 
 ::crucible::FileDelta CrucibleRepo::CrucibleFileDeltaFromDisk(
     const std::string& full_path, const std::string& relative_path) const {
   ::crucible::FileDelta file_delta;
-  file_delta.file_info.realative_path = relative_path;
+  file_delta.file_info.relative_path = relative_path;
   file_delta.file_info.md5 = File::MD5OrDie(full_path);
-  file_delta.file_info.modify_timestamp = File::LastWriteTime(full_path);
+  file_delta.file_info.modify_timestamp =
+      std::to_string(File::LastWriteTime(full_path));
   std::string old_content = ReconstructFileFromDiffs(relative_path);
   file_delta.patches = differencer_.PatchesFromStrings(
       old_content, File::ReadContentsOrDie(full_path));
@@ -268,8 +268,8 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   repo_.repo_header.latest_change_list_uuid = new_change_list.change_list_uuid;
   repo_.change_lists.push_back(new_change_list);
   // Save it to disk
-  ::nlohmann::json repo_json = crucible_mapper_.RepoToJson(repo_);
-  File::WriteToFile(crucible_repo_json_path, repo_json.dump(2));
+  std::string json = crucible_mapper_.repo_mapper.to_json(repo_);
+  File::WriteToFile(crucible_repo_json_path, json);
   return std::move(new_change_list);
 }
 

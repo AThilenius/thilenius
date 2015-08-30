@@ -115,9 +115,9 @@ SUITE(CPlusPlusRefresher) {
   }
 
   static std::string array = GetRandomString();
-  runner->GetConfig()->MinMemory = (array.length() + 1) * sizeof(char);
-  runner->GetConfig()->MaxMemory = (array.length() + 1) * sizeof(char);
-  runner->GetConfig()->LeakCheck = true;
+  runner->GetConfig()->min_memory = (array.length() + 1) * sizeof(char);
+  runner->GetConfig()->max_memory = (array.length() + 1) * sizeof(char);
+  runner->GetConfig()->leak_check = true;
   TEST("Copy an array to the heap", 25, 25) {
     CopyArrayOnHeap(array.c_str());
     std::string alloc_size =
@@ -151,11 +151,12 @@ SUITE(CPlusPlusRefresher) {
                    "You need to set the member uber_member to 42");
   }
 
-  static std::string forward = GetRandomString();
-  static std::string backward = forward;
-  static char* c_buffer = new char[forward.length() + 1];
-  runner->GetConfig()->MaxMemory = 0;
-  TEST("In place string reversal", 5, 0) {
+  runner->GetConfig()->max_memory = 0;
+  TEST("Extra Credit: In place string reversal", 5, 0) {
+    std::string forward = GetRandomString();
+    std::string backward = forward;
+    char* c_buffer =
+        static_cast<char*>(malloc((forward.length() + 1) * sizeof(char)));
     backward = forward;
     std::reverse(backward.begin(), backward.end());
     forward.copy(c_buffer, forward.length(), 0);

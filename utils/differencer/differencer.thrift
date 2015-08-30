@@ -3,15 +3,13 @@
 //==============================================================================
 namespace cpp differencer
 
-enum DiffType {
-  UNKNOWN,
-  INSERT,
-  DELETE,
-  EQUAL
-}
+const i32 DIFF_TYPE_UNKNOWN = 0;
+const i32 DIFF_TYPE_INSERT = 1;
+const i32 DIFF_TYPE_DELETE = 2;
+const i32 DIFF_TYPE_EQUAL = 3;
 
 struct Diff {
-  1:DiffType diff_type;
+  1:i32 diff_type;
   2:string text;
 }
 

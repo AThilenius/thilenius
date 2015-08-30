@@ -4,12 +4,9 @@
 #ifndef SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_MAPPER_H_
 #define SCORCH_CLOUD_CRUCIBLE_CRUCIBLE_MAPPER_H_
 
-#include <vector>
-
-#include "base/json.h"
-#include "base/types.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
+#include "third_party/mongoxx/mongoxx.hh"
 #include "utils/differencer/differencer_mapper.h"
 
 namespace thilenius {
@@ -19,22 +16,16 @@ namespace crucible {
 
 class CrucibleMapper {
  public:
-  // From JSON
-  int64 JsonToTimestamp(const ::nlohmann::json timestamp_json) const;
-  ::crucible::ChangeList JsonToChangeList(
-      const ::nlohmann::json change_list_json) const;
+  CrucibleMapper();
 
-  ::crucible::Repo JsonToRepo(const ::nlohmann::json json) const;
-
-  // To Json
-  ::nlohmann::json ChangeListToJson(
-      const ::crucible::ChangeList change_list) const;
-
-  ::nlohmann::json RepoToJson(const ::crucible::Repo& repo) const;
-
- private:
-  ::thilenius::utils::differencer::DifferencerMapper difference_mapper_;
-
+  ::thilenius::utils::differencer::DifferencerMapper differencer_mapper;
+  ::mongoxx::Mapper<::crucible::FileInfo> file_info_mapper;
+  ::mongoxx::Mapper<::crucible::File> file_mapper;
+  ::mongoxx::Mapper<::crucible::FileDelta> file_delta_mapper;
+  ::mongoxx::Mapper<::crucible::ChangeList> change_list_mapper;
+  ::mongoxx::Mapper<::crucible::RepoHeader> repo_header_mapper;
+  ::mongoxx::Mapper<::crucible::Repo> repo_mapper;
+  ::mongoxx::Mapper<::crucible::Snapshot> snapshot_mapper;
 };
 
 }  // namespace crucible

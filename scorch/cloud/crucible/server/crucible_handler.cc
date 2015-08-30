@@ -54,14 +54,12 @@ void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
     repo_header.repo_uuid = Guid::NewGuid();
     repo_header.user_uuid = user_uuid;
     repo_header.repo_name = repo_name;
-    repo_header.creation_timestamp = Time::EpochMilliseconds();
+    repo_header.creation_timestamp = std::to_string(Time::EpochMilliseconds());
     repo = std::move(::crucible::Repo());
     repo.repo_header = std::move(repo_header);
     model_.SaveRepo(repo);
     _return = repo;
   }
-  LOG(INFO) << "CreateNewRepo returning: "
-            << crucible_mapper_.RepoToJson(_return).dump(2);
 }
 
 void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
@@ -114,7 +112,7 @@ void CrucibleHandler::CommitAndDownstream(
       // TODO(athilenius) Need to downstream as well
       ::crucible::ChangeList new_change_list = change_list;
       new_change_list.change_list_uuid = Guid::NewGuid();
-      new_change_list.timestamp = Time::EpochMilliseconds();
+      new_change_list.timestamp = std::to_string(Time::EpochMilliseconds());
       repo.change_lists.push_back(new_change_list);
       repo.repo_header.latest_change_list_uuid =
           new_change_list.change_list_uuid;

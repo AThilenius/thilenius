@@ -4,185 +4,71 @@
 #include "scorch/cloud/crucible/crucible_mapper.h"
 
 #include "base/log.h"
-#include "third_party/mongoxx/mongoxx.hh"
 
 namespace thilenius {
 namespace scorch {
 namespace cloud {
 namespace crucible {
 
-int64 CrucibleMapper::JsonToTimestamp(
-    const ::nlohmann::json timestamp_json) const {
-  if (timestamp_json.is_number()) {
-    return timestamp_json.get<int64>();
-  } else {
-    return std::stoll(timestamp_json["$numberLong"].get<std::string>());
-  }
-}
+CrucibleMapper::CrucibleMapper() {
+  // File Info
+  file_info_mapper.add_field("relative_path",
+                             &::crucible::FileInfo::relative_path);
+  file_info_mapper.add_field("md5", &::crucible::FileInfo::md5);
+  file_info_mapper.add_field("modify_timestamp",
+                             &::crucible::FileInfo::modify_timestamp);
 
-::crucible::ChangeList CrucibleMapper::JsonToChangeList(
-    const ::nlohmann::json change_list_json) const {
-  ::crucible::ChangeList change_list;
-  change_list.change_list_uuid =
-      change_list_json["change_list_uuid"].get<std::string>();
-  change_list.user_uuid = change_list_json["user_uuid"].get<std::string>();
-  change_list.timestamp = JsonToTimestamp(change_list_json["timestamp"]);
-  // Added files
-  for (const auto& file_json : change_list_json["added_files"]) {
-    ::crucible::File file;
-    file.file_info.realative_path =
-        file_json["file_info"]["realative_path"].get<std::string>();
-    file.file_info.md5 = file_json["file_info"]["md5"].get<std::string>();
-    file.file_info.modify_timestamp =
-        JsonToTimestamp(file_json["file_info"]["modify_timestamp"]);
-    switch (file_json["file_type"].get<int>()) {
-      case 1: {
-        file.file_type = ::crucible::FileType::TEXT;
-        file.text_source = file_json["text_source"].get<std::string>();
-        break;
-      }
-      case 2: {
-        file.file_type = ::crucible::FileType::BINARY;
-        file.binary_source = file_json["binary_source"].get<std::string>();
-        break;
-      }
-      case 3: {
-        file.file_type = ::crucible::FileType::URL;
-        file.url_source = file_json["url_source"].get<std::string>();
-        break;
-      }
-    }
-    change_list.added_files.emplace_back(std::move(file));
-  }
-  // Modified files
-  for (const auto& file_delta_json : change_list_json["modified_files"]) {
-    ::crucible::FileDelta file_delta;
-    file_delta.file_info.realative_path =
-        file_delta_json["file_info"]["realative_path"].get<std::string>();
-    file_delta.file_info.md5 =
-        file_delta_json["file_info"]["md5"].get<std::string>();
-    file_delta.file_info.modify_timestamp =
-        JsonToTimestamp(file_delta_json["file_info"]["modify_timestamp"]);
-    for (const auto& patch_json : file_delta_json["patches"]) {
-      file_delta.patches.emplace_back(
-          difference_mapper_.JsonToPatch(patch_json));
-    }
-    change_list.modified_files.emplace_back(std::move(file_delta));
-  }
-  // Deleted files
-  for (const auto& file_info_json : change_list_json["removed_files"]) {
-    ::crucible::FileInfo file_info;
-    file_info.realative_path =
-        file_info_json["realative_path"].get<std::string>();
-    file_info.md5 = file_info_json["md5"].get<std::string>();
-    file_info.modify_timestamp =
-        JsonToTimestamp(file_info_json["modify_timestamp"]);
-    change_list.removed_files.emplace_back(std::move(file_info));
-  }
-  return std::move(change_list);
-}
+  // File
+  file_mapper.add_field("file_info", &::crucible::File::file_info,
+                        file_info_mapper);
+  file_mapper.add_field("file_type", &::crucible::File::file_type);
+  file_mapper.add_field("source", &::crucible::File::source);
 
-::crucible::Repo CrucibleMapper::JsonToRepo(const ::nlohmann::json json) const {
-  ::crucible::RepoHeader repo_header;
-  repo_header.repo_uuid = json["repo_uuid"].get<std::string>();
-  if (json["base_repo_uuid"].get<std::string>() != "") {
-    repo_header.base_repo_uuid = json["base_repo_uuid"].get<std::string>();
-  }
-  repo_header.user_uuid = json["user_uuid"].get<std::string>();
-  repo_header.repo_name = json["repo_name"].get<std::string>();
-  repo_header.creation_timestamp = JsonToTimestamp(json["creation_timestamp"]);
-  repo_header.latest_change_list_uuid =
-      json["latest_change_list_uuid"].get<std::string>();
+  // FileDelta
+  file_delta_mapper.add_field("file_info", &::crucible::FileDelta::file_info,
+                              file_info_mapper);
+  file_delta_mapper.add_field("patches", &::crucible::FileDelta::patches,
+                              differencer_mapper.patch_mapper);
+
+  // ChangeList
+  change_list_mapper.add_field("change_list_uuid",
+                               &::crucible::ChangeList::change_list_uuid);
+  change_list_mapper.add_field("user_uuid", &::crucible::ChangeList::user_uuid);
+  change_list_mapper.add_field("timestamp", &::crucible::ChangeList::timestamp);
+  change_list_mapper.add_field(
+      "added_files", &::crucible::ChangeList::added_files, file_mapper);
+  change_list_mapper.add_field("modified_files",
+                               &::crucible::ChangeList::modified_files,
+                               file_delta_mapper);
+  change_list_mapper.add_field("removed_files",
+                               &::crucible::ChangeList::removed_files,
+                               file_info_mapper);
+
+  // RepoHeader
+  repo_header_mapper.add_field("repo_uuid", &::crucible::RepoHeader::repo_uuid);
+  repo_header_mapper.add_field("base_repo_uuid",
+                               &::crucible::RepoHeader::base_repo_uuid);
+  repo_header_mapper.add_field("user_uuid", &::crucible::RepoHeader::user_uuid);
+  repo_header_mapper.add_field("repo_name", &::crucible::RepoHeader::repo_name);
+  repo_header_mapper.add_field("creation_timestamp",
+                               &::crucible::RepoHeader::creation_timestamp);
+  repo_header_mapper.add_field(
+      "latest_change_list_uuid",
+      &::crucible::RepoHeader::latest_change_list_uuid);
+
   // Repo
-  ::crucible::Repo repo;
-  repo.repo_header = std::move(repo_header);
-  for (const auto& change_list_json : json["change_lists"]) {
-    repo.change_lists.emplace_back(JsonToChangeList(change_list_json));
-  }
-  return std::move(repo);
-}
+  repo_mapper.add_field("repo_header", &::crucible::Repo::repo_header,
+                        repo_header_mapper);
+  repo_mapper.add_field("change_lists", &::crucible::Repo::change_lists,
+                        change_list_mapper);
 
-::nlohmann::json CrucibleMapper::ChangeListToJson(
-    const ::crucible::ChangeList change_list) const {
-  ::nlohmann::json cl_json = {
-      {"change_list_uuid", change_list.change_list_uuid},
-      {"user_uuid", change_list.user_uuid},
-      {"timestamp", change_list.timestamp},
-      {"added_files", ::nlohmann::json::array()},
-      {"modified_files", ::nlohmann::json::array()},
-      {"removed_files", ::nlohmann::json::array()}};
-  // Added files
-  for (const auto& file : change_list.added_files) {
-    ::nlohmann::json file_json = {
-        {"file_info",
-         {{"realative_path", file.file_info.realative_path},
-          {"md5", file.file_info.md5},
-          {"modify_timestamp", file.file_info.modify_timestamp}}}};
-    switch (file.file_type) {
-      case ::crucible::FileType::TEXT: {
-        file_json["file_type"] = 1;
-        file_json["text_source"] = file.text_source;
-        break;
-      }
-      case ::crucible::FileType::BINARY: {
-        file_json["file_type"] = 2;
-        file_json["binary_source"] = file.binary_source;
-        break;
-      }
-      case ::crucible::FileType::URL: {
-        file_json["file_type"] = 3;
-        file_json["url_source"] = file.url_source;
-        break;
-      }
-      default: {
-        file_json["file_type"] = 0;
-        LOG(WARNING) << "Unknown Crucible FileType while converting Crucible "
-                        "Repo to JSON";
-      }
-    }
-    cl_json["added_files"].push_back(std::move(file_json));
-  }
-  // Modified files
-  for (const auto& file_delta : change_list.modified_files) {
-    ::nlohmann::json file_delta_json = {
-        {
-         "file_info",
-         {{"realative_path", file_delta.file_info.realative_path},
-          {"md5", file_delta.file_info.md5},
-          {"modify_timestamp", file_delta.file_info.modify_timestamp}},
-        },
-        {"patches", ::nlohmann::json::array()}};
-    for (const auto& patch : file_delta.patches) {
-      file_delta_json["patches"].push_back(
-          difference_mapper_.PatchToJson(patch));
-    }
-    cl_json["modified_files"].push_back(std::move(file_delta_json));
-  }
-  // Removed files
-  for (const auto& file_info : change_list.removed_files) {
-    ::nlohmann::json file_info_json = {
-        {"realative_path", file_info.realative_path},
-        {"md5", file_info.md5},
-        {"modify_timestamp", file_info.modify_timestamp}};
-    cl_json["removed_files"].push_back(std::move(file_info_json));
-  }
-  return std::move(cl_json);
-}
-
-::nlohmann::json CrucibleMapper::RepoToJson(
-    const ::crucible::Repo& repo) const {
-  ::nlohmann::json repo_json = {
-      {"repo_uuid", repo.repo_header.repo_uuid},
-      {"base_repo_uuid", repo.repo_header.base_repo_uuid},
-      {"user_uuid", repo.repo_header.user_uuid},
-      {"repo_name", repo.repo_header.repo_name},
-      {"creation_timestamp", repo.repo_header.creation_timestamp},
-      {"latest_change_list_uuid", repo.repo_header.latest_change_list_uuid},
-      {"change_lists", ::nlohmann::json::array()}};
-  for (const auto& change_list : repo.change_lists) {
-    repo_json["change_lists"].push_back(ChangeListToJson(change_list));
-  }
-  return std::move(repo_json);
+  // Snapshot
+  snapshot_mapper.add_field("repo_info", &::crucible::Snapshot::repo_info,
+                            repo_header_mapper);
+  snapshot_mapper.add_field("from_change_list",
+                            &::crucible::Snapshot::from_change_list,
+                            change_list_mapper);
+  snapshot_mapper.add_field("files", &::crucible::Snapshot::files, file_mapper);
 }
 
 }  // namespace crucible

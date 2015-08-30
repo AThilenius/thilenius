@@ -4,9 +4,7 @@
 #ifndef UTILS_DIFFERENCER_DIFFERENCER_MAPPER_H_
 #define UTILS_DIFFERENCER_DIFFERENCER_MAPPER_H_
 
-#include <vector>
-
-#include "base/json.h"
+#include "third_party/mongoxx/mongoxx.hh"
 #include "utils/differencer/differencer_constants.h"
 #include "utils/differencer/differencer_types.h"
 
@@ -16,13 +14,11 @@ namespace differencer {
 
 class DifferencerMapper {
  public:
-  ::differencer::DiffType::type IntToDiffType(int value) const;
+   DifferencerMapper();
 
-  int DiffTypeToInt(const ::differencer::DiffType::type& diff_type) const;
-
-  ::differencer::Patch JsonToPatch(const ::nlohmann::json& json) const;
-
-  ::nlohmann::json PatchToJson(const ::differencer::Patch& patch) const;
+   ::mongoxx::Mapper<::differencer::Diff> diff_mapper;
+   ::mongoxx::Mapper<::differencer::Span> span_mapper;
+   ::mongoxx::Mapper<::differencer::Patch> patch_mapper;
 };
 
 }  // namespace differencer

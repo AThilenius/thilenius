@@ -48,8 +48,9 @@ class CrucibleRepo {
   ::crucible::FileDelta CrucibleFileDeltaFromDisk(
       const std::string& full_path, const std::string& relative_path) const;
 
-  std::string path_;
   ::crucible::Repo repo_;
+  ::crucible::crucibleConstants constants_;
+  std::string path_;
 };
 
 }  // namespace crucible

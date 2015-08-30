@@ -12,6 +12,7 @@ namespace differencer {
 
 std::vector<::differencer::Patch> Differencer::PatchesFromStrings(
     const std::string& from, const std::string& to) const {
+  ::differencer::differencerConstants constants;
   std::vector<::differencer::Patch> patches;
   typedef diff_match_patch<std::string> DiffMatchPatch;
   DiffMatchPatch dmp;
@@ -28,21 +29,21 @@ std::vector<::differencer::Patch> Differencer::PatchesFromStrings(
       switch (dmp_diff.operation) {
         case DiffMatchPatch::INSERT: {
           ::differencer::Diff thrift_diff;
-          thrift_diff.diff_type = ::differencer::DiffType::INSERT;
+          thrift_diff.diff_type = constants.DIFF_TYPE_INSERT;
           thrift_diff.text = dmp_diff.text;
           patch.diffs.emplace_back(std::move(thrift_diff));
           break;
         }
         case DiffMatchPatch::DELETE: {
           ::differencer::Diff thrift_diff;
-          thrift_diff.diff_type = ::differencer::DiffType::DELETE;
+          thrift_diff.diff_type = constants.DIFF_TYPE_DELETE;
           thrift_diff.text = dmp_diff.text;
           patch.diffs.emplace_back(std::move(thrift_diff));
           break;
         }
         case DiffMatchPatch::EQUAL: {
           ::differencer::Diff thrift_diff;
-          thrift_diff.diff_type = ::differencer::DiffType::EQUAL;
+          thrift_diff.diff_type = constants.DIFF_TYPE_EQUAL;
           thrift_diff.text = dmp_diff.text;
           patch.diffs.emplace_back(std::move(thrift_diff));
           break;
@@ -57,6 +58,7 @@ std::vector<::differencer::Patch> Differencer::PatchesFromStrings(
 std::string Differencer::ApplyPatches(
     const std::string& original,
     const std::vector<::differencer::Patch>& patches) const {
+  ::differencer::differencerConstants constants;
   // Convert back into DiffMatchPatch patches
   typedef diff_match_patch<std::string> DiffMatchPatch;
   DiffMatchPatch dmp;
@@ -69,19 +71,12 @@ std::string Differencer::ApplyPatches(
     dmp_patch.length2 = patch.to_span.length;
     for (const auto& diff : patch.diffs) {
       DiffMatchPatch::Diff dmp_diff;
-      switch (diff.diff_type) {
-        case ::differencer::DiffType::INSERT: {
-          dmp_diff.operation = DiffMatchPatch::INSERT;
-          break;
-        }
-        case ::differencer::DiffType::DELETE: {
-          dmp_diff.operation = DiffMatchPatch::DELETE;
-          break;
-        }
-        case ::differencer::DiffType::EQUAL: {
-          dmp_diff.operation = DiffMatchPatch::EQUAL;
-          break;
-        }
+      if (diff.diff_type == constants.DIFF_TYPE_INSERT) {
+        dmp_diff.operation = DiffMatchPatch::INSERT;
+      } else if (diff.diff_type == constants.DIFF_TYPE_DELETE) {
+        dmp_diff.operation = DiffMatchPatch::DELETE;
+      } else if (diff.diff_type == constants.DIFF_TYPE_EQUAL) {
+        dmp_diff.operation = DiffMatchPatch::EQUAL;
       }
       dmp_diff.text = diff.text;
       dmp_patch.diffs.emplace_back(std::move(dmp_diff));
@@ -95,25 +90,21 @@ std::string Differencer::ApplyPatches(
 
 void Differencer::PrintPatchDebugString(
     const ::differencer::Patch& patch) const {
+  ::differencer::differencerConstants constants;
   LOG(INFO) << "From [" << patch.from_span.from << ", "
             << (patch.from_span.from + patch.from_span.length) << "]";
   LOG(INFO) << "  To [" << patch.to_span.from << ", "
             << (patch.to_span.from + patch.to_span.length) << "]";
   for (const auto& diff : patch.diffs) {
     std::string type_string;
-    switch (diff.diff_type) {
-      case ::differencer::DiffType::INSERT: {
+    if (diff.diff_type == constants.DIFF_TYPE_INSERT) {
         type_string = "Insert";
-        break;
-      }
-      case ::differencer::DiffType::DELETE: {
+    } else if (diff.diff_type == constants.DIFF_TYPE_DELETE) {
         type_string = "Delete";
-        break;
-      }
-      case ::differencer::DiffType::EQUAL: {
+    } else if (diff.diff_type == constants.DIFF_TYPE_EQUAL) {
         type_string = "Equal";
-        break;
-      }
+    } else {
+      type_string = "Unknown";
     }
     LOG(INFO) << "  - " << type_string << ": " << diff.text;
   }

@@ -7,26 +7,20 @@ include "utils/differencer/differencer.thrift"
 
 // Represents only the memtadata of a file
 struct FileInfo {
-  1: string realative_path;
+  1: string relative_path;
   2: string md5;
-  3: i64 modify_timestamp;
+  3: string modify_timestamp;
 }
 
-enum FileType {
-  UNKNOWN,
-  TEXT,
-  BINARY,
-  URL
-}
+const i32 FILE_TYPE_UNKNOWN = 0;
+const i32 FILE_TYPE_TEXT = 1;
+const i32 FILE_TYPE_URL = 2;
 
 // Represents a file (including it's contents)
 struct File {
   1: FileInfo file_info;
-  2: FileType file_type;
-  // Union (one of)
-  3: optional string text_source;
-  4: optional binary binary_source;
-  5: optional string url_source;
+  2: i32 file_type;
+  3: string source;
 }
 
 struct FileDelta {
@@ -38,7 +32,7 @@ struct FileDelta {
 struct ChangeList {
   1: string change_list_uuid;
   2: string user_uuid;
-  3: i64 timestamp;
+  3: string timestamp;
   4: list<File> added_files;
   5: list<FileDelta> modified_files;
   6: list<FileInfo> removed_files;
@@ -51,7 +45,7 @@ struct RepoHeader {
   2: optional string base_repo_uuid;
   3: string user_uuid;
   4: string repo_name;
-  5: i64 creation_timestamp;
+  5: string creation_timestamp;
   6: string latest_change_list_uuid;
 }
 

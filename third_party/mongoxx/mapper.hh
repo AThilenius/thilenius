@@ -69,6 +69,15 @@ class Mapper {
     return *this;
   }
 
+  // TODO(athilenius): Make sure this works
+  template <typename U>
+  Mapper& add_field(std::string const& name, U T::*field,
+                    Mapper<U> const& mapper) {
+    m_fields.push_back(direct_member<U>(name, member_direct(field),
+                                        mapper_coder(mapper)));
+    return *this;
+  }
+
   template <typename U>
   Mapper& add_field(std::string const& name, U const& (T::*getter)() const,
                     void (T::*setter)(U const&)) {

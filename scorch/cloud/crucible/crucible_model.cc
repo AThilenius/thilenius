@@ -14,14 +14,12 @@ namespace crucible {
 
 bool CrucibleModel::FindRepoById(::crucible::Repo* repo,
                                  const std::string& repo_uuid) {
-  ::mongo::BSONObj query = BSON("repo_uuid" << repo_uuid);
+  ::mongo::BSONObj query = BSON("repo_header.repo_uuid" << repo_uuid);
   auto cursor = connection_.query(table_, query);
   if (cursor->more()) {
     // Got a repo back
     ::mongo::BSONObj bson = cursor->next();
-    bson = bson.removeField("_id");
-    *repo =
-        crucible_mapper_.JsonToRepo(::nlohmann::json::parse(bson.jsonString()));
+    crucible_mapper_.repo_mapper.from_bson(bson, *repo);
     return true;
   } else {
     return false;
@@ -32,14 +30,13 @@ bool CrucibleModel::FindRepoByUserIdAndRepoName(::crucible::Repo* repo,
                                                 const std::string& user_uuid,
                                                 const std::string& repo_name) {
   ::mongo::BSONObj query =
-      BSON("user_uuid" << user_uuid << "repo_name" << repo_name);
+      BSON("repo_header.user_uuid" << user_uuid << "repo_header.repo_name"
+                                   << repo_name);
   auto cursor = connection_.query(table_, query);
   if (cursor->more()) {
     // Got a repo back
     ::mongo::BSONObj bson = cursor->next();
-    bson = bson.removeField("_id");
-    *repo =
-        crucible_mapper_.JsonToRepo(::nlohmann::json::parse(bson.jsonString()));
+    crucible_mapper_.repo_mapper.from_bson(bson, *repo);
     return true;
   } else {
     return false;
@@ -58,9 +55,10 @@ std::vector<::crucible::Repo> CrucibleModel::FindReposByRepoBaseId(
 
 bool CrucibleModel::SaveRepo(const ::crucible::Repo repo) {
   connection_.update(
-      table_, BSON("repo_name" << repo.repo_header.repo_name << "user_uuid"
-                               << repo.repo_header.user_uuid),
-      ::mongo::fromjson(crucible_mapper_.RepoToJson(repo).dump()), true);
+      table_, BSON("repo_header.repo_name" << repo.repo_header.repo_name
+                                           << "repo_header.user_uuid"
+                                           << repo.repo_header.user_uuid),
+      crucible_mapper_.repo_mapper.to_bson(repo), true);
 
   std::string last_error = connection_.getLastError();
   if (last_error != "") {

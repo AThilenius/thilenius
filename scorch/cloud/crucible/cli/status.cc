@@ -40,19 +40,19 @@ int Status(const std::string root_path, const std::vector<std::string>& args) {
   if (pending.added_files.size() != 0) {
     LOG(INFO) << "Pending Adds:";
     for (const auto& file : pending.added_files) {
-      LOG(INFO) << "  + " << file.file_info.realative_path;
+      LOG(INFO) << "  + " << file.file_info.relative_path;
     }
   }
   if (pending.modified_files.size() != 0) {
     LOG(INFO) << "Pending Modifications:";
     for (const auto& file_delta : pending.modified_files) {
-      LOG(INFO) << "  ~ " << file_delta.file_info.realative_path;
+      LOG(INFO) << "  ~ " << file_delta.file_info.relative_path;
     }
   }
   if (pending.removed_files.size() != 0) {
     LOG(INFO) << "Pending Removals:";
     for (const auto& file_info : pending.removed_files) {
-      LOG(INFO) << "  - " << file_info.realative_path;
+      LOG(INFO) << "  - " << file_info.relative_path;
     }
   }
   if (pending.added_files.size() == 0 && pending.modified_files.size() == 0 &&
