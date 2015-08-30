@@ -1,11 +1,7 @@
-//
-//  UTTestRunner.cpp
-//  UTFramework
-//
-//  Created by Alec Thilenius on 4/20/15.
-//  Copyright (c) 2015 Thilenius. All rights reserved.
-//
-#include "scorch/testing_framework/test_runner.h"
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
+#include "test_runner.h"
 
 #undef new
 #undef delete
@@ -18,16 +14,22 @@
 #include <sstream>
 #include <thread>
 
-std::function<void()> g_testIterateFunction;
-std::function<void()> g_testEndFunction;
-std::function<void*(size_t)> g_newHandler;
-std::function<void(void*)> g_deleteHandler;
+#include "json.h"
 
-// These must be global because the stack ?can? be unwound when catching a
-// sig-segv.
-UTTestRunner* g_testRunner;
-std::string g_suiteName;
-std::function<void(UTTestRunner*)> g_suiteFunction;
+namespace {
+
+UTTestRunner* test_runner_;
+std::function<void()> test_end_function_;
+std::function<void()> test_iterate_function_;
+std::function<void(UTTestRunner*)> suite_function_;
+std::function<void(void*)> delete_handler_;
+std::function<void*(size_t)> new_handler_;
+std::ostream* stream_ = &std::cout;
+std::string suite_name_;
+std::stringstream string_stream_;
+bool exporting_json_;
+
+}  // namespace
 
 // Used to protect the test-end print
 std::mutex g_printLock;
@@ -43,8 +45,8 @@ bool& HandlersReadyAccessor() {
 }
 
 bool& CustomHanderActiveAccessor() {
-  static bool custom_handler_active = false;
-  return custom_handler_active;
+  static bool custohandler__active = false;
+  return custohandler__active;
 }
 
 void* operator new(size_t size) {
@@ -52,7 +54,7 @@ void* operator new(size_t size) {
     return malloc(size);
   } else {
     CustomHanderActiveAccessor() = true;
-    void* ptr = g_newHandler(size);
+    void* ptr = new_handler_(size);
     __file__ = "unknown";
     __line__ = -1;
     CustomHanderActiveAccessor() = false;
@@ -61,68 +63,93 @@ void* operator new(size_t size) {
 }
 
 void operator delete(void* ptr) noexcept {
-  static bool custom_handler_active = false;
+  static bool custohandler__active = false;
   if (!HandlersReadyAccessor() || CustomHanderActiveAccessor()) {
     free(ptr);
   } else {
     CustomHanderActiveAccessor() = true;
-    g_deleteHandler(ptr);
+    delete_handler_(ptr);
     __file__ = "unknown";
     __line__ = -1;
     CustomHanderActiveAccessor() = false;
   }
 }
 
-void UTTestRunner::RunSuite(std::string suiteName,
+UTTestRunner::UTTestRunner(int* argc, char*** argv)
+    : active_test_(nullptr),
+      export_json_(false),
+      silent_(false),
+      active_test_index_(-1),
+      current_test_index_(-1) {
+  // Parse out flags we are looking for
+  std::vector<std::string> args;
+  std::vector<std::string> remaining_args;
+  for (int i = 0; i < *argc; i++) {
+    args.push_back((*argv)[i]);
+  }
+  for (const auto& arg : args) {
+    if (arg == "--export_json" || arg == "-export_json" || arg == "-e") {
+      export_json_ = true;
+    } else if (arg == "--silent" || arg == "-silent" || arg == "-s") {
+      silent_ = true;
+      stream_ = &string_stream_;
+    } else {
+      remaining_args.push_back(arg);
+    }
+  }
+  // TODO(athilenius): Remove args we needed from argc/argv
+}
+
+void UTTestRunner::RunSuite(std::string suitename,
                             std::function<void(UTTestRunner*)> suiteFunction) {
   // Use global variables to prevent stack unwinding issues from sig-segv
-  g_testRunner = this;
-  g_suiteName = suiteName;
-  g_suiteFunction = suiteFunction;
+  test_runner_ = this;
+  suite_name_ = suitename;
+  suite_function_ = suiteFunction;
+  exporting_json_ = export_json_;
 
   // Set up the first UTTest now, to allow for the Config to be changed
-  m_tests.push_back(UTTest());
+  tests_.push_back(UTTest());
 
   // Bind the scrap handler
-  m_handler =
+  handler_ =
       std::bind(&UTTestRunner::ScrapeHandler, this, std::placeholders::_1,
                 std::placeholders::_2, std::placeholders::_3);
   // Run the Scrape phase
   suiteFunction(this);
   // Bind the runner handler
-  m_handler = std::bind(&UTTestRunner::RunHandler, this, std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3);
-  m_activeTestIndex = -1;
+  handler_ = std::bind(&UTTestRunner::RunHandler, this, std::placeholders::_1,
+                       std::placeholders::_2, std::placeholders::_3);
+  active_test_index_ = -1;
   // Create the iterate function (can then be used by the POSIX SIGSEGV handler)
-  g_testIterateFunction = []() {
-    g_testRunner->m_currentTestIndex = 0;
-    g_testRunner->m_activeTestIndex++;
-    for (g_testRunner->m_activeTest = 0;
-         g_testRunner->m_activeTestIndex < g_testRunner->m_tests.size() - 1;
-         g_testRunner->m_activeTestIndex++) {
-      g_testRunner->m_activeTest =
-          &g_testRunner->m_tests[g_testRunner->m_activeTestIndex];
+  test_iterate_function_ = []() {
+    test_runner_->current_test_index_ = 0;
+    test_runner_->active_test_index_++;
+    for (test_runner_->active_test_ = 0;
+         test_runner_->active_test_index_ < test_runner_->tests_.size() - 1;
+         test_runner_->active_test_index_++) {
+      test_runner_->active_test_ =
+          &test_runner_->tests_[test_runner_->active_test_index_];
       // Need to load the new config here. Might want to use a RACK format for
       // this...
-      g_testRunner->SigSegCatcher(g_suiteFunction);
+      test_runner_->SigSegCatcher(suite_function_);
 
-      g_testRunner->m_currentTestIndex = 0;
+      test_runner_->current_test_index_ = 0;
     }
   };
 
   // Create the end function (can then be used by the POSIX SIGSEGV handler)
-  g_testEndFunction = []() {
+  test_end_function_ = []() {
     g_printLock.lock();
-    g_testEndFunction = []() {};
+    test_end_function_ = []() {};
     g_printLock.unlock();
     // Collect metrics
     bool didPass = true;
     int points_earned = 0;
     int points_possible = 0;
     int points_denominator = 0;
-    int points_possible_extra_credit = 0;
-    for (int i = 0; i < g_testRunner->m_tests.size() - 1; i++) {
-      UTTest* test = &g_testRunner->m_tests[i];
+    for (int i = 0; i < test_runner_->tests_.size() - 1; i++) {
+      UTTest* test = &test_runner_->tests_[i];
       if (!test->DidPass()) {
         didPass = false;
       }
@@ -130,96 +157,107 @@ void UTTestRunner::RunSuite(std::string suiteName,
       points_possible += test->points_possible;
       points_denominator += test->points_denominator;
     }
-    std::cout << std::endl;
-    std::cout << Blue << "Suite: " << g_suiteName << std::endl;
-    std::cout << Blue << "|" << std::endl;
-    for (int i = 0; i < g_testRunner->m_tests.size() - 1; i++) {
-      UTTest* test = &g_testRunner->m_tests[i];
-      test->Print();
+    *stream_ << std::endl;
+    *stream_ << Blue << "Suite: " << suite_name_ << std::endl;
+    *stream_ << Blue << "|" << std::endl;
+    for (int i = 0; i < test_runner_->tests_.size() - 1; i++) {
+      UTTest* test = &test_runner_->tests_[i];
+      test->Print(*stream_);
     }
     if (didPass) {
-      std::cout << Green << "Passed!" << White << std::endl;
+      *stream_ << Green << "Passed!" << White << std::endl;
     } else {
-      std::cout << Red << "Failed!" << White << std::endl;
+      *stream_ << Red << "Failed!" << White << std::endl;
     }
     // Print report card
     if (points_possible > 0) {
-      std::cout << White << std::endl;
-      std::cout << Blue << "Points: ";
+      *stream_ << White << std::endl;
+      *stream_ << Blue << "Points: ";
       int earned_percent_total = GetPercent(points_earned, points_denominator);
       PrintRatioColor(earned_percent_total);
-      std::cout << points_earned << "/" << points_denominator << ", "
-                << earned_percent_total << "%" << std::endl;
-      std::cout << Blue << "|" << std::endl;
-      for (int i = 0; i < g_testRunner->m_tests.size() - 1; i++) {
-        UTTest& test = g_testRunner->m_tests[i];
-        std::cout << Blue << "|   ";
+      *stream_ << points_earned << "/" << points_denominator << ", "
+               << earned_percent_total << "%" << std::endl;
+      *stream_ << Blue << "|" << std::endl;
+      for (int i = 0; i < test_runner_->tests_.size() - 1; i++) {
+        UTTest& test = test_runner_->tests_[i];
+        *stream_ << Blue << "|   ";
         int earned_percent =
             GetPercent(test.PointsEarned(), test.points_denominator);
         PrintRatioColor(earned_percent);
-        std::cout << std::setw(3) << std::right << test.PointsEarned()
-                  << std::setw(3) << std::left << " / " << std::setw(3)
-                  << std::left << test.points_denominator << std::setw(0)
-                  << std::left << Blue << " - " << test.Name << std::endl;
+        *stream_ << std::setw(3) << std::right << test.PointsEarned()
+                 << std::setw(3) << std::left << " / " << std::setw(3)
+                 << std::left << test.points_denominator << std::setw(0)
+                 << std::left << Blue << " - " << test.name << std::endl;
       }
-      std::cout << Blue << "|" << std::endl;
-      std::cout << Blue << "[";
+      *stream_ << Blue << "|" << std::endl;
+      *stream_ << Blue << "[";
       PrintRatioColor(earned_percent_total);
       for (int i = 0; i < 50; i++) {
         if (round(earned_percent_total / 2.0f) > i) {
-          std::cout << "=";
+          *stream_ << "=";
         } else {
-          std::cout << " ";
+          *stream_ << " ";
         }
       }
       if (points_possible > points_denominator) {
-        std::cout << Blue << "|" << Green;
+        *stream_ << Blue << "|" << Green;
         int extra_credit_points = points_possible - points_denominator;
         int extra_credit_percent =
             GetPercent(extra_credit_points, points_denominator);
         int earned_extra_credit_percent = earned_percent_total - 100;
         for (int i = 0; i < extra_credit_percent; i++) {
           if (earned_extra_credit_percent > i) {
-            std::cout << "=";
+            *stream_ << "=";
           } else {
-            std::cout << " ";
+            *stream_ << " ";
           }
         }
       }
-      std::cout << Blue << "]" << White << std::endl;
-      std::cout << std::endl;
+      *stream_ << Blue << "]" << White << std::endl;
+      *stream_ << std::endl;
     }
     std::cout.flush();
+
+    // Write JSON if needed
+    if (exporting_json_) {
+      std::string json_string;
+      try {
+        json_string = test_runner_->WriteJson();
+      } catch (...) {
+        return;
+      }
+      std::cerr << "<JSON>" << json_string << "</JSON>" << std::endl;
+    }
   };
 
   // Funally call both
-  g_testIterateFunction();
-  g_testEndFunction();
+  test_iterate_function_();
+  test_end_function_();
 }
 
 void UTTestRunner::IsTrue(bool expression, std::string name,
                           std::string assertMessage) {
   // Add the condition
-  m_activeTest->Conditions.push_back(
+  active_test_->conditions.push_back(
       UTCondition(expression, name, assertMessage));
 }
 
 UTTestConfiguration* UTTestRunner::GetConfig() {
-  return &(m_tests[m_tests.size() - 1]).Configuration;
+  return &(tests_[tests_.size() - 1]).configuration;
 }
 
-bool UTTestRunner::_TestPass(const std::string& testName, int points_possible,
+bool UTTestRunner::_TestPass(const std::string& testname, int points_possible,
                              int points_denominator) {
-  return m_handler(testName, points_possible, points_denominator);
+  return handler_(testname, points_possible, points_denominator);
 }
 
 void UTTestRunner::PrintRatioColor(int percent) {
   if (percent < 70) {
-    std::cout << Red;
+    *stream_ << Red;
   } else if (percent < 90) {
-    std::cout << Yellow;
+    *stream_ << Yellow;
   } else {
-    std::cout << Green;
+    *stream_ << Green;
   }
 }
 
@@ -235,13 +273,13 @@ int UTTestRunner::GetPercent(int nominator, int denominator) {
 bool UTTestRunner::ScrapeHandler(const std::string& test_name,
                                  int points_possible, int points_denominator) {
   // Update the last UTTest
-  UTTest& test = m_tests[m_tests.size() - 1];
-  test.Name = test_name;
+  UTTest& test = tests_[tests_.size() - 1];
+  test.name = test_name;
   test.points_possible = points_possible;
   test.points_denominator = points_denominator;
 
   // Create a new config for the next test
-  m_tests.push_back(UTTest());
+  tests_.push_back(UTTest());
 
   // Don't run the test
   return false;
@@ -250,13 +288,39 @@ bool UTTestRunner::ScrapeHandler(const std::string& test_name,
 bool UTTestRunner::RunHandler(const std::string& test_name, int points_possible,
                               int points_denominator) {
   // Returns true for ONLY the active test
-  if (m_currentTestIndex == m_activeTestIndex) {
-    m_currentTestIndex++;
+  if (current_test_index_ == active_test_index_) {
+    current_test_index_++;
     return true;
   }
 
-  m_currentTestIndex++;
+  current_test_index_++;
   return false;
+}
+
+std::string UTTestRunner::WriteJson() {
+  // Collect metrics
+  bool did_pass = true;
+  int points_earned = 0;
+  int points_possible = 0;
+  int points_denominator = 0;
+  for (int i = 0; i < test_runner_->tests_.size() - 1; i++) {
+    UTTest* test = &test_runner_->tests_[i];
+    if (!test->DidPass()) {
+      did_pass = false;
+    }
+    points_earned += test->PointsEarned();
+    points_possible += test->points_possible;
+    points_denominator += test->points_denominator;
+  }
+  ::nlohmann::json json = {{"total_points_earned", points_earned},
+                           {"total_points_possible", points_possible},
+                           {"total_points_denominator", points_denominator},
+                           {"test_cases", ::nlohmann::json::array()}};
+  for (int i = 0; i < test_runner_->tests_.size() - 1; i++) {
+    json["test_cases"].push_back(
+        ::nlohmann::json::parse(test_runner_->tests_[i].WriteJson()));
+  }
+  return json.dump();
 }
 
 void UTTestRunner::StdExceptionCatcher(
@@ -264,27 +328,27 @@ void UTTestRunner::StdExceptionCatcher(
   try {
     suiteFunction(this);
   } catch (...) {
-    m_activeTest->FatalMessage = "A fatal exception was caught!";
+    active_test_->fatal_message = "A fatal exception was caught!";
   }
 }
 
 void UTTestRunner::MemoryMonitor(
     std::function<void(UTTestRunner*)> suiteFunction) {
   // Register Custom handlers for new / delete
-  g_newHandler = [this](size_t size) -> void* {
+  new_handler_ = [this](size_t size) -> void* {
     void* ptr = malloc(size);
 
     if (__line__ != -1) {
-      this->m_activeTest->RegisterAllocation(
+      this->active_test_->RegisterAllocation(
           MemoryAllocation(ptr, size, __file__, __line__));
     }
 
     return ptr;
   };
 
-  g_deleteHandler = [this](void* ptr) -> void {
+  delete_handler_ = [this](void* ptr) -> void {
     if (__line__ != -1) {
-      this->m_activeTest->RegisterFree(ptr);
+      this->active_test_->RegisterFree(ptr);
     }
 
     free(ptr);
@@ -314,8 +378,8 @@ void UTTestRunner::ThreadedTimeout(
   while (threadFinished == false &&
          std::chrono::steady_clock::now() < endTime) {
     if (std::chrono::steady_clock::now() > warn_time && !warning_issued) {
-      std::cout << Yellow
-                << "One of the tests is taking an unusually long time...";
+      *stream_ << Yellow
+               << "One of the tests is taking an unusually long time...";
       warning_issued = true;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -324,7 +388,7 @@ void UTTestRunner::ThreadedTimeout(
   // Check if we timed out
   if (std::chrono::steady_clock::now() >= endTime) {
     workerThread.detach();
-    m_activeTest->FatalMessage =
+    active_test_->fatal_message =
         "Timed out, likley an infite loop or waiting for user input!";
   } else {
     workerThread.join();
@@ -334,15 +398,15 @@ void UTTestRunner::ThreadedTimeout(
 }
 
 void SigSegVHandler(int signum) {
-  std::cout << "SIG-SEG Handler" << std::endl;
+  *stream_ << "SIG-SEG Handler" << std::endl;
 
   // Re-Register the SIG-SEGV handler
   signal(SIGSEGV, SigSegVHandler);
 
-  g_testRunner->m_activeTest->FatalMessage =
+  test_runner_->active_test_->fatal_message =
       "SEG-FAULT!\nYou are likley trying to dereference a null pointer.";
-  g_testIterateFunction();
-  g_testEndFunction();
+  test_iterate_function_();
+  test_end_function_();
   std::cout.flush();
   signal(signum, SIG_DFL);
 }

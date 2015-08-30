@@ -13,9 +13,9 @@ include_directories (
 
 add_library (
   testing_framework STATIC
-  /root/thilenius/scorch/testing_framework/console_colors.cc
-  /root/thilenius/scorch/testing_framework/test.cc
-  /root/thilenius/scorch/testing_framework/test_runner.cc
+  /root/thilenius/external/testing_framework/console_colors.cc
+  /root/thilenius/external/testing_framework/test.cc
+  /root/thilenius/external/testing_framework/test_runner.cc
 )
 
 target_link_libraries (
@@ -25,7 +25,7 @@ target_link_libraries (
 
 add_executable (
   testing_framework_test
-  /root/thilenius/scorch/testing_framework/main.cc
+  /root/thilenius/external/testing_framework/main.cc
 )
 
 target_link_libraries (

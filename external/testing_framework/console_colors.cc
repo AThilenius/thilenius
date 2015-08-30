@@ -5,7 +5,7 @@
 //  Created by Alec Thilenius on 4/20/15.
 //  Copyright (c) 2015 Thilenius. All rights reserved.
 //
-#include "scorch/testing_framework/console_colors.h"
+#include "external/testing_framework/console_colors.h"
 
 //#define DISABLE_COLORS
 

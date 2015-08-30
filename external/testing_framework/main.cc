@@ -7,7 +7,7 @@
 //
 #include <iostream>
 
-#include "scorch/testing_framework/test_runner.h"
+#include "test_runner.h"
 
 SUITE(SuiteOne) {
   TEST("True Check", 5, 5) {
@@ -49,7 +49,7 @@ SUITE(SuiteOne) {
     int* foo = new int[1];
   }
 
-  runner->GetConfig()->MinMemory = 8;
+  runner->GetConfig()->min_memory = 8;
   TEST("Min Memory Check", 5, 5) {
     runner->IsTrue(true, "Should be True", "Should NOT show up!");
     runner->IsTrue(false, "Should be False", "Should Be Shown");
@@ -57,7 +57,7 @@ SUITE(SuiteOne) {
     delete foo;
   }
 
-  runner->GetConfig()->MaxMemory = 8;
+  runner->GetConfig()->max_memory = 8;
   TEST("Max Memory Check", 5, 5) {
     runner->IsTrue(true, "Should be True", "Should NOT show up!");
     runner->IsTrue(false, "Should be False", "Should Be Shown");
@@ -66,7 +66,7 @@ SUITE(SuiteOne) {
   }
 }
 
-int main(int argc, const char* argv[]) {
-  UTTestRunner runner;
+int main(int argc, char* argv[]) {
+  UTTestRunner runner (&argc, &argv);
   runner.RunSuite("Test Name", &SuiteOne);
 }
