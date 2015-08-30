@@ -5,11 +5,12 @@
 #define SCORCH_ANVIL_TEST_HARNESS_H_
 
 #include <string>
-#include <tuple>
-#include <unordered_map>
 
 #include "base/macros.h"
+#include "base/value_of.hh"
 #include "scorch/anvil/anvil_types.h"
+
+using ::thilenius::base::ValueOf;
 
 namespace thilenius {
 namespace scorch {
@@ -17,20 +18,14 @@ namespace anvil {
 
 class TestHarness {
  public:
-  explicit TestHarness(
-      const std::unordered_map<std::string, std::tuple<int, int>> points_map);
-  void RunAllTests();
-  void PrintToStderr();
-  int GetGTestReturnValue();
-  ::anvil::TestRunReport GetTestRunReport();
+  TestHarness(const std::string& runnable_path, bool silent);
+  ValueOf<::anvil::TestRunReport> RunAllTests();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestHarness);
 
-  const std::unordered_map<std::string, std::tuple<int, int>> points_map_;
-  int points_denominator_total_;
-  int points_possible_total_;
-  int return_value_;
+  std::string runnable_path_;
+  bool silent_;
 };  // class TestHarness
 
 }  // namespace anvil

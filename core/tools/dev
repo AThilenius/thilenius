@@ -29,7 +29,7 @@ else
       docker exec -it $RUNNING_ID /bin/bash
     else
       # Not running, see if we have an old one
-      OLD_ID=$(docker ps -a | grep -m 1 'athilenius/dev_env' | awk '{print $1}')
+      OLD_ID=$(docker ps -a | grep -m 1 'athilenius/dev_env:' | awk '{print $1}')
       if [ "$OLD_ID" != '' ]; then
         INFO "Old dev_env container found [$OLD_ID], restarting..."
         docker start -ai $OLD_ID

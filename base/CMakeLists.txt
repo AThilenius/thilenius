@@ -82,34 +82,13 @@ set_target_properties(libgmock PROPERTIES
 # I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
 include_directories("${source_dir}/include")
 
-#===  GOOGLE LOG  ==============================================================
-ExternalProject_Add(
-    glog
-    URL https://github.com/emzeat/google-glog/archive/master.zip
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/glog
-    DEPENDS gflags
-    # Disable install step
-    INSTALL_COMMAND ""
-)
-
-# Create a libglog target
-add_library(libglog IMPORTED STATIC GLOBAL)
-add_dependencies(libglog glog)
-
-# Set glog properties
-ExternalProject_Get_Property(glog source_dir binary_dir)
-set_target_properties(libglog PROPERTIES
-    "IMPORTED_LOCATION" "${binary_dir}/libgoogle-glog.a"
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-)
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
-include_directories("${source_dir}/include")
-
 #===  CURL, ZLIB  ==============================================================
 add_subdirectory (/root/thilenius/base/curl)
 
 #===  BASE LIB  ================================================================
 include_directories("/root/thilenius")
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost COMPONENTS regex system filesystem REQUIRED)
 
 add_library (
   base
@@ -123,6 +102,7 @@ add_library (
   /root/thilenius/base/log.cc
   /root/thilenius/base/path.cc
   /root/thilenius/base/process.cc
+  /root/thilenius/base/regex.cc
   /root/thilenius/base/string.cc
   /root/thilenius/base/text_file.cc
   /root/thilenius/base/time.cc
@@ -130,16 +110,31 @@ add_library (
 
 target_link_libraries (
   base
-  boost_filesystem
-  boost_system
+  ${Boost_REGEX_LIBRARY}
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_SYSTEM_LIBRARY}
   crypto
   libcurl
   libgflags
-  libglog
   libgmock
   libgtest
   libz
   ssl
+)
+
+add_custom_target(combined ALL
+  COMMAND ${CMAKE_AR} rc libcombined.a
+  $<TARGET_FILE:base>
+  ${Boost_REGEX_LIBRARY}
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_SYSTEM_LIBRARY}
+  /usr/lib/x86_64-linux-gnu/libcrypto.a
+  $<TARGET_FILE:libcurl>
+  $<TARGET_FILE:libgflags>
+  $<TARGET_FILE:libgmock>
+  $<TARGET_FILE:libgtest>
+  $<TARGET_FILE:libz>
+  /usr/lib/x86_64-linux-gnu/libssl.a
 )
 
 #===  BASE TESTS  ==============================================================
@@ -151,6 +146,7 @@ add_executable (
   /root/thilenius/base/http_test.cc
   /root/thilenius/base/path_test.cc
   /root/thilenius/base/process_test.cc
+  /root/thilenius/base/regex_test.cc
   /root/thilenius/base/string_test.cc
   /root/thilenius/base/value_of_test.cc
 )

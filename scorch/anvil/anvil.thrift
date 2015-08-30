@@ -8,7 +8,7 @@ namespace cpp anvil
 struct Test {
   1: bool did_pass;
   2: string name;
-  3: list<string> message_parts;
+  3: string assert_message;
 }
 
 struct TestCase {

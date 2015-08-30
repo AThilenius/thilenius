@@ -27,7 +27,7 @@ add_custom_command(
 )
 
 add_library (
-  anvil
+  anvil STATIC
   /root/thilenius/scorch/anvil/anvil.cc
   /root/thilenius/scorch/anvil/test_harness.cc
   /root/thilenius_gen/scorch/anvil/anvil_constants.cpp
@@ -38,4 +38,14 @@ target_link_libraries (
   anvil
   base
   libthrift
+)
+
+add_library (
+  anvil_main STATIC
+  /root/thilenius/scorch/anvil/anvil_main.cc
+)
+
+target_link_libraries (
+  anvil_main
+  anvil
 )

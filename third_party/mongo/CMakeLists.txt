@@ -20,9 +20,6 @@ set (MONGOCLIENT_SCONS_FLAGS
   --prefix=/usr
 )
 
-add_subdirectory (/root/thilenius/third_party/curl
-                  /root/thilenius_bin/third_party/curl)
-
 include (ExternalProject)
 
 # Download and install MongoCXX Driver
@@ -37,8 +34,8 @@ ExternalProject_Add(
   BUILD_COMMAND scons ${MONGOCLIENT_SCONS_FLAGS} install
   INSTALL_COMMAND ""
   BUILD_IN_SOURCE 1
-  DEPENDS
-    libcurl
+  # TODO(athilenius): This depends on curl, but I can't add sub dir or CMAke
+  # bitches about duplicates
 )
 
 add_library(libmongoclient IMPORTED STATIC GLOBAL)

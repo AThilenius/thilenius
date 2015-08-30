@@ -34,6 +34,7 @@ class CrucibleMapper {
 
  private:
   ::thilenius::utils::differencer::DifferencerMapper difference_mapper_;
+
 };
 
 }  // namespace crucible

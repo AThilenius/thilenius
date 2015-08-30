@@ -48,8 +48,8 @@ namespace cloud {
 namespace crucible {
 
 CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
-    const std::string& path, const std::string user_name,
-    const std::string repo_name) {
+    const std::string& path, const std::string& user_name,
+    const std::string& repo_name) {
   std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
       Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);

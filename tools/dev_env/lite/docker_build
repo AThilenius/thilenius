@@ -1,0 +1,7 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/*
+
+docker build -t athilenius/dev_env_lite ~/thilenius/tools/dev_env/lite ||\
+        EROR 'Failed to build Docker Image'
+
+INFO 'athilenius/dev_end built successfully.'

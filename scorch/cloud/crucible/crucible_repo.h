@@ -20,8 +20,8 @@ enum class RepoSyncStatus { UNKNOWN, HEAD, BEHIND_HEAD };
 class CrucibleRepo {
  public:
   static CrucibleRepo CreateNewInDirectoryOrDie(const std::string& path,
-                                                const std::string user_name,
-                                                const std::string repo_name);
+                                                const std::string& user_name,
+                                                const std::string& repo_name);
 
   static CrucibleRepo LoadFromDirectoryOrDie(const std::string& path);
 

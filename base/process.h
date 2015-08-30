@@ -20,6 +20,10 @@ class Process {
   static int ExecuteCommandSync(
       const std::string& command, const std::vector<std::string> args,
       const std::function<void(std::string)> stdout_handler);
+  static int ExecuteCommandSync(
+      const std::string& command, const std::vector<std::string> args,
+      const std::function<void(std::string)> stdout_handler,
+      const std::function<void(std::string)> stderr_handler);
 };
 
 }  // namespace base

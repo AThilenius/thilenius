@@ -4,6 +4,7 @@
 #include "scorch/cloud/crucible/crucible_mapper.h"
 
 #include "base/log.h"
+#include "third_party/mongoxx/mongoxx.hh"
 
 namespace thilenius {
 namespace scorch {
@@ -32,7 +33,8 @@ int64 CrucibleMapper::JsonToTimestamp(
     file.file_info.realative_path =
         file_json["file_info"]["realative_path"].get<std::string>();
     file.file_info.md5 = file_json["file_info"]["md5"].get<std::string>();
-    file.file_info.modify_timestamp = JsonToTimestamp(file_json["file_info"]["modify_timestamp"]);
+    file.file_info.modify_timestamp =
+        JsonToTimestamp(file_json["file_info"]["modify_timestamp"]);
     switch (file_json["file_type"].get<int>()) {
       case 1: {
         file.file_type = ::crucible::FileType::TEXT;
@@ -59,7 +61,8 @@ int64 CrucibleMapper::JsonToTimestamp(
         file_delta_json["file_info"]["realative_path"].get<std::string>();
     file_delta.file_info.md5 =
         file_delta_json["file_info"]["md5"].get<std::string>();
-    file_delta.file_info.modify_timestamp = JsonToTimestamp(file_delta_json["file_info"]["modify_timestamp"]);
+    file_delta.file_info.modify_timestamp =
+        JsonToTimestamp(file_delta_json["file_info"]["modify_timestamp"]);
     for (const auto& patch_json : file_delta_json["patches"]) {
       file_delta.patches.emplace_back(
           difference_mapper_.JsonToPatch(patch_json));
@@ -72,7 +75,8 @@ int64 CrucibleMapper::JsonToTimestamp(
     file_info.realative_path =
         file_info_json["realative_path"].get<std::string>();
     file_info.md5 = file_info_json["md5"].get<std::string>();
-    file_info.modify_timestamp = JsonToTimestamp(file_info_json["modify_timestamp"]);
+    file_info.modify_timestamp =
+        JsonToTimestamp(file_info_json["modify_timestamp"]);
     change_list.removed_files.emplace_back(std::move(file_info));
   }
   return std::move(change_list);

@@ -1,0 +1,49 @@
+" Alec Thilenius
+" The start of the .vimrc file, containing only plugins for Vundle.
+
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'gmarik/Vundle.vim'
+
+"==== Plugin Install Notes =====================================================
+" YouCompelteMe
+"   python /bundle/YouCompleteMe
+" Tern for VIM
+"   Need Nodejs, Node-legacy, npm
+"   run npm install
+
+"==== Plugins ==================================================================
+Plugin 'FelikZ/ctrlp-py-matcher'
+Plugin 'Raimondi/delimitMate'
+Plugin 'bling/vim-airline'
+Plugin 'bronson/vim-trailing-whitespace'
+Plugin 'ekalinin/Dockerfile.vim'
+Plugin 'elzr/vim-json'
+Plugin 'flazz/vim-colorschemes'
+Plugin 'jalcine/cmake.vim'
+Plugin 'kien/ctrlp.vim'
+Plugin 'majutsushi/tagbar'
+Plugin 'marijnh/tern_for_vim'
+Plugin 'mbbill/undotree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'solarnz/thrift.vim'
+Plugin 'tpope/vim-endwise'
+Plugin 'tpope/vim-sensible'
+Plugin 'tpope/vim-unimpaired'
+Plugin 'tpope/vim-vinegar'
+Plugin 'xolox/vim-easytags'
+Plugin 'xolox/vim-misc'
+
+if !filereadable(expand('~/.vimrc_google'))
+  " Non-Google Only
+  Plugin 'Valloric/YouCompleteMe'
+  Plugin 'google/vim-codefmt'
+  Plugin 'google/vim-maktaba'
+  Plugin 'scrooloose/syntastic'
+endif
+
+call vundle#end()
