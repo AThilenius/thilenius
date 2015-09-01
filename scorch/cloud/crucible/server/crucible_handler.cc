@@ -39,7 +39,7 @@ CrucibleHandler::CrucibleHandler()
 }
 
 void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
-                                    const std::string& user_uuid,
+                                    const std::string& user_stoken,
                                     const std::string& repo_name) {
   // Make sure the repo doesn't already exit
   ::crucible::Repo repo;
@@ -63,7 +63,7 @@ void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
 }
 
 void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
-                                       const std::string& user_uuid,
+                                       const std::string& user_stoken,
                                        const std::string& base_repo_uuid) {
   // Your implementation goes here
   printf("CreateForkedRepo\n");
@@ -71,7 +71,7 @@ void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
 
 void CrucibleHandler::GetRepoHeadersByUser(
     std::vector<::crucible::RepoHeader>& _return,
-    const std::string& user_uuid) {}
+    const std::string& user_stoken) {}
 
 void CrucibleHandler::GetRepoById(::crucible::Repo& _return,
                                   const std::string& repo_uuid) {
@@ -80,6 +80,7 @@ void CrucibleHandler::GetRepoById(::crucible::Repo& _return,
 }
 
 void CrucibleHandler::GetRepoHeaderById(::crucible::RepoHeader& _return,
+                                        const std::string& user_stoken,
                                         const std::string& repo_uuid) {
   ::crucible::Repo repo;
   if (!model_.FindRepoById(&repo, repo_uuid)) {
@@ -93,7 +94,8 @@ void CrucibleHandler::GetRepoHeaderById(::crucible::RepoHeader& _return,
 }
 
 void CrucibleHandler::CommitAndDownstream(
-    ::crucible::ChangeList& _return, const ::crucible::RepoHeader& repo_header,
+    ::crucible::ChangeList& _return, const std::string& user_stoken,
+    const ::crucible::RepoHeader& repo_header,
     const ::crucible::ChangeList& change_list) {
   ::crucible::Repo repo;
   if (!model_.FindRepoById(&repo, repo_header.repo_uuid)) {

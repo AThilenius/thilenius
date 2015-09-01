@@ -28,13 +28,13 @@ SUITE(SuiteOne) {
     //std::cout << foo;
   //}
 
-  TEST("Infinite Loops Check", 5, 5) {
-    runner->IsTrue(true, "Should be True", "Should NOT show up!");
-    runner->IsTrue(false, "Should be False", "Should Be Shown");
-    runner->IsTrue(true, "Should Timout After This", "Should NOT show up!");
-    while (true) {
-    }
-  }
+  //TEST("Infinite Loops Check", 5, 5) {
+    //runner->IsTrue(true, "Should be True", "Should NOT show up!");
+    //runner->IsTrue(false, "Should be False", "Should Be Shown");
+    //runner->IsTrue(true, "Should Timout After This", "Should NOT show up!");
+    //while (true) {
+    //}
+  //}
 
   TEST("Memory Leak Check Pass", 5, 5) {
     runner->IsTrue(true, "Should be True", "Should NOT show up!");

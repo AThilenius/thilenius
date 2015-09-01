@@ -6,8 +6,6 @@
 
 #include <sstream>
 
-#include "base/macros.h"
-
 namespace thilenius {
 namespace base {
 
@@ -16,7 +14,7 @@ namespace base {
   thilenius::base::Log(thilenius::base::LogLevel::level).GetOStringStream()
 
 // Enums
-enum class LogLevel { FATAL, ERROR, WARNING, INFO };
+enum class LogLevel { FATAL, ERROR, WARNING, INFO, INPUT };
 enum class ConsoleColor { WHITE, RED, YELLOW, GREEN, BLUE };
 
 // In-stream console colors
@@ -29,7 +27,7 @@ class Log {
   std::ostringstream& GetOStringStream();
 
  private:
-  bool is_fatal_;
+  LogLevel log_level_;
   std::ostringstream stream_buffer_;
 };  // class Log
 

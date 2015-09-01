@@ -8,9 +8,12 @@
 #include <string>
 
 #include "base/log.h"
+#include "base/value_of.hh"
 #include "third_party/thrift/protocol/TJSONProtocol.h"
 #include "third_party/thrift/transport/THttpClient.h"
 #include "third_party/thrift/transport/TTransportUtils.h"
+
+using ::thilenius::base::ValueOf;
 
 namespace thilenius {
 namespace cloud {
@@ -40,6 +43,19 @@ class ThriftHttpClient {
       }
     }
     return client_;
+  }
+
+  ValueOf<ClientPtr> Connect() {
+    if (!connected_) {
+      try {
+        transport_->open();
+        connected_ = true;
+      } catch (::apache::thrift::TException& tx) {
+        return {nullptr, "Failed to connect to Thrift HTTP Server!"};
+      }
+    }
+    ClientPtr client = client_;
+    return {std::move(client)};
   }
 
  private:

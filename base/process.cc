@@ -55,7 +55,6 @@ int Process::ExecuteCommandSync(
   ctx.environment = ::boost::process::self::get_environment();
   ctx.stdout_behavior = ::boost::process::capture_stream();
   ctx.stderr_behavior = ::boost::process::capture_stream();
-  ctx.stderr_behavior = ::boost::process::redirect_stream_to_stdout();
   ::boost::process::child child =
       ::boost::process::launch(exec, args_with_path, ctx);
   ::boost::process::pistream& stdout_stream = child.get_stdout();

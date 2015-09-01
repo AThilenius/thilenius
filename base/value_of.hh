@@ -28,9 +28,7 @@ class ValueOf {
 
   bool IsValid() { return is_valid_; }
 
-  std::string GetError() {
-    return error_;
-  }
+  std::string GetError() { return error_; }
 
  private:
   T value_;

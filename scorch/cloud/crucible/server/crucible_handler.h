@@ -19,21 +19,25 @@ class CrucibleHandler : virtual public ::crucible::CrucibleIf {
  public:
   CrucibleHandler();
 
-  void CreateNewRepo(::crucible::Repo& _return, const std::string& user_uuid,
+  void CreateNewRepo(::crucible::Repo& _return, const std::string& user_stoken,
                      const std::string& repo_name);
 
-  void CreateForkedRepo(::crucible::Repo& _return, const std::string& user_uuid,
+  void CreateForkedRepo(::crucible::Repo& _return,
+                        const std::string& user_stoken,
                         const std::string& base_repo_uuid);
 
   void GetRepoHeadersByUser(std::vector<::crucible::RepoHeader>& _return,
-                            const std::string& user_uuid);
+                            const std::string& user_stoken);
 
-  void GetRepoById(::crucible::Repo& _return, const std::string& repo_uuid);
+  void GetRepoById(::crucible::Repo& _return, const std::string& user_stoken,
+                   const std::string& repo_uuid);
 
   void GetRepoHeaderById(::crucible::RepoHeader& _return,
+                         const std::string& user_stoken,
                          const std::string& repo_uuid);
 
   void CommitAndDownstream(::crucible::ChangeList& _return,
+                           const std::string& user_stoken,
                            const ::crucible::RepoHeader& repo_header,
                            const ::crucible::ChangeList& change_list);
 

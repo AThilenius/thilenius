@@ -34,18 +34,19 @@ using ::thilenius::base::Path;
 using ::thilenius::base::String;
 using ::thilenius::base::Time;
 
+namespace thilenius {
+namespace scorch {
+namespace cloud {
+namespace crucible {
 namespace {
+
 ::thilenius::scorch::cloud::crucible::CrucibleMapper crucible_mapper_;
 ::thilenius::cloud::utils::ThriftHttpClient<::crucible::CrucibleClient>
     http_client_(FLAGS_crucible_endpoint, FLAGS_crucible_endpoint_port,
                  FLAGS_crucible_endpoint_route);
 ::thilenius::utils::differencer::Differencer differencer_;
-}  // namespace
 
-namespace thilenius {
-namespace scorch {
-namespace cloud {
-namespace crucible {
+}  // namespace
 
 CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
     const std::string& path, const std::string& user_name,

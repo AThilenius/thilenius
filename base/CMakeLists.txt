@@ -94,6 +94,7 @@ add_library (
   base
   /root/thilenius/base/arguments.cc
   /root/thilenius/base/auto_update.cc
+  /root/thilenius/base/crypto.cc
   /root/thilenius/base/dependency.cc
   /root/thilenius/base/directory.cc
   /root/thilenius/base/file.cc
@@ -140,6 +141,7 @@ add_custom_target(combined ALL
 #===  BASE TESTS  ==============================================================
 add_executable (
   base_test
+  /root/thilenius/base/crypto_test.cc
   /root/thilenius/base/dependency_test.cc
   /root/thilenius/base/directory_test.cc
   /root/thilenius/base/file_test.cc

@@ -114,8 +114,13 @@ std::ostream& operator<<(std::ostream& stream, ConsoleColor color) {
   return stream;
 }
 
-Log::Log(LogLevel log_level) : is_fatal_(false) {
+Log::Log(LogLevel log_level) : log_level_(log_level) {
   switch (log_level) {
+    case LogLevel::INPUT: {
+      stream_buffer_ << ConsoleColor::GREEN << "[INPUT]" << ConsoleColor::WHITE
+                     << ": ";
+      break;
+    }
     case LogLevel::INFO: {
       stream_buffer_ << ConsoleColor::GREEN << "[INFO]" << ConsoleColor::WHITE
                      << ": ";
@@ -130,8 +135,6 @@ Log::Log(LogLevel log_level) : is_fatal_(false) {
       break;
     }
     case LogLevel::FATAL: {
-      // Set the fatal flag for stack tracing and exiting
-      is_fatal_ = true;
       stream_buffer_ << ConsoleColor::RED << "[FATAL]: ";
       break;
     }
@@ -139,8 +142,13 @@ Log::Log(LogLevel log_level) : is_fatal_(false) {
 }
 
 Log::~Log() {
-  stream_buffer_ << ConsoleColor::WHITE << std::endl;
-  if (is_fatal_) {
+  // Skip last \n if INPUT
+  if (log_level_ == LogLevel::INPUT) {
+    stream_buffer_ << ConsoleColor::WHITE;
+  } else {
+    stream_buffer_ << ConsoleColor::WHITE << std::endl;
+  }
+  if (log_level_ == LogLevel::FATAL) {
 // Run a stack trace if on linux
 #ifdef __linux__
     PrintStackTrace();
