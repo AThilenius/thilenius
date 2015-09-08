@@ -6,11 +6,6 @@ find_package(Threads)
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include_directories (
-  "/root/thilenius/"
-  "/root/thilenius_gen"
-)
-
 add_library (
   vanguard
   /root/thilenius/external/vanguard/main.cc
