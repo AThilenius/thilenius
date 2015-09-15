@@ -3,7 +3,8 @@
 
 #include "base/http.h"
 
-#include "base/curl/curl.h"
+#include <curl/curl.h>
+
 #include "base/log.h"
 #include "base/string.h"
 #include "base/types.h"

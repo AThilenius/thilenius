@@ -15,7 +15,8 @@ ExternalProject_Add(
   curl
   PREFIX ${curl_prefix}
   URL http://curl.haxx.se/download/curl-7.44.0.tar.gz
-  CONFIGURE_COMMAND ./configure --disable-shared
+  CONFIGURE_COMMAND ./buildconf
+    COMMAND ./configure --disable-shared
   BUILD_IN_SOURCE 1
 )
 
