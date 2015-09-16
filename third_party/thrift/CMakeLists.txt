@@ -4,16 +4,22 @@ cmake_minimum_required (VERSION 2.6)
 include(ExternalProject)
 
 # Download and install Thrift
-set(thrift_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/thrift)
 ExternalProject_Add(
-    thrift
-    PREFIX ${thrift_PREFIX}
-    URL http://www.trieuvan.com/apache/thrift/0.9.2/thrift-0.9.2.tar.gz
-    URL_MD5 89f63cc4d0100912f4a1f8a9dee63678
-    CONFIGURE_COMMAND ${thrift_PREFIX}/src/thrift/configure --enable-shared=no --with-c_glib=no
-    BUILD_COMMAND $(MAKE)
-    INSTALL_COMMAND $(MAKE) install
-    BUILD_IN_SOURCE 1
+  thrift
+  URL http://www.trieuvan.com/apache/thrift/0.9.2/thrift-0.9.2.tar.gz
+  CONFIGURE_COMMAND ./configure
+    --enable-shared=no
+    --without-tests
+    --without-php
+    --without-php_extension
+    --without-ruby
+    --without-haskell
+    --without-d
+    --without-go
+    --without-perl
+    --without-erlang
+    --without-c_glib
+  BUILD_IN_SOURCE 1
 )
 include_directories(${thrift_PREFIX}/include)
 set(THRIFT_LIBRARIES /usr/local/lib/libthrift.a)

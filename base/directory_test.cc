@@ -23,7 +23,7 @@ class DirectoryTest : public testing::Test {
         rename_dir_name_("/root/thilenius_bin/base/new_dir_rename"),
         sub_dir_name_("/root/thilenius_bin/base/new_dir/sub_dir") {}
 
-  virtual void TearDown() { ::boost::filesystem::remove_all(dir_name_); }
+  //virtual void TearDown() { ::boost::filesystem::remove_all(dir_name_); }
 
   std::string dir_name_;
   std::string rename_dir_name_;
@@ -70,13 +70,16 @@ TEST_F(DirectoryTest, RenameTest) {
 }
 
 TEST_F(DirectoryTest, RecuriveGetTests) {
-  Directory::Create(dir_name_);
-  File::WriteToFile(StrCat(dir_name_, "/file2.txt"), "Hello");
-  Directory::Create(StrCat(dir_name_, "/subDir1"));
-  File::WriteToFile(StrCat(dir_name_, "/subDir1/file2.txt"), "Hello");
-  Directory::Create(StrCat(dir_name_, "/subDir2"));
-  Directory::Create(StrCat(dir_name_, "/subDir2/subSubDir1"));
-  File::WriteToFile(StrCat(dir_name_, "/subDir2/file3.txt"), "Hello");
+  EXPECT_TRUE(Directory::Create(dir_name_));
+  EXPECT_TRUE(File::WriteToFile(StrCat(dir_name_, "/file1.txt"), "Hello"));
+  EXPECT_TRUE(Directory::Create(StrCat(dir_name_, "/subDir1")));
+  EXPECT_TRUE(File::WriteToFile(StrCat(dir_name_, "/subDir1/file2.txt"), "Hello"));
+  EXPECT_TRUE(Directory::Create(StrCat(dir_name_, "/subDir2")));
+  EXPECT_TRUE(Directory::Create(StrCat(dir_name_, "/subDir2/subSubDir1")));
+  EXPECT_TRUE(File::WriteToFile(StrCat(dir_name_, "/subDir2/file3.txt"), "Hello"));
+  for (const auto& path : Directory::GetChildrenRecursive(dir_name_)) {
+    std::cout << path << std::endl;
+  }
   ASSERT_EQ(6, Directory::GetChildrenRecursive(dir_name_).size());
   ASSERT_EQ(3, Directory::GetChildrenDirectoriesRecursive(dir_name_).size());
   ASSERT_EQ(3, Directory::GetChildrenFilesRecursive(dir_name_).size());

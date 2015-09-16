@@ -9,7 +9,7 @@ find_package(Threads REQUIRED)
 include(ExternalProject)
 
 #===  BOOST  ===================================================================
-ExternalProject_Add(
+ExternalProject_Add (
   boost
   URL http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz
   BUILD_IN_SOURCE 1
@@ -31,7 +31,7 @@ ExternalProject_Add(
   INSTALL_DIR /usr
 )
 
-ExternalProject_Add(
+ExternalProject_Add (
   boost_process
   URL http://www.highscore.de/boost/process.zip
   UPDATE_COMMAND ""
@@ -47,114 +47,80 @@ ExternalProject_Add(
 )
 
 #===  GOOGLE FLAGS  ============================================================
-ExternalProject_Add(
-    gflags
-    URL https://github.com/gflags/gflags/archive/v2.1.2.zip
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gflags
+ExternalProject_Add (
+  gflags
+  URL https://github.com/gflags/gflags/archive/v2.1.2.zip
 )
-
-# Create a libgflags target
 add_library(libgflags IMPORTED STATIC GLOBAL)
 add_dependencies(libgflags gflags)
 
-# Set gflags properties
 ExternalProject_Get_Property(gflags source_dir binary_dir)
 set_target_properties(libgflags PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/lib/libgflags.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
-include_directories("${source_dir}/include")
 
 #===  GOOGLE TEST  =============================================================
-ExternalProject_Add(
-    gtest
-    URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
-    DEPENDS gflags
-    # Disable install step
-    INSTALL_COMMAND ""
+ExternalProject_Add (
+  gtest
+  URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
+  DEPENDS gflags
+  INSTALL_COMMAND ""
 )
-
-# Set gtest properties
+# Gtest
 ExternalProject_Get_Property(gtest source_dir binary_dir)
-
-# Create a libgtest target to be used as a dependency by test programs
 add_library(libgtest IMPORTED STATIC GLOBAL)
 add_dependencies(libgtest gtest)
-
 set_target_properties(libgtest PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/libgtest.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
+#Gtest main
 add_library(libgtest_main IMPORTED STATIC GLOBAL)
 add_dependencies(libgtest_main gtest)
-
 set_target_properties(libgtest_main PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/libgtest_main.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
-include_directories("${source_dir}/include")
 
 #===  GOOGLE MOCK  =============================================================
-ExternalProject_Add(
-    gmock
-    URL https://googlemock.googlecode.com/files/gmock-1.7.0.zip
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gmock
-    DEPENDS gflags
-    INSTALL_COMMAND ""
+ExternalProject_Add (
+  gmock
+  URL https://googlemock.googlecode.com/files/gmock-1.7.0.zip
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gmock
+  DEPENDS gflags
+  INSTALL_COMMAND ""
 )
-
-# Create a libgmock target to be used as a dependency by test programs
 add_library(libgmock IMPORTED STATIC GLOBAL)
 add_dependencies(libgmock gmock)
 
-# Set gmock properties
 ExternalProject_Get_Property(gmock source_dir binary_dir)
 set_target_properties(libgmock PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/libgmock.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
-include_directories("${source_dir}/include")
 
 #===  ZLIB  ====================================================================
-set(zlib_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/zlib)
-ExternalProject_Add(
-    zlib
-    PREFIX ${zlib_PREFIX}
-    URL http://zlib.net/zlib128.zip
-    URL_MD5 126f8676442ffbd97884eb4d6f32afb4
+ExternalProject_Add (
+  zlib
+  URL http://zlib.net/zlib128.zip
 )
-
-# Create a libzlib target to be used as a dependency by test programs
 add_library(libz IMPORTED STATIC GLOBAL)
 add_dependencies(libz zlib)
 
-# Set zlib properties
-ExternalProject_Get_Property(zlib source_dir binary_dir)
 set_target_properties(libz PROPERTIES
     "IMPORTED_LOCATION" "/usr/local/lib/libz.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
-include_directories("${source_dir}/include")
-
-
 #===  CURL  ====================================================================
-set(curl_prefix ${CMAKE_CURRENT_BINARY_DIR}/curl)
-ExternalProject_Add(
+ExternalProject_Add (
   curl
-  PREFIX ${curl_prefix}
   URL http://curl.haxx.se/download/curl-7.44.0.tar.gz
   CONFIGURE_COMMAND ./configure --disable-shared
   BUILD_IN_SOURCE 1
 )
-
-# Create a libthrift target to be used as a dependency by test programs
 add_library(libcurl IMPORTED STATIC GLOBAL)
 add_dependencies(
   libcurl
@@ -163,17 +129,26 @@ add_dependencies(
   ssl
 )
 
-# Set thrift properties
-ExternalProject_Get_Property(curl source_dir binary_dir)
 set_target_properties(libcurl PROPERTIES
     "IMPORTED_LOCATION" "/usr/local/lib/libcurl.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
+#===  LIB EVENT  ===============================================================
+ExternalProject_Add (
+  event
+  URL https://github.com/libevent/libevent/archive/master.zip
+)
+add_library(libevent IMPORTED STATIC GLOBAL)
+add_dependencies(libevent event)
+
+set_target_properties(libevent PROPERTIES
+    "IMPORTED_LOCATION" "/usr/local/lib/libevent.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+)
+
 #===  BASE LIB  ================================================================
 include_directories("/root/thilenius")
-#set(Boost_USE_STATIC_LIBS ON)
-#find_package(Boost COMPONENTS regex system filesystem REQUIRED)
 
 add_library (
   base STATIC
@@ -199,6 +174,7 @@ add_dependencies (
   boost
   boost_process
   libcurl
+  libevent
   libgflags
   libgmock
   libgtest
@@ -217,6 +193,7 @@ target_link_libraries (
   libgtest
   ssl
   libz
+  libevent
 )
 
 #===  BASE TESTS  ==============================================================
