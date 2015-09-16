@@ -21,9 +21,12 @@ class SentinelUser {
   static ValueOf<SentinelUser> Login(const std::string& email_address,
                                      const std::string& password);
 
-  static ValueOf<::sentinel::Token> LoadToken(const std::string& path);
-
   static bool CheckToken(const ::sentinel::Token& token);
+
+  static ValueOf<::sentinel::Token> LoadToken(const std::string& project_path);
+
+  bool SaveToken(const ::sentinel::Token& token,
+                 const std::string& project_path);
 
   ValueOf<::sentinel::Token> CreateToken(int permission_level);
 

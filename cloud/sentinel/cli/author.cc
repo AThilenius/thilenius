@@ -29,6 +29,9 @@ int Author(const std::string root_path, const std::vector<std::string>& args) {
       sentinel_user.CreateToken(0).GetOrDie();
   LOG(INFO) << "Secondary token authored and authenticated with Sentinel: "
             << token;
+  if (!sentinel_user.SaveToken(token, root_path)) {
+    LOG(ERROR) << "Failed to create keyfile";
+  }
   return 0;
 }
 

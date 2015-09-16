@@ -22,7 +22,7 @@ DEFINE_string(crucible_endpoint, "localhost",
 DEFINE_string(crucible_endpoint_route, "/",
               "The http route for the Crucible server.");
 DEFINE_int32(crucible_endpoint_port, 80, "The port for the Crucible server.");
-DEFINE_string(crucible_dir_name, ".crucible",
+DEFINE_string(crucible_dir_name, ".anvil",
               "The name of the dir crucible uses to store data.");
 DEFINE_string(crucible_repo_file_cache_name, "crucible_repo.json",
               "The name of the file within crucible_dir_name that crucible "
