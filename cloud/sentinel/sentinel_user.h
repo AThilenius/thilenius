@@ -15,6 +15,8 @@ namespace sentinel {
 
 class SentinelUser {
  public:
+  static void CheckConnectionOrDie();
+
   static ValueOf<SentinelUser> Create(const ::sentinel::User& user_partial,
                                       const std::string& password);
 

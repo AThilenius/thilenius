@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 
+#include "cloud/sentinel/sentinel_user.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 
@@ -19,10 +20,11 @@ enum class RepoSyncStatus { UNKNOWN, HEAD, BEHIND_HEAD };
 
 class CrucibleRepo {
  public:
+  // Keyfile must be present frist
   static CrucibleRepo CreateNewInDirectoryOrDie(const std::string& path,
-                                                const std::string& user_name,
                                                 const std::string& repo_name);
 
+  // Keyfile must be present first
   static CrucibleRepo LoadFromDirectoryOrDie(const std::string& path);
 
   std::string GetRepoId() const;
@@ -50,6 +52,7 @@ class CrucibleRepo {
 
   ::crucible::Repo repo_;
   ::crucible::crucibleConstants constants_;
+  ::sentinel::Token token_;
   std::string path_;
 };
 

@@ -9,6 +9,7 @@
 #include "base/log.h"
 #include "base/string.h"
 #include "base/time.h"
+#include "cloud/sentinel/sentinel_user.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 
@@ -19,6 +20,7 @@ DEFINE_string(mongo_table, "crucible.repos",
 
 using ::thilenius::base::Guid;
 using ::thilenius::base::Time;
+using ::thilenius::cloud::sentinel::SentinelUser;
 
 namespace thilenius {
 namespace scorch {
@@ -31,6 +33,7 @@ CrucibleHandler::CrucibleHandler()
   try {
     LOG(INFO) << "Connecting to MongoDB at " << FLAGS_mongo_ip << ":"
               << FLAGS_mongo_port;
+    SentinelUser::CheckConnectionOrDie();
     mongo_connection_.connect(StrCat(FLAGS_mongo_ip, ":", FLAGS_mongo_port));
   } catch (const mongo::DBException& e) {
     LOG(FATAL) << "MongoDB Driver failed to connect to " << FLAGS_mongo_ip
@@ -39,11 +42,13 @@ CrucibleHandler::CrucibleHandler()
 }
 
 void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
-                                    const std::string& user_stoken,
+                                    const ::sentinel::Token& user_stoken,
                                     const std::string& repo_name) {
+  AuthenticateOrThrow(user_stoken);
   // Make sure the repo doesn't already exit
   ::crucible::Repo repo;
-  if (model_.FindRepoByUserIdAndRepoName(&repo, user_uuid, repo_name)) {
+  if (model_.FindRepoByUserIdAndRepoName(&repo, user_stoken.user_uuid,
+                                         repo_name)) {
     ::crucible::OperationFailure op_failure;
     op_failure.user_message =
         "A repo with that username and repo name already exists";
@@ -52,7 +57,7 @@ void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
     // Create a new one
     ::crucible::RepoHeader repo_header;
     repo_header.repo_uuid = Guid::NewGuid();
-    repo_header.user_uuid = user_uuid;
+    repo_header.user_uuid = user_stoken.user_uuid;
     repo_header.repo_name = repo_name;
     repo_header.creation_timestamp = std::to_string(Time::EpochMilliseconds());
     repo = std::move(::crucible::Repo());
@@ -63,25 +68,29 @@ void CrucibleHandler::CreateNewRepo(::crucible::Repo& _return,
 }
 
 void CrucibleHandler::CreateForkedRepo(::crucible::Repo& _return,
-                                       const std::string& user_stoken,
+                                       const ::sentinel::Token& user_stoken,
                                        const std::string& base_repo_uuid) {
-  // Your implementation goes here
+  AuthenticateOrThrow(user_stoken);
   printf("CreateForkedRepo\n");
 }
 
 void CrucibleHandler::GetRepoHeadersByUser(
     std::vector<::crucible::RepoHeader>& _return,
-    const std::string& user_stoken) {}
+    const ::sentinel::Token& user_stoken) {
+  AuthenticateOrThrow(user_stoken);
+}
 
 void CrucibleHandler::GetRepoById(::crucible::Repo& _return,
+                                  const ::sentinel::Token& user_stoken,
                                   const std::string& repo_uuid) {
-  // Your implementation goes here
+  AuthenticateOrThrow(user_stoken);
   printf("GetRepoById\n");
 }
 
 void CrucibleHandler::GetRepoHeaderById(::crucible::RepoHeader& _return,
-                                        const std::string& user_stoken,
+                                        const ::sentinel::Token& user_stoken,
                                         const std::string& repo_uuid) {
+  AuthenticateOrThrow(user_stoken);
   ::crucible::Repo repo;
   if (!model_.FindRepoById(&repo, repo_uuid)) {
     ::crucible::OperationFailure op_failure;
@@ -94,9 +103,10 @@ void CrucibleHandler::GetRepoHeaderById(::crucible::RepoHeader& _return,
 }
 
 void CrucibleHandler::CommitAndDownstream(
-    ::crucible::ChangeList& _return, const std::string& user_stoken,
+    ::crucible::ChangeList& _return, const ::sentinel::Token& user_stoken,
     const ::crucible::RepoHeader& repo_header,
     const ::crucible::ChangeList& change_list) {
+  AuthenticateOrThrow(user_stoken);
   ::crucible::Repo repo;
   if (!model_.FindRepoById(&repo, repo_header.repo_uuid)) {
     ::crucible::OperationFailure op_failure;
@@ -121,6 +131,16 @@ void CrucibleHandler::CommitAndDownstream(
       model_.SaveRepo(repo);
       _return = std::move(new_change_list);
     }
+  }
+}
+
+void CrucibleHandler::AuthenticateOrThrow(
+    const ::sentinel::Token& token) const {
+  // Authenticate
+  if (!SentinelUser::CheckToken(token)) {
+    ::crucible::OperationFailure op_failure;
+    op_failure.user_message = "Sentinel failure, invalid token";
+    throw op_failure;
   }
 }
 

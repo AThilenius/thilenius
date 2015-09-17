@@ -9,17 +9,12 @@ include_directories (
   "/root/thilenius_gen/"
 )
 
-find_package(
-  Boost 1.58.0 COMPONENTS
-  regex
-  system
-  thread
-)
-
-add_subdirectory (/root/thilenius/third_party/mongo
-                  /root/thilenius_bin/third_party/mongo)
-add_subdirectory (/root/thilenius/utils/differencer
-                  /root/thilenius_bin/utils/differencer)
+# Added in Sentinel because CMake is fucking retarded
+# TODO(athilenius): Fix the retarded dependency clashes in CMake
+#add_subdirectory (/root/thilenius/utils/differencer
+                  #/root/thilenius_bin/utils/differencer)
+add_subdirectory (/root/thilenius/cloud/sentinel
+                  /root/thilenius_bin/cloud/sentinel)
 
 file(MAKE_DIRECTORY /root/thilenius_gen/scorch/cloud/crucible)
 add_custom_command(
@@ -49,7 +44,6 @@ add_library (
 
 target_link_libraries (
   crucible
-  ${Boost_LIBRARIES}
-  differencer
-  libmongoclient
+  #differencer
+  sentinel
 )

@@ -33,6 +33,7 @@ using ::thilenius::base::File;
 using ::thilenius::base::Path;
 using ::thilenius::base::String;
 using ::thilenius::base::Time;
+using ::thilenius::cloud::sentinel::SentinelUser;
 
 namespace thilenius {
 namespace scorch {
@@ -49,8 +50,9 @@ namespace {
 }  // namespace
 
 CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
-    const std::string& path, const std::string& user_name,
-    const std::string& repo_name) {
+    const std::string& path, const std::string& repo_name) {
+  // Try loading keyfile
+  ::sentinel::Token token = SentinelUser::LoadToken(path).GetOrDie();
   std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
       Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
@@ -59,19 +61,18 @@ CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
     LOG(WARNING) << "Directory " << path << " does not exist. Creating it.";
     Directory::Create(path);
   } else {
-    // Make sure there isn't already a .crucilble folder
-    if (Directory::Exists(crucible_dir_path) &&
-        Directory::GetChildren(crucible_dir_path).size() != 0) {
+    // Make sure there isn't already a .anvil/crucible_repo.json folder
+    if (File::Exists(crucible_repo_json_path)) {
       LOG(FATAL) << "Cannot create a new repo at " << path
                  << ", a repo already exists there";
     }
   }
   Directory::Create(crucible_dir_path);
   CrucibleRepo repo;
+  repo.token_ = token;
   repo.path_ = path;
   try {
-    http_client_.ConnectOrDie()->CreateNewRepo(repo.repo_, user_name,
-                                               repo_name);
+    http_client_.ConnectOrDie()->CreateNewRepo(repo.repo_, token, repo_name);
   } catch (::crucible::OperationFailure op_failure) {
     LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
   } catch (...) {
@@ -85,6 +86,7 @@ CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
 }
 
 CrucibleRepo CrucibleRepo::LoadFromDirectoryOrDie(const std::string& path) {
+  ::sentinel::Token token = SentinelUser::LoadToken(path).GetOrDie();
   std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
       Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
@@ -96,6 +98,7 @@ CrucibleRepo CrucibleRepo::LoadFromDirectoryOrDie(const std::string& path) {
   }
   std::string json = File::ReadContentsOrDie(crucible_repo_json_path);
   CrucibleRepo crucible_repo;
+  crucible_repo.token_ = token;
   crucible_repo.path_ = path;
   crucible_repo.repo_ =
       crucible_mapper_.repo_mapper.from_bson(::mongo::fromjson(json));
@@ -109,7 +112,7 @@ std::string CrucibleRepo::GetRepoId() const {
 RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
   ::crucible::RepoHeader repo_header;
   try {
-    http_client_.ConnectOrDie()->GetRepoHeaderById(repo_header,
+    http_client_.ConnectOrDie()->GetRepoHeaderById(repo_header, token_,
                                                    repo_.repo_header.repo_uuid);
   } catch (::crucible::OperationFailure op_failure) {
     LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
@@ -259,7 +262,7 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   ::crucible::ChangeList new_change_list;
   try {
     http_client_.ConnectOrDie()->CommitAndDownstream(
-        new_change_list, repo_.repo_header, old_change_list);
+        new_change_list, token_, repo_.repo_header, old_change_list);
   } catch (::crucible::OperationFailure op_failure) {
     LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
   } catch (...) {

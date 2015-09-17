@@ -3,6 +3,7 @@
 //==============================================================================
 namespace cpp crucible
 
+include "cloud/sentinel/sentinel.thrift"
 include "utils/differencer/differencer.thrift"
 
 // Represents only the memtadata of a file
@@ -68,24 +69,25 @@ exception OperationFailure {
 
 service Crucible {
   // CREATE
-  Repo CreateNewRepo (1:string user_stoken, 2:string repo_name)
+  Repo CreateNewRepo (1:sentinel.Token user_stoken, 2:string repo_name)
       throws (1: OperationFailure operation_failure);
 
-  Repo CreateForkedRepo (1:string user_stoken, 2:string base_repo_uuid)
+  Repo CreateForkedRepo (1:sentinel.Token user_stoken, 2:string base_repo_uuid)
       throws (1: OperationFailure operation_failure);
 
   // QUERY
-  list<RepoHeader> GetRepoHeadersByUser (1:string user_stoken)
+  list<RepoHeader> GetRepoHeadersByUser (1:sentinel.Token user_stoken)
       throws (1: OperationFailure operation_failure);
 
-  Repo GetRepoById (1:string user_stoken, 2:string repo_uuid)
+  Repo GetRepoById (1:sentinel.Token user_stoken, 2:string repo_uuid)
       throws (1: OperationFailure operation_failure);
 
-  RepoHeader GetRepoHeaderById (1:string user_stoken, 1:string repo_uuid)
+  RepoHeader GetRepoHeaderById (1:sentinel.Token user_stoken,
+                                2:string repo_uuid)
       throws (1: OperationFailure operation_failure);
 
   // MODIFY
-  ChangeList CommitAndDownstream (1:string user_stoken,
+  ChangeList CommitAndDownstream (1:sentinel.Token user_stoken,
                                   2:RepoHeader repo_header,
                                   3:ChangeList change_list)
       throws (1: OperationFailure operation_failure);

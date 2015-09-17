@@ -183,9 +183,10 @@ add_dependencies (
 
 target_link_libraries (
   base
-  boost_regex
   boost_filesystem
+  boost_regex
   boost_system
+  boost_thread
   crypto
   libcurl
   libgflags

@@ -15,12 +15,12 @@ namespace crucible {
 namespace cli {
 
 int Create(const std::string root_path, const std::vector<std::string>& args) {
-  if (args.size() < 2) {
-    LOG(ERROR) << "Usage: crucible create [flags] <username> <repo_name>";
-    LOG(FATAL) << "Expected 2 arguments, got " << args.size();
+  if (args.size() < 1) {
+    LOG(ERROR) << "Usage: crucible create [flags] <repo_name>";
+    LOG(FATAL) << "Expected 1 argument, got " << args.size();
   }
   CrucibleRepo crucible_repo =
-      CrucibleRepo::CreateNewInDirectoryOrDie(root_path, args[0], args[1]);
+      CrucibleRepo::CreateNewInDirectoryOrDie(root_path, args[0]);
   LOG(INFO) << "Created a new repo with ID: " << crucible_repo.GetRepoId();
   return 0;
 }

@@ -9,19 +9,16 @@ include_directories (
   "/root/thilenius_gen/"
 )
 
-find_package(
-  Boost 1.58.0 COMPONENTS
-  regex
-  system
-  thread
-)
-
-add_subdirectory (/root/thilenius/base
-                  /root/thilenius_bin/base)
-add_subdirectory (/root/thilenius/third_party/thrift
-                  /root/thilenius_bin/third_party/thrift)
+#add_subdirectory (/root/thilenius/base
+                  #/root/thilenius_bin/base)
+#add_subdirectory (/root/thilenius/third_party/thrift
+                  #/root/thilenius_bin/third_party/thrift)
 add_subdirectory (/root/thilenius/third_party/mongo
                   /root/thilenius_bin/third_party/mongo)
+# This needs to be here for now to resolve the fact that the differ, sentinal
+# and crucible all need thrift
+add_subdirectory (/root/thilenius/utils/differencer
+                  /root/thilenius_bin/utils/differencer)
 
 file(MAKE_DIRECTORY /root/thilenius_gen/cloud/sentinel)
 add_custom_command(
@@ -52,8 +49,8 @@ add_library (
 
 target_link_libraries (
   sentinel
-  ${Boost_LIBRARIES}
-  base
-  libthrift
+  #base
+  #libthrift
+  differencer
   libmongoclient
 )

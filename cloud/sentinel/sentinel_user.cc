@@ -14,7 +14,7 @@
 #include "cloud/sentinel/sentinel_types.h"
 #include "cloud/utils/thrift_http_client.hh"
 
-DEFINE_string(sentinel_endpoint, "localhost",
+DEFINE_string(sentinel_endpoint, "127.0.0.1",
               "The endpoint for the Sentinel server.");
 DEFINE_string(sentinel_endpoint_route, "/",
               "The http route for the Sentinel server.");
@@ -43,6 +43,16 @@ namespace {
 
 SentinelUser::SentinelUser(const ::sentinel::Token& token)
     : primary_token_(token) {}
+
+void SentinelUser::CheckConnectionOrDie() {
+  http_client_ =
+      ::thilenius::cloud::utils::ThriftHttpClient<::sentinel::SentinelClient>(
+          FLAGS_sentinel_endpoint, FLAGS_sentinel_endpoint_port,
+          FLAGS_sentinel_endpoint_route);
+  LOG(INFO) << "Connection to Sentinel at " << FLAGS_sentinel_endpoint << ":"
+            << FLAGS_sentinel_endpoint_port;
+  http_client_.ConnectOrDie();
+}
 
 ValueOf<SentinelUser> SentinelUser::Create(const ::sentinel::User& user_partial,
                                            const std::string& password) {

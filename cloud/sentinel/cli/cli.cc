@@ -8,12 +8,14 @@
 #include "cloud/sentinel/cli/author.h"
 #include "cloud/sentinel/cli/create.h"
 #include "cloud/sentinel/cli/login.h"
+#include "cloud/sentinel/sentinel_user.h"
 
 using ::thilenius::base::Arguments;
 using ::thilenius::base::Path;
 
 int main(int argc, char** argv) {
   ::gflags::ParseCommandLineFlags(&argc, &argv, true);
+  ::thilenius::cloud::sentinel::SentinelUser::CheckConnectionOrDie();
   if (argc < 2) {
     LOG(FATAL) << "Usage: sentinel <command> <command_args>";
   }
