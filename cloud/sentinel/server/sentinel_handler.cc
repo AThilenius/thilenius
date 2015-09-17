@@ -26,7 +26,7 @@ namespace server {
 namespace {
 
 void ThrowOpFailure(const std::string& user_message) {
-  ::sentinel::OperationFailure op_failure;
+  ::sentinel::proto::OperationFailure op_failure;
   op_failure.user_message = user_message;
   throw op_failure;
 }
@@ -46,19 +46,19 @@ SentinelHandler::SentinelHandler()
   }
 }
 
-void SentinelHandler::CreateUser(::sentinel::User& _return,
-                                 const ::sentinel::User& new_user_partial,
+void SentinelHandler::CreateUser(::sentinel::proto::User& _return,
+                                 const ::sentinel::proto::User& new_user_partial,
                                  const std::string& password) {
   if (String::Blank(new_user_partial.first_name) ||
       String::Blank(new_user_partial.last_name) ||
       String::Blank(new_user_partial.email_address) ||
       String::Blank(password)) {
-    ::sentinel::OperationFailure op_failure;
+    ::sentinel::proto::OperationFailure op_failure;
     op_failure.user_message = "A required field was left blank";
     throw op_failure;
   }
   // Make sure the user is unique by email address
-  ::sentinel::User user;
+  ::sentinel::proto::User user;
   user.email_address = new_user_partial.email_address;
   ValueOf<SentinelMapper::SentinelEntry> duplicate_user_value =
       model_.FindUser(user);
@@ -91,11 +91,11 @@ void SentinelHandler::CreateUser(::sentinel::User& _return,
   _return = std::move(user);
 }
 
-void SentinelHandler::CreateToken(::sentinel::Token& _return,
+void SentinelHandler::CreateToken(::sentinel::proto::Token& _return,
                                   const std::string& email_address,
                                   const std::string& password) {
   const std::string error_message = "Email address or password is incorrect";
-  ::sentinel::User user;
+  ::sentinel::proto::User user;
   user.email_address = email_address;
   // Find user
   ValueOf<SentinelMapper::SentinelEntry> existing_entry_value =
@@ -122,7 +122,7 @@ void SentinelHandler::CreateToken(::sentinel::Token& _return,
     LOG(ERROR) << "Crypo call failed: " << new_token_value.GetError();
     ThrowOpFailure("Internal server error");
   }
-  ::sentinel::Token token;
+  ::sentinel::proto::Token token;
   token.user_uuid = sentinel_entry.user.uuid;
   token.token_uuid = new_token_value.GetOrDie();
   token.permission_level = sentinel_entry.user.permission_level;
@@ -133,8 +133,8 @@ void SentinelHandler::CreateToken(::sentinel::Token& _return,
   _return = std::move(token);
 }
 
-void SentinelHandler::CreateSecondaryToken(::sentinel::Token& _return,
-                                           const ::sentinel::Token& token,
+void SentinelHandler::CreateSecondaryToken(::sentinel::proto::Token& _return,
+                                           const ::sentinel::proto::Token& token,
                                            const int32_t permission_level) {
   if (token.permission_level < sentinel_constants_.USER_THRESHOLD) {
     ThrowOpFailure("Insufficient permissions");
@@ -149,17 +149,17 @@ void SentinelHandler::CreateSecondaryToken(::sentinel::Token& _return,
   _return = CreateAndSaveToken(token.user_uuid, permission_level);
 }
 
-bool SentinelHandler::CheckToken(const ::sentinel::Token& token) {
+bool SentinelHandler::CheckToken(const ::sentinel::proto::Token& token) {
   return model_.FindToken(token);
 }
 
-void SentinelHandler::FindUser(::sentinel::User& _return,
-                               const ::sentinel::Token& token,
-                               const ::sentinel::User& user_partial) {}
+void SentinelHandler::FindUser(::sentinel::proto::User& _return,
+                               const ::sentinel::proto::Token& token,
+                               const ::sentinel::proto::User& user_partial) {}
 
-::sentinel::Token SentinelHandler::CreateAndSaveToken(
+::sentinel::proto::Token SentinelHandler::CreateAndSaveToken(
     const std::string& user_uuid, int permission_level) {
-  ::sentinel::Token token;
+  ::sentinel::proto::Token token;
   ValueOf<std::string> new_token_value = Crypto::GenerateSaltBase64();
   if (!new_token_value.IsValid()) {
     LOG(ERROR) << "Crypo call failed: " << new_token_value.GetError();

@@ -38,9 +38,9 @@ add_custom_command(
 
 add_library (
   sentinel
+  /root/thilenius/cloud/sentinel/sentinel_client.cc
   /root/thilenius/cloud/sentinel/sentinel_mapper.cc
   /root/thilenius/cloud/sentinel/sentinel_model.cc
-  /root/thilenius/cloud/sentinel/sentinel_user.cc
   /root/thilenius_gen/cloud/sentinel/Sentinel.cpp
   /root/thilenius_gen/cloud/sentinel/SentinelInternal.cpp
   /root/thilenius_gen/cloud/sentinel/sentinel_constants.cpp

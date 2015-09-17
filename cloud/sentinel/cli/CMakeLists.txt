@@ -14,10 +14,7 @@ add_subdirectory (/root/thilenius/cloud/sentinel
 
 add_executable (
   cli
-  /root/thilenius/cloud/sentinel/cli/author.cc
   /root/thilenius/cloud/sentinel/cli/cli.cc
-  /root/thilenius/cloud/sentinel/cli/create.cc
-  /root/thilenius/cloud/sentinel/cli/login.cc
 )
 
 target_link_libraries (

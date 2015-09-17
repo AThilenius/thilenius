@@ -23,18 +23,18 @@ class SentinelModel {
         token_table_(token_table) {}
 
   ValueOf<SentinelMapper::SentinelEntry> FindUser(
-      const ::sentinel::User& user_partial);
+      const ::sentinel::proto::User& user_partial);
 
-  bool FindToken(const ::sentinel::Token& token);
+  bool FindToken(const ::sentinel::proto::Token& token);
 
-  bool SaveToken(const ::sentinel::Token& token);
+  bool SaveToken(const ::sentinel::proto::Token& token);
 
   bool SaveSentinelEntry(const SentinelMapper::SentinelEntry& sentinel_entry);
 
  private:
   SentinelMapper sentinel_mapper_;
   ::mongo::DBClientConnection& connection_;
-  ::sentinel::sentinelConstants constants_;
+  ::sentinel::proto::sentinelConstants constants_;
   const std::string user_table_;
   const std::string token_table_;
 };

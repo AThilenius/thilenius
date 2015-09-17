@@ -6,11 +6,11 @@
 #include "base/input.hh"
 #include "base/log.h"
 #include "base/value_of.hh"
-#include "cloud/sentinel/sentinel_user.h"
+#include "cloud/sentinel/sentinel_client.h"
 
 using ::thilenius::base::Input;
 using ::thilenius::base::ValueOf;
-using ::thilenius::cloud::sentinel::SentinelUser;
+using ::thilenius::cloud::sentinel::SentinelClient;
 
 namespace thilenius {
 namespace cloud {

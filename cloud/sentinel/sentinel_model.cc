@@ -14,7 +14,7 @@ namespace sentinel {
 // TODO(athilenius): String queries need to be sanitized
 
 ValueOf<SentinelMapper::SentinelEntry> SentinelModel::FindUser(
-    const ::sentinel::User& user_partial) {
+    const ::sentinel::proto::User& user_partial) {
   ::mongo::BSONObj query;
   if (!String::Blank(user_partial.uuid)) {
     // Search by string
@@ -41,7 +41,7 @@ ValueOf<SentinelMapper::SentinelEntry> SentinelModel::FindUser(
   return {SentinelMapper::SentinelEntry(), "Failed to find user"};
 }
 
-bool SentinelModel::FindToken(const ::sentinel::Token& token) {
+bool SentinelModel::FindToken(const ::sentinel::proto::Token& token) {
   ::mongo::BSONObj query =
       BSON("user_uuid" << token.user_uuid << "token_uuid" << token.token_uuid
                        << "permission_level" << token.permission_level);
@@ -52,7 +52,7 @@ bool SentinelModel::FindToken(const ::sentinel::Token& token) {
   return false;
 }
 
-bool SentinelModel::SaveToken(const ::sentinel::Token& token) {
+bool SentinelModel::SaveToken(const ::sentinel::proto::Token& token) {
   if (token.permission_level >= constants_.USER_THRESHOLD) {
     // Primary Token, make sure we don't have duplicates
     connection_.remove(

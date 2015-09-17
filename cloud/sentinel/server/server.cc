@@ -14,7 +14,7 @@ using ::thilenius::cloud::sentinel::server::SentinelHandler;
 
 int main(int argc, char **argv) {
   ::google::ParseCommandLineFlags(&argc, &argv, true);
-  ThriftHttpServer<SentinelHandler, ::sentinel::SentinelProcessor> http_server(
+  ThriftHttpServer<SentinelHandler, ::sentinel::proto::SentinelProcessor> http_server(
       FLAGS_server_port, "/");
   LOG(INFO) << "Starting server on port " << FLAGS_server_port;
   http_server.ServeBlocking();

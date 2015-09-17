@@ -16,32 +16,32 @@ namespace cloud {
 namespace sentinel {
 namespace server {
 
-class SentinelHandler : virtual public ::sentinel::SentinelIf {
+class SentinelHandler : virtual public ::sentinel::proto::SentinelIf {
  public:
   SentinelHandler();
 
-  void CreateUser(::sentinel::User& _return,
-                  const ::sentinel::User& new_user_partial,
+  void CreateUser(::sentinel::proto::User& _return,
+                  const ::sentinel::proto::User& new_user_partial,
                   const std::string& password);
 
-  void CreateToken(::sentinel::Token& _return, const std::string& email_address,
+  void CreateToken(::sentinel::proto::Token& _return, const std::string& email_address,
                    const std::string& password);
 
-  void CreateSecondaryToken(::sentinel::Token& _return,
-                            const ::sentinel::Token& token,
+  void CreateSecondaryToken(::sentinel::proto::Token& _return,
+                            const ::sentinel::proto::Token& token,
                             const int32_t permission_level);
 
-  bool CheckToken(const ::sentinel::Token& token);
+  bool CheckToken(const ::sentinel::proto::Token& token);
 
-  void FindUser(::sentinel::User& _return, const ::sentinel::Token& token,
-                const ::sentinel::User& user_partial);
+  void FindUser(::sentinel::proto::User& _return, const ::sentinel::proto::Token& token,
+                const ::sentinel::proto::User& user_partial);
 
  private:
-  ::sentinel::Token CreateAndSaveToken(const std::string& user_uuid,
+  ::sentinel::proto::Token CreateAndSaveToken(const std::string& user_uuid,
                                        int permission_level);
 
   ::mongo::DBClientConnection mongo_connection_;
-  ::sentinel::sentinelConstants sentinel_constants_;
+  ::sentinel::proto::sentinelConstants sentinel_constants_;
   SentinelModel model_;
   SentinelMapper mapper_;
 };

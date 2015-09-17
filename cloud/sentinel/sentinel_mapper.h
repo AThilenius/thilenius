@@ -17,13 +17,13 @@ class SentinelMapper {
   SentinelMapper();
 
   struct SentinelEntry {
-    ::sentinel::User user;
+    ::sentinel::proto::User user;
     std::string salt;
     std::string hash;
   };
 
-  ::mongoxx::Mapper<::sentinel::User> user_mapper;
-  ::mongoxx::Mapper<::sentinel::Token> token_mapper;
+  ::mongoxx::Mapper<::sentinel::proto::User> user_mapper;
+  ::mongoxx::Mapper<::sentinel::proto::Token> token_mapper;
   ::mongoxx::Mapper<SentinelEntry> entry_mapper;
 };
 
