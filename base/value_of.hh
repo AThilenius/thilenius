@@ -36,6 +36,27 @@ class ValueOf {
   bool is_valid_;
 };
 
+template <>
+class ValueOf<void> {
+ public:
+  ValueOf() : is_valid_(true) {}
+  ValueOf(std::string error) : error_(std::move(error)), is_valid_(false) {}
+
+  void GetOrDie() {
+    if (!IsValid()) {
+      LOG(FATAL) << error_;
+    }
+  }
+
+  bool IsValid() { return is_valid_; }
+
+  std::string GetError() { return error_; }
+
+ private:
+  std::string error_;
+  bool is_valid_;
+};
+
 }  // namespace base
 }  // namespace thilenius
 

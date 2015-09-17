@@ -23,10 +23,18 @@ namespace thilenius {
 namespace cloud {
 namespace sentinel {
 
-SentinelClient::SentinelClient(const std::string& endpoint, int port,
-                               const std::string& route)
-    : http_client_(endpoint, port, route) {
-  http_client_.ConnectOrDie();
+SentinelClient::SentinelClient() : http_client_("unknown", 80, "/") {}
+
+ValueOf<void> SentinelClient::Connect(const std::string& endpoint, int port,
+                                      const std::string& route) {
+  http_client_ = std::move(ThriftHttpClient<::sentinel::proto::SentinelClient>(
+      endpoint, port, route));
+  auto connection = http_client_.Connect();
+  if (connection.IsValid()) {
+    return {};
+  } else {
+    return {connection.GetError()};
+  }
 }
 
 ValueOf<::sentinel::proto::Token> SentinelClient::CreateUser(

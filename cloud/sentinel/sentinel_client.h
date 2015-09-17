@@ -11,7 +11,6 @@
 #include "cloud/sentinel/sentinel_types.h"
 #include "cloud/utils/thrift_http_client.hh"
 
-using namespace ::sentinel;
 using ::thilenius::base::ValueOf;
 using ::thilenius::cloud::sentinel::SentinelMapper;
 using ::thilenius::cloud::utils::ThriftHttpClient;
@@ -22,8 +21,10 @@ namespace sentinel {
 
 class SentinelClient {
  public:
-  SentinelClient(const std::string& endpoint, int port,
-                 const std::string& route);
+  SentinelClient();
+
+  ValueOf<void> Connect(const std::string& endpoint, int port,
+                        const std::string& route);
 
   // Creates a new user and returns their primary token
   ValueOf<::sentinel::proto::Token> CreateUser(

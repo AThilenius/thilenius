@@ -26,8 +26,9 @@ namespace sentinel {
 namespace cli {
 
 int Author(const std::string root_path, const std::vector<std::string>& args) {
-  SentinelClient sentinel_client(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                                 FLAGS_sentinel_route);
+  SentinelClient sentinel_client;
+  sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
+                                 FLAGS_sentinel_route).GetOrDie();
   LOG(INPUT) << "Email address: ";
   std::string email_address = Input::WaitOnceOrDie<std::string>();
   LOG(INPUT) << "Password: ";
@@ -46,8 +47,9 @@ int Author(const std::string root_path, const std::vector<std::string>& args) {
 }
 
 int Login(const std::string root_path, const std::vector<std::string>& args) {
-  SentinelClient sentinel_client(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                                 FLAGS_sentinel_route);
+  SentinelClient sentinel_client;
+  sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
+                                 FLAGS_sentinel_route).GetOrDie();
   LOG(INPUT) << "Email address: ";
   std::string email_address = Input::WaitOnceOrDie<std::string>();
   LOG(INPUT) << "Password: ";
@@ -58,8 +60,9 @@ int Login(const std::string root_path, const std::vector<std::string>& args) {
 }
 
 int Create(const std::string root_path, const std::vector<std::string>& args) {
-  SentinelClient sentinel_client(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                                 FLAGS_sentinel_route);
+  SentinelClient sentinel_client;
+  sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
+                                 FLAGS_sentinel_route).GetOrDie();
   ::sentinel::proto::User user;
   LOG(INPUT) << "First name: ";
   user.first_name = Input::WaitOnceOrDie<std::string>();
