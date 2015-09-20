@@ -19,13 +19,14 @@ class CrucibleMapper {
   CrucibleMapper();
 
   ::thilenius::utils::differencer::DifferencerMapper differencer_mapper;
-  ::mongoxx::Mapper<::crucible::FileInfo> file_info_mapper;
-  ::mongoxx::Mapper<::crucible::File> file_mapper;
-  ::mongoxx::Mapper<::crucible::FileDelta> file_delta_mapper;
-  ::mongoxx::Mapper<::crucible::ChangeList> change_list_mapper;
-  ::mongoxx::Mapper<::crucible::RepoHeader> repo_header_mapper;
-  ::mongoxx::Mapper<::crucible::Repo> repo_mapper;
-  ::mongoxx::Mapper<::crucible::Snapshot> snapshot_mapper;
+  ::mongoxx::Mapper<::crucible::proto::FileInfo> file_info_mapper;
+  ::mongoxx::Mapper<::crucible::proto::File> file_mapper;
+  ::mongoxx::Mapper<::crucible::proto::FileDelta> file_delta_mapper;
+  ::mongoxx::Mapper<::crucible::proto::ChangeList> change_list_mapper;
+  ::mongoxx::Mapper<::crucible::proto::RepoHeader> repo_header_mapper;
+  ::mongoxx::Mapper<::crucible::proto::Repo> repo_mapper;
+  ::mongoxx::Mapper<::crucible::proto::RepoState> repo_state_mapper;
+  ::mongoxx::Mapper<::crucible::proto::Snapshot> snapshot_mapper;
 };
 
 }  // namespace crucible

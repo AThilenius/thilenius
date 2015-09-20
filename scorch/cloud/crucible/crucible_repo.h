@@ -7,7 +7,7 @@
 #include <string>
 #include <map>
 
-#include "cloud/sentinel/sentinel_user.h"
+#include "cloud/sentinel/sentinel_client.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 
@@ -33,26 +33,26 @@ class CrucibleRepo {
 
   // Gets all pending (added, modified, or removed) files, as they differ from
   // GetFileInfosForHeader
-  ::crucible::ChangeList GetPending() const;
+  ::crucible::proto::ChangeList GetPending() const;
 
   // Runs though all diffs and computes what files should be active in head,
   // returned as a map of realative file names to FileInfo
-  std::map<std::string, ::crucible::FileInfo> GetFileInfosForHead() const;
+  std::map<std::string, ::crucible::proto::FileInfo> GetFileInfosForHead() const;
 
   // Reconstructs a single file (by relative path) from diffs
   std::string ReconstructFileFromDiffs(const std::string& relative_path) const;
 
-  ::crucible::ChangeList Commit();
+  ::crucible::proto::ChangeList Commit();
 
  private:
-  ::crucible::File CrucibleFileFromDiskFile(
+  ::crucible::proto::File CrucibleFileFromDiskFile(
       const std::string& full_path, const std::string& relative_path) const;
-  ::crucible::FileDelta CrucibleFileDeltaFromDisk(
+  ::crucible::proto::FileDelta CrucibleFileDeltaFromDisk(
       const std::string& full_path, const std::string& relative_path) const;
 
-  ::crucible::Repo repo_;
-  ::crucible::crucibleConstants constants_;
-  ::sentinel::Token token_;
+  ::crucible::proto::Repo repo_;
+  ::crucible::proto::crucibleConstants constants_;
+  ::sentinel::proto::Token token_;
   std::string path_;
 };
 

@@ -34,7 +34,7 @@ int Commit(const std::string root_path, const std::vector<std::string>& args) {
       break;
     }
   }
-  ::crucible::ChangeList change_list = repo.Commit();
+  ::crucible::proto::ChangeList change_list = repo.Commit();
   LOG(INFO) << "Commit compleated with commit Id: "
             << change_list.change_list_uuid;
   return 0;

@@ -12,7 +12,7 @@ namespace scorch {
 namespace cloud {
 namespace crucible {
 
-bool CrucibleModel::FindRepoById(::crucible::Repo* repo,
+bool CrucibleModel::FindRepoById(::crucible::proto::Repo* repo,
                                  const std::string& repo_uuid) {
   ::mongo::BSONObj query = BSON("repo_header.repo_uuid" << repo_uuid);
   auto cursor = connection_.query(table_, query);
@@ -26,7 +26,7 @@ bool CrucibleModel::FindRepoById(::crucible::Repo* repo,
   }
 }
 
-bool CrucibleModel::FindRepoByUserIdAndRepoName(::crucible::Repo* repo,
+bool CrucibleModel::FindRepoByUserIdAndRepoName(::crucible::proto::Repo* repo,
                                                 const std::string& user_uuid,
                                                 const std::string& repo_name) {
   ::mongo::BSONObj query =
@@ -43,17 +43,17 @@ bool CrucibleModel::FindRepoByUserIdAndRepoName(::crucible::Repo* repo,
   }
 }
 
-std::vector<::crucible::Repo> CrucibleModel::FindReposByUserId(
+std::vector<::crucible::proto::Repo> CrucibleModel::FindReposByUserId(
     const std::string& user_uuid) {
-  return std::vector<::crucible::Repo>();
+  return std::vector<::crucible::proto::Repo>();
 }
 
-std::vector<::crucible::Repo> CrucibleModel::FindReposByRepoBaseId(
+std::vector<::crucible::proto::Repo> CrucibleModel::FindReposByRepoBaseId(
     const std::string& base_repo_uuid) {
-  return std::vector<::crucible::Repo>();
+  return std::vector<::crucible::proto::Repo>();
 }
 
-bool CrucibleModel::SaveRepo(const ::crucible::Repo repo) {
+bool CrucibleModel::SaveRepo(const ::crucible::proto::Repo repo) {
   connection_.update(
       table_, BSON("repo_header.repo_name" << repo.repo_header.repo_name
                                            << "repo_header.user_uuid"

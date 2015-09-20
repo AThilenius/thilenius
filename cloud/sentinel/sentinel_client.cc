@@ -23,13 +23,15 @@ namespace thilenius {
 namespace cloud {
 namespace sentinel {
 
-SentinelClient::SentinelClient() : http_client_("unknown", 80, "/") {}
+SentinelClient::SentinelClient()
+    : http_client_ptr_(ProtoSentinelClientPtr(nullptr)) {}
 
 ValueOf<void> SentinelClient::Connect(const std::string& endpoint, int port,
                                       const std::string& route) {
-  http_client_ = std::move(ThriftHttpClient<::sentinel::proto::SentinelClient>(
-      endpoint, port, route));
-  auto connection = http_client_.Connect();
+  http_client_ptr_ = ProtoSentinelClientPtr(
+      new ThriftHttpClient<::sentinel::proto::SentinelClient>(endpoint, port,
+                                                              route));
+  auto connection = http_client_ptr_->Connect();
   if (connection.IsValid()) {
     return {};
   } else {
@@ -40,8 +42,12 @@ ValueOf<void> SentinelClient::Connect(const std::string& endpoint, int port,
 ValueOf<::sentinel::proto::Token> SentinelClient::CreateUser(
     const ::sentinel::proto::User& user_partial, const std::string& password) {
   ::sentinel::proto::User user;
+  ValueOf<void> connection_check = CheckConnection();
+  if (!connection_check.IsValid()) {
+    return {::sentinel::proto::Token(), connection_check.GetError()};
+  }
+  auto client = http_client_ptr_->ConnectOrDie();
   try {
-    auto client = http_client_.Connect().GetOrDie();
     client->CreateUser(user, user_partial, password);
   } catch (::sentinel::proto::OperationFailure op_failure) {
     return {::sentinel::proto::Token(),
@@ -53,8 +59,12 @@ ValueOf<::sentinel::proto::Token> SentinelClient::CreateUser(
 ValueOf<::sentinel::proto::Token> SentinelClient::LoginUser(
     const std::string& email_address, const std::string& password) {
   ::sentinel::proto::Token token;
+  ValueOf<void> connection_check = CheckConnection();
+  if (!connection_check.IsValid()) {
+    return {::sentinel::proto::Token(), connection_check.GetError()};
+  }
+  auto client = http_client_ptr_->ConnectOrDie();
   try {
-    auto client = http_client_.Connect().GetOrDie();
     client->CreateToken(token, email_address, password);
   } catch (::sentinel::proto::OperationFailure op_failure) {
     return {::sentinel::proto::Token(),
@@ -63,9 +73,14 @@ ValueOf<::sentinel::proto::Token> SentinelClient::LoginUser(
   return {std::move(token)};
 }
 
-bool SentinelClient::ValidateToken(const ::sentinel::proto::Token& token) {
+ValueOf<bool> SentinelClient::ValidateToken(
+    const ::sentinel::proto::Token& token) {
+  ValueOf<void> connection_check = CheckConnection();
+  if (!connection_check.IsValid()) {
+    return {false, connection_check.GetError()};
+  }
+  auto client = http_client_ptr_->ConnectOrDie();
   try {
-    auto client = http_client_.Connect().GetOrDie();
     return client->CheckToken(token);
   } catch (::sentinel::proto::OperationFailure op_failure) {
   }
@@ -103,14 +118,31 @@ bool SentinelClient::SaveProjectToken(const ::sentinel::proto::Token& token,
 ValueOf<::sentinel::proto::Token> SentinelClient::AuthorToken(
     const ::sentinel::proto::Token& authoring_token, int permission_level) {
   ::sentinel::proto::Token token;
+  ValueOf<void> connection_check = CheckConnection();
+  if (!connection_check.IsValid()) {
+    return {::sentinel::proto::Token(), connection_check.GetError()};
+  }
+  auto client = http_client_ptr_->ConnectOrDie();
   try {
-    auto client = http_client_.Connect().GetOrDie();
     client->CreateSecondaryToken(token, authoring_token, permission_level);
   } catch (::sentinel::proto::OperationFailure op_failure) {
     return {::sentinel::proto::Token(),
             "Sentinel remote exception: " + op_failure.user_message};
   }
   return {std::move(token)};
+}
+
+ValueOf<void> SentinelClient::CheckConnection() const {
+  if (http_client_ptr_ == nullptr) {
+    return {
+        "Connect must be called before SentinelClient can be used for RPC "
+        "calls"};
+  }
+  auto client_value = http_client_ptr_->Connect();
+  if (!client_value.IsValid()) {
+    return {"Connection to Sentinel was dropped"};
+  }
+  return {};
 }
 
 }  // namespace sentinel

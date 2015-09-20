@@ -36,7 +36,7 @@ int Status(const std::string root_path, const std::vector<std::string>& args) {
     }
   }
   CrucibleMapper mapper_;
-  ::crucible::ChangeList pending = repo.GetPending();
+  ::crucible::proto::ChangeList pending = repo.GetPending();
   if (pending.added_files.size() != 0) {
     LOG(INFO) << "Pending Adds:";
     for (const auto& file : pending.added_files) {

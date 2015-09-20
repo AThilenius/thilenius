@@ -4,6 +4,8 @@
 #ifndef CLOUD_SENTINEL_SENTINEL_CLIENT_H_
 #define CLOUD_SENTINEL_SENTINEL_CLIENT_H_
 
+#include <memory>
+
 #include "base/value_of.hh"
 #include "cloud/sentinel/Sentinel.h"
 #include "cloud/sentinel/sentinel_constants.h"
@@ -48,11 +50,15 @@ class SentinelClient {
       const ::sentinel::proto::Token& authoring_token, int permission_level);
 
   // Validates if a token is valid or not
-  bool ValidateToken(const ::sentinel::proto::Token& token);
+  ValueOf<bool> ValidateToken(const ::sentinel::proto::Token& token);
 
  private:
+  ValueOf<void> CheckConnection() const;
+
+  typedef std::shared_ptr<ThriftHttpClient<::sentinel::proto::SentinelClient>>
+      ProtoSentinelClientPtr;
   SentinelMapper sentinel_mapper_;
-  ThriftHttpClient<::sentinel::proto::SentinelClient> http_client_;
+  ProtoSentinelClientPtr http_client_ptr_;
 };
 
 }  // namespace sentinel

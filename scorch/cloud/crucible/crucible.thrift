@@ -1,7 +1,7 @@
 //==============================================================================
 //==  CRUCIBLE SOURCE CONTROL  =================================================
 //==============================================================================
-namespace cpp crucible
+namespace cpp crucible.proto
 
 include "cloud/sentinel/sentinel.thrift"
 include "utils/differencer/differencer.thrift"
@@ -9,8 +9,9 @@ include "utils/differencer/differencer.thrift"
 // Represents only the memtadata of a file
 struct FileInfo {
   1: string relative_path;
-  2: string md5;
-  3: string modify_timestamp;
+  2: bool is_locked;
+  3: string md5;
+  4: string modify_timestamp;
 }
 
 const i32 FILE_TYPE_UNKNOWN = 0;
@@ -54,6 +55,18 @@ struct RepoHeader {
 struct Repo {
   1: RepoHeader repo_header;
   2: list<ChangeList> change_lists;
+}
+
+// Stores a repo's state (including the repo) as it apears on a disk.
+struct RepoState {
+  1: Repo repo;
+  2: list<FileInfo> head_files;
+  3: list<FileInfo> staged_adds;
+  4: list<FileInfo> staged_modifications;
+  5: list<FileInfo> staged_removals;
+  6: list<FileInfo> unstaged_adds;
+  7: list<FileInfo> unstaged_modifications;
+  8: list<FileInfo> unstaged_removals;
 }
 
 // Represents an entire repo as it existed at the point in time

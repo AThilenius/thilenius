@@ -33,7 +33,7 @@ using ::thilenius::base::File;
 using ::thilenius::base::Path;
 using ::thilenius::base::String;
 using ::thilenius::base::Time;
-using ::thilenius::cloud::sentinel::SentinelUser;
+using ::thilenius::cloud::sentinel::SentinelClient;
 
 namespace thilenius {
 namespace scorch {
@@ -42,7 +42,7 @@ namespace crucible {
 namespace {
 
 ::thilenius::scorch::cloud::crucible::CrucibleMapper crucible_mapper_;
-::thilenius::cloud::utils::ThriftHttpClient<::crucible::CrucibleClient>
+::thilenius::cloud::utils::ThriftHttpClient<::crucible::proto::CrucibleClient>
     http_client_(FLAGS_crucible_endpoint, FLAGS_crucible_endpoint_port,
                  FLAGS_crucible_endpoint_route);
 ::thilenius::utils::differencer::Differencer differencer_;
@@ -52,7 +52,9 @@ namespace {
 CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
     const std::string& path, const std::string& repo_name) {
   // Try loading keyfile
-  ::sentinel::Token token = SentinelUser::LoadToken(path).GetOrDie();
+  SentinelClient sentinel_client;
+  ::sentinel::proto::Token token =
+      sentinel_client.LoadProjectToken(path).GetOrDie();
   std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
       Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
@@ -73,7 +75,7 @@ CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
   repo.path_ = path;
   try {
     http_client_.ConnectOrDie()->CreateNewRepo(repo.repo_, token, repo_name);
-  } catch (::crucible::OperationFailure op_failure) {
+  } catch (::crucible::proto::OperationFailure op_failure) {
     LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
   } catch (...) {
     LOG(FATAL) << "In CreateNewRepo, Crucible server threw an unhandled "
@@ -86,7 +88,9 @@ CrucibleRepo CrucibleRepo::CreateNewInDirectoryOrDie(
 }
 
 CrucibleRepo CrucibleRepo::LoadFromDirectoryOrDie(const std::string& path) {
-  ::sentinel::Token token = SentinelUser::LoadToken(path).GetOrDie();
+  SentinelClient sentinel_client;
+  ::sentinel::proto::Token token =
+      sentinel_client.LoadProjectToken(path).GetOrDie();
   std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
       Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
@@ -110,11 +114,11 @@ std::string CrucibleRepo::GetRepoId() const {
 }
 
 RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
-  ::crucible::RepoHeader repo_header;
+  ::crucible::proto::RepoHeader repo_header;
   try {
     http_client_.ConnectOrDie()->GetRepoHeaderById(repo_header, token_,
                                                    repo_.repo_header.repo_uuid);
-  } catch (::crucible::OperationFailure op_failure) {
+  } catch (::crucible::proto::OperationFailure op_failure) {
     LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
   } catch (...) {
     LOG(FATAL) << "In GetRepoHeaderById, Crucible server threw an unhandled "
@@ -127,11 +131,11 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
   return RepoSyncStatus::HEAD;
 }
 
-::crucible::ChangeList CrucibleRepo::GetPending() const {
+::crucible::proto::ChangeList CrucibleRepo::GetPending() const {
   std::string crucible_dir_path = Path::Combine(path_, FLAGS_crucible_dir_name);
-  std::map<std::string, ::crucible::FileInfo> header_infos =
+  std::map<std::string, ::crucible::proto::FileInfo> header_infos =
       GetFileInfosForHead();
-  ::crucible::ChangeList change_list;
+  ::crucible::proto::ChangeList change_list;
   change_list.user_uuid = repo_.repo_header.user_uuid;
   change_list.timestamp = std::to_string(Time::EpochMilliseconds());
   // First find all files (Glob them)
@@ -175,7 +179,7 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
   for (const auto& header_info : header_infos) {
     if (relative_all_files.find(header_info.first) ==
         relative_all_files.end()) {
-      ::crucible::FileInfo file_info;
+      ::crucible::proto::FileInfo file_info;
       file_info.relative_path = header_info.first;
       file_info.modify_timestamp = std::to_string(Time::EpochMilliseconds());
       change_list.removed_files.emplace_back(std::move(file_info));
@@ -184,9 +188,9 @@ RepoSyncStatus CrucibleRepo::GetSyncStatus() const {
   return std::move(change_list);
 }
 
-std::map<std::string, ::crucible::FileInfo> CrucibleRepo::GetFileInfosForHead()
-    const {
-  std::map<std::string, ::crucible::FileInfo> active_files;
+std::map<std::string, ::crucible::proto::FileInfo>
+CrucibleRepo::GetFileInfosForHead() const {
+  std::map<std::string, ::crucible::proto::FileInfo> active_files;
   for (const auto& change_list : repo_.change_lists) {
     for (const auto& file : change_list.added_files) {
       active_files[file.file_info.relative_path] = file.file_info;
@@ -229,9 +233,9 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   return std::move(contents);
 }
 
-::crucible::File CrucibleRepo::CrucibleFileFromDiskFile(
+::crucible::proto::File CrucibleRepo::CrucibleFileFromDiskFile(
     const std::string& full_path, const std::string& relative_path) const {
-  ::crucible::File file;
+  ::crucible::proto::File file;
   file.file_info.relative_path = relative_path;
   file.file_info.md5 = File::MD5OrDie(full_path);
   file.file_info.modify_timestamp =
@@ -241,9 +245,9 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   return std::move(file);
 }
 
-::crucible::FileDelta CrucibleRepo::CrucibleFileDeltaFromDisk(
+::crucible::proto::FileDelta CrucibleRepo::CrucibleFileDeltaFromDisk(
     const std::string& full_path, const std::string& relative_path) const {
-  ::crucible::FileDelta file_delta;
+  ::crucible::proto::FileDelta file_delta;
   file_delta.file_info.relative_path = relative_path;
   file_delta.file_info.md5 = File::MD5OrDie(full_path);
   file_delta.file_info.modify_timestamp =
@@ -254,16 +258,16 @@ std::string CrucibleRepo::ReconstructFileFromDiffs(
   return std::move(file_delta);
 }
 
-::crucible::ChangeList CrucibleRepo::Commit() {
+::crucible::proto::ChangeList CrucibleRepo::Commit() {
   std::string crucible_dir_path = Path::Combine(path_, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
       Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
-  ::crucible::ChangeList old_change_list = GetPending();
-  ::crucible::ChangeList new_change_list;
+  ::crucible::proto::ChangeList old_change_list = GetPending();
+  ::crucible::proto::ChangeList new_change_list;
   try {
     http_client_.ConnectOrDie()->CommitAndDownstream(
         new_change_list, token_, repo_.repo_header, old_change_list);
-  } catch (::crucible::OperationFailure op_failure) {
+  } catch (::crucible::proto::OperationFailure op_failure) {
     LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
   } catch (...) {
     LOG(FATAL) << "In CommitAndDownstream, Crucible server threw an unhandled "

@@ -40,19 +40,19 @@ class CrucibleModel {
       : connection_(connection), table_(table) {}
 
   // Querying
-  bool FindRepoById(::crucible::Repo* repo, const std::string& repo_uuid);
+  bool FindRepoById(::crucible::proto::Repo* repo, const std::string& repo_uuid);
 
-  bool FindRepoByUserIdAndRepoName(::crucible::Repo* repo,
+  bool FindRepoByUserIdAndRepoName(::crucible::proto::Repo* repo,
                                    const std::string& user_uuid,
                                    const std::string& repo_name);
 
-  std::vector<::crucible::Repo> FindReposByUserId(const std::string& user_uuid);
+  std::vector<::crucible::proto::Repo> FindReposByUserId(const std::string& user_uuid);
 
-  std::vector<::crucible::Repo> FindReposByRepoBaseId(
+  std::vector<::crucible::proto::Repo> FindReposByRepoBaseId(
       const std::string& base_repo_uuid);
 
   // Saving
-  bool SaveRepo(const ::crucible::Repo repo);
+  bool SaveRepo(const ::crucible::proto::Repo repo);
 
  private:
   CrucibleMapper crucible_mapper_;
