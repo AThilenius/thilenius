@@ -1,0 +1,4 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+find . -type f -exec sed -i "$1" {} +
