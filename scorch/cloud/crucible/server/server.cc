@@ -16,7 +16,7 @@ using ::thilenius::scorch::cloud::crucible::server::CrucibleHandler;
 
 int main(int argc, char **argv) {
   ::google::ParseCommandLineFlags(&argc, &argv, true);
-  ThriftHttpServer<CrucibleHandler, ::crucible::CrucibleProcessor> http_server(
+  ThriftHttpServer<CrucibleHandler, ::crucible::proto::CrucibleProcessor> http_server(
       80, "/");
   LOG(INFO) << "Starting server";
   http_server.ServeBlocking();

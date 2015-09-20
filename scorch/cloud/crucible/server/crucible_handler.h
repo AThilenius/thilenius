@@ -16,36 +16,36 @@ namespace cloud {
 namespace crucible {
 namespace server {
 
-class CrucibleHandler : virtual public ::crucible::CrucibleIf {
+class CrucibleHandler : virtual public ::crucible::proto::CrucibleIf {
  public:
   CrucibleHandler();
 
-  void CreateNewRepo(::crucible::Repo& _return,
-                     const ::sentinel::Token& user_stoken,
+  void CreateNewRepo(::crucible::proto::Repo& _return,
+                     const ::sentinel::proto::Token& user_stoken,
                      const std::string& repo_name);
 
-  void CreateForkedRepo(::crucible::Repo& _return,
-                        const ::sentinel::Token& user_stoken,
+  void CreateForkedRepo(::crucible::proto::Repo& _return,
+                        const ::sentinel::proto::Token& user_stoken,
                         const std::string& base_repo_uuid);
 
-  void GetRepoHeadersByUser(std::vector<::crucible::RepoHeader>& _return,
-                            const ::sentinel::Token& user_stoken);
+  void GetRepoHeadersByUser(std::vector<::crucible::proto::RepoHeader>& _return,
+                            const ::sentinel::proto::Token& user_stoken);
 
-  void GetRepoById(::crucible::Repo& _return,
-                   const ::sentinel::Token& user_stoken,
+  void GetRepoById(::crucible::proto::Repo& _return,
+                   const ::sentinel::proto::Token& user_stoken,
                    const std::string& repo_uuid);
 
-  void GetRepoHeaderById(::crucible::RepoHeader& _return,
-                         const ::sentinel::Token& user_stoken,
+  void GetRepoHeaderById(::crucible::proto::RepoHeader& _return,
+                         const ::sentinel::proto::Token& user_stoken,
                          const std::string& repo_uuid);
 
-  void CommitAndDownstream(::crucible::ChangeList& _return,
-                           const ::sentinel::Token& user_stoken,
-                           const ::crucible::RepoHeader& repo_header,
-                           const ::crucible::ChangeList& change_list);
+  void CommitAndDownstream(::crucible::proto::ChangeList& _return,
+                           const ::sentinel::proto::Token& user_stoken,
+                           const ::crucible::proto::RepoHeader& repo_header,
+                           const ::crucible::proto::ChangeList& change_list);
 
  private:
-  void AuthenticateOrThrow(const ::sentinel::Token& token) const;
+  void AuthenticateOrThrow(const ::sentinel::proto::Token& token) const;
 
   ::mongo::DBClientConnection mongo_connection_;
   CrucibleModel model_;
