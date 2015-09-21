@@ -15,9 +15,6 @@ add_subdirectory (/root/thilenius/scorch/cloud/crucible
 add_executable (
   cli
   /root/thilenius/scorch/cloud/crucible/cli/cli.cc
-  /root/thilenius/scorch/cloud/crucible/cli/commit.cc
-  /root/thilenius/scorch/cloud/crucible/cli/create.cc
-  /root/thilenius/scorch/cloud/crucible/cli/status.cc
 )
 
 target_link_libraries (

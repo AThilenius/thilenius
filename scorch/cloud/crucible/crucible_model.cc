@@ -26,12 +26,9 @@ bool CrucibleModel::FindRepoById(::crucible::proto::Repo* repo,
   }
 }
 
-bool CrucibleModel::FindRepoByUserIdAndRepoName(::crucible::proto::Repo* repo,
-                                                const std::string& user_uuid,
-                                                const std::string& repo_name) {
-  ::mongo::BSONObj query =
-      BSON("repo_header.user_uuid" << user_uuid << "repo_header.repo_name"
-                                   << repo_name);
+bool CrucibleModel::FindRepoByRepoName(::crucible::proto::Repo* repo,
+                                       const std::string& repo_name) {
+  ::mongo::BSONObj query = BSON("repo_header.repo_name" << repo_name);
   auto cursor = connection_.query(table_, query);
   if (cursor->more()) {
     // Got a repo back
@@ -43,14 +40,34 @@ bool CrucibleModel::FindRepoByUserIdAndRepoName(::crucible::proto::Repo* repo,
   }
 }
 
-std::vector<::crucible::proto::Repo> CrucibleModel::FindReposByUserId(
-    const std::string& user_uuid) {
-  return std::vector<::crucible::proto::Repo>();
+std::vector<::crucible::proto::RepoHeader>
+CrucibleModel::FindRepoHeadersByUserId(const std::string& user_uuid) {
+  std::vector<::crucible::proto::RepoHeader> repo_headers;
+  ::mongo::BSONObj query = BSON("repo_header.user_uuid" << user_uuid);
+  auto cursor = connection_.query(table_, query);
+  while (cursor->more()) {
+    // Got a repo header back
+    ::mongo::BSONObj bson = cursor->next();
+    ::crucible::proto::RepoHeader repo_header;
+    crucible_mapper_.repo_header_mapper.from_bson(bson, repo_header);
+    repo_headers.emplace_back(std::move(repo_header));
+  }
+  return std::move(repo_headers);
 }
 
-std::vector<::crucible::proto::Repo> CrucibleModel::FindReposByRepoBaseId(
-    const std::string& base_repo_uuid) {
-  return std::vector<::crucible::proto::Repo>();
+std::vector<::crucible::proto::RepoHeader>
+CrucibleModel::FindRepoHeadersByRepoBaseId(const std::string& base_repo_uuid) {
+  std::vector<::crucible::proto::RepoHeader> repo_headers;
+  ::mongo::BSONObj query = BSON("repo_header.base_repo_uuid" << base_repo_uuid);
+  auto cursor = connection_.query(table_, query);
+  while (cursor->more()) {
+    // Got a repo header back
+    ::mongo::BSONObj bson = cursor->next();
+    ::crucible::proto::RepoHeader repo_header;
+    crucible_mapper_.repo_header_mapper.from_bson(bson, repo_header);
+    repo_headers.emplace_back(std::move(repo_header));
+  }
+  return std::move(repo_headers);
 }
 
 bool CrucibleModel::SaveRepo(const ::crucible::proto::Repo repo) {

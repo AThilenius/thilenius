@@ -7,7 +7,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <termios.h>
 #include <typeinfo>
+#include <unistd.h>
 
 #include "base/log.h"
 #include "base/value_of.hh"
@@ -19,21 +21,44 @@ class Input {
  public:
   template <typename T>
   static T WaitForever() {
-    ValueOf<T> value = Read<T>();
-    while (!value.IsValid()) {
-      value = Read<T>();
-    }
-    return value.GetOrDie();
+    return WaitForever<T>(false);
   }
 
   template <typename T>
   static T WaitOnceOrDie() {
-    return Read<T>().GetOrDie();
+    return WaitOnceOrDie<T>(false);
   }
 
   template <typename T>
   static ValueOf<T> WaitOnce() {
-    return Read<T>();
+    return WaitOnce<T>(false);
+  }
+
+  template <typename T>
+  static T WaitForever(bool suppress_cout) {
+    SetStdinEcho(!suppress_cout);
+    ValueOf<T> value = Read<T>();
+    while (!value.IsValid()) {
+      value = Read<T>();
+    }
+    SetStdinEcho(true);
+    return value.GetOrDie();
+  }
+
+  template <typename T>
+  static T WaitOnceOrDie(bool suppress_cout) {
+    SetStdinEcho(!suppress_cout);
+    ValueOf<T> val = Read<T>();
+    SetStdinEcho(true);
+    return val.GetOrDie();
+  }
+
+  template <typename T>
+  static ValueOf<T> WaitOnce(bool suppress_cout) {
+    SetStdinEcho(!suppress_cout);
+    ValueOf<T> val = Read<T>();
+    SetStdinEcho(true);
+    return std::move(val);
   }
 
  private:
@@ -51,6 +76,16 @@ class Input {
               "Failed to cast input to " + std::string(typeid(T).name())};
     }
     return {std::move(value)};
+  }
+
+  static void SetStdinEcho(bool enable) {
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    if (!enable)
+      tty.c_lflag &= ~ECHO;
+    else
+      tty.c_lflag |= ECHO;
+    (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
   }
 };
 

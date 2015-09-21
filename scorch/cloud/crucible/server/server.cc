@@ -9,7 +9,7 @@
 #include "scorch/cloud/crucible/crucible_types.h"
 #include "scorch/cloud/crucible/server/crucible_handler.h"
 
-DEFINE_int32(server_port, 80, "The port for the Crucible server.");
+DEFINE_int32(server_port, 2200, "The port for the Crucible server.");
 
 using ::thilenius::cloud::utils::ThriftHttpServer;
 using ::thilenius::scorch::cloud::crucible::server::CrucibleHandler;
@@ -17,7 +17,7 @@ using ::thilenius::scorch::cloud::crucible::server::CrucibleHandler;
 int main(int argc, char **argv) {
   ::google::ParseCommandLineFlags(&argc, &argv, true);
   ThriftHttpServer<CrucibleHandler, ::crucible::proto::CrucibleProcessor> http_server(
-      80, "/");
-  LOG(INFO) << "Starting server";
+      FLAGS_server_port, "/");
+  LOG(INFO) << "Starting server on port " << FLAGS_server_port;
   http_server.ServeBlocking();
 }

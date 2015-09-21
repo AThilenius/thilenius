@@ -69,31 +69,6 @@ CrucibleMapper::CrucibleMapper() {
   repo_mapper.add_field("change_lists", &::crucible::proto::Repo::change_lists,
                         change_list_mapper);
 
-  // RepoState
-  repo_state_mapper.add_field("repo", &::crucible::proto::RepoState::repo,
-                              repo_mapper);
-  repo_state_mapper.add_field("head_files",
-                              &::crucible::proto::RepoState::head_files,
-                              file_info_mapper);
-  repo_state_mapper.add_field("staged_adds",
-                              &::crucible::proto::RepoState::staged_adds,
-                              file_info_mapper);
-  repo_state_mapper.add_field(
-      "staged_modifications",
-      &::crucible::proto::RepoState::staged_modifications, file_info_mapper);
-  repo_state_mapper.add_field("staged_removals",
-                              &::crucible::proto::RepoState::staged_removals,
-                              file_info_mapper);
-  repo_state_mapper.add_field("unstaged_adds",
-                              &::crucible::proto::RepoState::unstaged_adds,
-                              file_info_mapper);
-  repo_state_mapper.add_field(
-      "unstaged_modifications",
-      &::crucible::proto::RepoState::unstaged_modifications, file_info_mapper);
-  repo_state_mapper.add_field("unstaged_removals",
-                              &::crucible::proto::RepoState::unstaged_removals,
-                              file_info_mapper);
-
   // Snapshot
   snapshot_mapper.add_field(
       "repo_info", &::crucible::proto::Snapshot::repo_info, repo_header_mapper);

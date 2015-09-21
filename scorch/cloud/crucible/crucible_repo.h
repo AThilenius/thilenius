@@ -8,8 +8,14 @@
 #include <map>
 
 #include "cloud/sentinel/sentinel_client.h"
+#include "cloud/utils/thrift_http_client.hh"
+#include "scorch/cloud/crucible/Crucible.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
+#include "scorch/cloud/crucible/crucible_mapper.h"
 #include "scorch/cloud/crucible/crucible_types.h"
+#include "utils/differencer/differencer.h"
+
+using ::thilenius::utils::differencer::Differencer;
 
 namespace thilenius {
 namespace scorch {
@@ -20,40 +26,53 @@ enum class RepoSyncStatus { UNKNOWN, HEAD, BEHIND_HEAD };
 
 class CrucibleRepo {
  public:
-  // Keyfile must be present frist
-  static CrucibleRepo CreateNewInDirectoryOrDie(const std::string& path,
-                                                const std::string& repo_name);
+  CrucibleRepo();
 
-  // Keyfile must be present first
-  static CrucibleRepo LoadFromDirectoryOrDie(const std::string& path);
+  ValueOf<void> Connect(const std::string& crucible_ip, int crucible_port,
+                        const std::string& crucible_route,
+                        const std::string& project_path);
 
-  std::string GetRepoId() const;
+  ValueOf<void> SyncToHead();
 
-  RepoSyncStatus GetSyncStatus() const;
+  ValueOf<RepoSyncStatus> SyncStatus() const;
 
   // Gets all pending (added, modified, or removed) files, as they differ from
-  // GetFileInfosForHeader
-  ::crucible::proto::ChangeList GetPending() const;
+  // GetFileInfosForHeader. Results are filtered if it's a forked repo.
+  ::crucible::proto::ChangeList GetPendingChangeList() const;
 
-  // Runs though all diffs and computes what files should be active in head,
-  // returned as a map of realative file names to FileInfo
-  std::map<std::string, ::crucible::proto::FileInfo> GetFileInfosForHead() const;
+  // Reconstructs a repo as it existed at the given CL uuid.
+  std::map<std::string, ::crucible::proto::File> ReconstructFilesForCL(
+      const std::string& change_list_uuid) const;
 
-  // Reconstructs a single file (by relative path) from diffs
-  std::string ReconstructFileFromDiffs(const std::string& relative_path) const;
+  // Commits all pending changes
+  ValueOf<::crucible::proto::ChangeList> Commit();
 
-  ::crucible::proto::ChangeList Commit();
+  // The token being used for sentinel authentication
+  ::sentinel::proto::Token token_proto;
+  std::string project_path;
 
  private:
+  typedef std::shared_ptr<ThriftHttpClient<::crucible::proto::CrucibleClient>>
+      ProtoCrucibleClientPtr;
+
   ::crucible::proto::File CrucibleFileFromDiskFile(
       const std::string& full_path, const std::string& relative_path) const;
+
   ::crucible::proto::FileDelta CrucibleFileDeltaFromDisk(
       const std::string& full_path, const std::string& relative_path) const;
 
+  std::string ReconstructFileFromDiffs(const std::string& relative_path) const;
+
   ::crucible::proto::Repo repo_;
-  ::crucible::proto::crucibleConstants constants_;
   ::sentinel::proto::Token token_;
-  std::string path_;
+  CrucibleMapper crucible_mapper_;
+  Differencer differencer_;
+  ProtoCrucibleClientPtr http_client_ptr_;
+  bool connected_;
+  int crucible_port_;
+  std::string crucible_ip_;
+  std::string crucible_route_;
+  std::string project_path_;
 };
 
 }  // namespace crucible

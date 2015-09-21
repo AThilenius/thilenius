@@ -57,18 +57,6 @@ struct Repo {
   2: list<ChangeList> change_lists;
 }
 
-// Stores a repo's state (including the repo) as it apears on a disk.
-struct RepoState {
-  1: Repo repo;
-  2: list<FileInfo> head_files;
-  3: list<FileInfo> staged_adds;
-  4: list<FileInfo> staged_modifications;
-  5: list<FileInfo> staged_removals;
-  6: list<FileInfo> unstaged_adds;
-  7: list<FileInfo> unstaged_modifications;
-  8: list<FileInfo> unstaged_removals;
-}
-
 // Represents an entire repo as it existed at the point in time
 struct Snapshot {
   1: RepoHeader repo_info;
@@ -82,10 +70,10 @@ exception OperationFailure {
 
 service Crucible {
   // CREATE
-  Repo CreateNewRepo (1:sentinel.Token user_stoken, 2:string repo_name)
+  Repo CreateBaseRepo (1:sentinel.Token user_stoken, 2:string repo_name)
       throws (1: OperationFailure operation_failure);
 
-  Repo CreateForkedRepo (1:sentinel.Token user_stoken, 2:string base_repo_uuid)
+  Repo CreateForkedRepo (1:sentinel.Token user_stoken, 2:string base_repo_name)
       throws (1: OperationFailure operation_failure);
 
   // QUERY

@@ -36,6 +36,10 @@ class SentinelClient {
   ValueOf<::sentinel::proto::Token> LoginUser(const std::string& email_address,
                                               const std::string& password);
 
+  // Logs an existing user in, getting username and password from cin, returning
+  // a primary token
+  ValueOf<::sentinel::proto::Token> LoginUserFromCin();
+
   // Loads a project token from JSON [default: .anvil/sentinel_key.json]
   ValueOf<::sentinel::proto::Token> LoadProjectToken(
       const std::string& project_path);

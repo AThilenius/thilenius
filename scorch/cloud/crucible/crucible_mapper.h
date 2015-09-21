@@ -25,7 +25,6 @@ class CrucibleMapper {
   ::mongoxx::Mapper<::crucible::proto::ChangeList> change_list_mapper;
   ::mongoxx::Mapper<::crucible::proto::RepoHeader> repo_header_mapper;
   ::mongoxx::Mapper<::crucible::proto::Repo> repo_mapper;
-  ::mongoxx::Mapper<::crucible::proto::RepoState> repo_state_mapper;
   ::mongoxx::Mapper<::crucible::proto::Snapshot> snapshot_mapper;
 };
 

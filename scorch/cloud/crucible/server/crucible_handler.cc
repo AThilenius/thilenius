@@ -9,7 +9,7 @@
 #include "base/log.h"
 #include "base/string.h"
 #include "base/time.h"
-#include "cloud/sentinel/sentinel_user.h"
+#include "cloud/sentinel/sentinel_constants.h"
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 
@@ -17,10 +17,12 @@ DEFINE_string(mongo_ip, "192.168.59.103", "The MongoDB instance ip address.");
 DEFINE_string(mongo_port, "27017", "The MongoDB instance port number.");
 DEFINE_string(mongo_table, "crucible.repos",
               "The MongoDB database and table name to use.");
+DEFINE_string(sentinel_ip, "localhost", "The Sentinel instance ip address.");
+DEFINE_int32(sentinel_port, 2100, "The Sentinel instance port number.");
+DEFINE_string(sentinel_route, "/", "The Sentinel instance route.");
 
 using ::thilenius::base::Guid;
 using ::thilenius::base::Time;
-using ::thilenius::cloud::sentinel::proto::SentinelUser;
 
 namespace thilenius {
 namespace scorch {
@@ -33,26 +35,30 @@ CrucibleHandler::CrucibleHandler()
   try {
     LOG(INFO) << "Connecting to MongoDB at " << FLAGS_mongo_ip << ":"
               << FLAGS_mongo_port;
-    SentinelUser::CheckConnectionOrDie();
     mongo_connection_.connect(StrCat(FLAGS_mongo_ip, ":", FLAGS_mongo_port));
   } catch (const mongo::DBException& e) {
     LOG(FATAL) << "MongoDB Driver failed to connect to " << FLAGS_mongo_ip
                << ":" << FLAGS_mongo_port;
   }
+  LOG(INFO) << "Connecting to Sentinel at " << FLAGS_sentinel_ip << ":"
+            << FLAGS_sentinel_port;
+  sentinel_client_.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
+                           FLAGS_sentinel_route).GetOrDie();
 }
 
-void CrucibleHandler::CreateNewRepo(::crucible::proto::Repo& _return,
-                                    const ::sentinel::proto::Token& user_stoken,
-                                    const std::string& repo_name) {
+void CrucibleHandler::CreateBaseRepo(
+    ::crucible::proto::Repo& _return,
+    const ::sentinel::proto::Token& user_stoken, const std::string& repo_name) {
   AuthenticateOrThrow(user_stoken);
+  if (user_stoken.permission_level <
+      ::sentinel::proto::g_sentinel_constants.ADMIN_THRESHOLD) {
+    ThrowOpFailure(
+        "You do not have sufficient permissions to create a base repo");
+  }
   // Make sure the repo doesn't already exit
   ::crucible::proto::Repo repo;
-  if (model_.FindRepoByUserIdAndRepoName(&repo, user_stoken.user_uuid,
-                                         repo_name)) {
-    ::crucible::proto::OperationFailure op_failure;
-    op_failure.user_message =
-        "A repo with that username and repo name already exists";
-    throw op_failure;
+  if (model_.FindRepoByRepoName(&repo, repo_name)) {
+    ThrowOpFailure("A repo with that repo name already exists");
   } else {
     // Create a new one
     ::crucible::proto::RepoHeader repo_header;
@@ -67,11 +73,41 @@ void CrucibleHandler::CreateNewRepo(::crucible::proto::Repo& _return,
   }
 }
 
-void CrucibleHandler::CreateForkedRepo(::crucible::proto::Repo& _return,
-                                       const ::sentinel::proto::Token& user_stoken,
-                                       const std::string& base_repo_uuid) {
+void CrucibleHandler::CreateForkedRepo(
+    ::crucible::proto::Repo& _return,
+    const ::sentinel::proto::Token& user_stoken,
+    const std::string& base_repo_name) {
   AuthenticateOrThrow(user_stoken);
-  printf("CreateForkedRepo\n");
+  if (user_stoken.permission_level <
+      ::sentinel::proto::g_sentinel_constants.USER_THRESHOLD) {
+    ThrowOpFailure(
+        "You do not have sufficient permissions to create a cloned repo");
+  }
+  std::string repo_name = StrCat(base_repo_name, "/", user_stoken.user_uuid);
+  ::crucible::proto::Repo repo;
+  // Check if the repo was already created
+  if (model_.FindRepoByRepoName(&repo, repo_name)) {
+    ThrowOpFailure("Cloned repo already exists");
+  }
+  // Find the base repo
+  if (model_.FindRepoByRepoName(&repo, base_repo_name)) {
+    // Create a new cloned repo from the base
+    ::crucible::proto::RepoHeader repo_header;
+    repo_header.repo_uuid = Guid::NewGuid();
+    repo_header.user_uuid = user_stoken.user_uuid;
+    repo_header.repo_name = repo_name;
+    repo_header.creation_timestamp = std::to_string(Time::EpochMilliseconds());
+    repo_header.base_repo_uuid = repo.repo_header.repo_uuid;
+    ::crucible::proto::Repo cloned_repo;
+    // Copy change list from base
+    cloned_repo.change_lists = std::move(repo.change_lists);
+    cloned_repo.repo_header = std::move(repo_header);
+    model_.SaveRepo(cloned_repo);
+    _return = cloned_repo;
+  } else {
+    ThrowOpFailure(
+        StrCat("Failed to find a base repo with the name ", base_repo_name));
+  }
 }
 
 void CrucibleHandler::GetRepoHeadersByUser(
@@ -87,39 +123,40 @@ void CrucibleHandler::GetRepoById(::crucible::proto::Repo& _return,
   printf("GetRepoById\n");
 }
 
-void CrucibleHandler::GetRepoHeaderById(::crucible::proto::RepoHeader& _return,
-                                        const ::sentinel::proto::Token& user_stoken,
-                                        const std::string& repo_uuid) {
+void CrucibleHandler::GetRepoHeaderById(
+    ::crucible::proto::RepoHeader& _return,
+    const ::sentinel::proto::Token& user_stoken, const std::string& repo_uuid) {
   AuthenticateOrThrow(user_stoken);
   ::crucible::proto::Repo repo;
   if (!model_.FindRepoById(&repo, repo_uuid)) {
-    ::crucible::proto::OperationFailure op_failure;
-    op_failure.user_message =
-        StrCat("Failed to find a repo with ID: ", repo_uuid);
-    throw op_failure;
+    ThrowOpFailure(StrCat("Failed to find a repo with ID: ", repo_uuid));
   } else {
     _return = repo.repo_header;
   }
 }
 
 void CrucibleHandler::CommitAndDownstream(
-    ::crucible::proto::ChangeList& _return, const ::sentinel::proto::Token& user_stoken,
+    ::crucible::proto::ChangeList& _return,
+    const ::sentinel::proto::Token& user_stoken,
     const ::crucible::proto::RepoHeader& repo_header,
     const ::crucible::proto::ChangeList& change_list) {
   AuthenticateOrThrow(user_stoken);
+  if (user_stoken.permission_level <
+      ::sentinel::proto::g_sentinel_constants.SECONDARY_THRESHOLD) {
+    ThrowOpFailure("Insufficient permission level to commit to a repo");
+  }
   ::crucible::proto::Repo repo;
   if (!model_.FindRepoById(&repo, repo_header.repo_uuid)) {
-    ::crucible::proto::OperationFailure op_failure;
-    op_failure.user_message =
-        StrCat("Failed to find a repo with ID: ", repo_header.repo_uuid);
-    throw op_failure;
+    ThrowOpFailure(
+        StrCat("Failed to find a repo with ID: ", repo_header.repo_uuid));
   } else {
+    if (repo_header.user_uuid != user_stoken.user_uuid) {
+      ThrowOpFailure("You do not own that repo");
+    }
     if (repo_header.latest_change_list_uuid !=
         repo.repo_header.latest_change_list_uuid) {
-      ::crucible::proto::OperationFailure op_failure;
-      op_failure.user_message =
-          "Your repo is behind head. You must sync before commiting.";
-      throw op_failure;
+      ThrowOpFailure(
+          "Your repo is behind head. You must sync before committing.");
     } else {
       // TODO(athilenius) Need to downstream as well
       ::crucible::proto::ChangeList new_change_list = change_list;
@@ -134,13 +171,17 @@ void CrucibleHandler::CommitAndDownstream(
   }
 }
 
+void CrucibleHandler::ThrowOpFailure(const std::string& message) {
+  ::crucible::proto::OperationFailure op_failure;
+  op_failure.user_message = message;
+  throw op_failure;
+}
+
 void CrucibleHandler::AuthenticateOrThrow(
-    const ::sentinel::proto::Token& token) const {
+    const ::sentinel::proto::Token& token) {
   // Authenticate
-  if (!SentinelUser::CheckToken(token)) {
-    ::crucible::proto::OperationFailure op_failure;
-    op_failure.user_message = "Sentinel failure, invalid token";
-    throw op_failure;
+  if (!sentinel_client_.ValidateToken(token).IsValid()) {
+    ThrowOpFailure("Sentinel failure, invalid token");
   }
 }
 

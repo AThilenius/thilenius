@@ -11,7 +11,7 @@
 
 DEFINE_string(sentinel_ip, "localhost",
               "The ip enpoint of the Sentinel server");
-DEFINE_int32(sentinel_port, 80, "The port for the Sentinel server");
+DEFINE_int32(sentinel_port, 2100, "The port for the Sentinel server");
 DEFINE_string(sentinel_route, "/", "The route of the Sentinel server");
 
 using ::thilenius::base::Arguments;
@@ -28,13 +28,15 @@ namespace cli {
 int Author(const std::string root_path, const std::vector<std::string>& args) {
   SentinelClient sentinel_client;
   sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                                 FLAGS_sentinel_route).GetOrDie();
-  LOG(INPUT) << "Email address: ";
-  std::string email_address = Input::WaitOnceOrDie<std::string>();
-  LOG(INPUT) << "Password: ";
-  std::string password = Input::WaitOnceOrDie<std::string>();
+                          FLAGS_sentinel_route).GetOrDie();
+  // LOG(INPUT) << "Email address: ";
+  // std::string email_address = Input::WaitOnceOrDie<std::string>();
+  // LOG(INPUT) << "Password: ";
+  // std::string password = Input::WaitOnceOrDie<std::string>();
+  //::sentinel::proto::Token token =
+  // sentinel_client.LoginUser(email_address, password).GetOrDie();
   ::sentinel::proto::Token token =
-      sentinel_client.LoginUser(email_address, password).GetOrDie();
+      sentinel_client.LoginUserFromCin().GetOrDie();
   LOG(INFO) << "Login successful";
   ::sentinel::proto::Token authored_token =
       sentinel_client.AuthorToken(token, 0).GetOrDie();
@@ -49,12 +51,14 @@ int Author(const std::string root_path, const std::vector<std::string>& args) {
 int Login(const std::string root_path, const std::vector<std::string>& args) {
   SentinelClient sentinel_client;
   sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                                 FLAGS_sentinel_route).GetOrDie();
-  LOG(INPUT) << "Email address: ";
-  std::string email_address = Input::WaitOnceOrDie<std::string>();
-  LOG(INPUT) << "Password: ";
-  std::string password = Input::WaitOnceOrDie<std::string>();
-  sentinel_client.LoginUser(email_address, password).GetOrDie();
+                          FLAGS_sentinel_route).GetOrDie();
+  //LOG(INPUT) << "Email address: ";
+  //std::string email_address = Input::WaitOnceOrDie<std::string>();
+  //LOG(INPUT) << "Password: ";
+  //std::string password = Input::WaitOnceOrDie<std::string>();
+  //sentinel_client.LoginUser(email_address, password).GetOrDie();
+  ::sentinel::proto::Token token =
+      sentinel_client.LoginUserFromCin().GetOrDie();
   LOG(INFO) << "Login successful";
   return 0;
 }
@@ -62,7 +66,7 @@ int Login(const std::string root_path, const std::vector<std::string>& args) {
 int Create(const std::string root_path, const std::vector<std::string>& args) {
   SentinelClient sentinel_client;
   sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                                 FLAGS_sentinel_route).GetOrDie();
+                          FLAGS_sentinel_route).GetOrDie();
   ::sentinel::proto::User user;
   LOG(INPUT) << "First name: ";
   user.first_name = Input::WaitOnceOrDie<std::string>();

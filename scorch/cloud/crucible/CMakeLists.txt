@@ -34,6 +34,7 @@ add_custom_command(
 
 add_library (
   crucible
+  /root/thilenius/scorch/cloud/crucible/crucible_client.cc
   /root/thilenius/scorch/cloud/crucible/crucible_mapper.cc
   /root/thilenius/scorch/cloud/crucible/crucible_model.cc
   /root/thilenius/scorch/cloud/crucible/crucible_repo.cc

@@ -6,6 +6,7 @@
 #include "base/directory.h"
 #include "base/file.h"
 #include "base/gflags/gflags.h"
+#include "base/input.hh"
 #include "base/path.h"
 #include "base/string.h"
 
@@ -16,6 +17,7 @@ DEFINE_string(sentinel_key_file_name, "sentinel_key.json",
 
 using ::thilenius::base::Directory;
 using ::thilenius::base::File;
+using ::thilenius::base::Input;
 using ::thilenius::base::Path;
 using ::thilenius::base::String;
 
@@ -71,6 +73,14 @@ ValueOf<::sentinel::proto::Token> SentinelClient::LoginUser(
             "Sentinel remote exception: " + op_failure.user_message};
   }
   return {std::move(token)};
+}
+
+ValueOf<::sentinel::proto::Token> SentinelClient::LoginUserFromCin() {
+  std::cout << "Email Address: ";
+  std::string email_address = Input::WaitOnceOrDie<std::string>();
+  std::cout << "Password: ";
+  std::string password = Input::WaitOnceOrDie<std::string>(true);
+  return LoginUser(email_address, password);
 }
 
 ValueOf<bool> SentinelClient::ValidateToken(

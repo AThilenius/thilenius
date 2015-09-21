@@ -7,7 +7,7 @@
 #include "cloud/sentinel/server/sentinel_handler.h"
 #include "cloud/utils/thrift_http_server.hh"
 
-DEFINE_int32(server_port, 80, "The port for the Sentinel server.");
+DEFINE_int32(server_port, 2100, "The port for the Sentinel server.");
 
 using ::thilenius::cloud::utils::ThriftHttpServer;
 using ::thilenius::cloud::sentinel::server::SentinelHandler;

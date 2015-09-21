@@ -14,25 +14,6 @@ namespace scorch {
 namespace cloud {
 namespace crucible {
 
-// STRUCTURE -
-// {
-//   repo_uuid,
-//   base_repo_uuid,
-//   user_uuid,
-//   repo_name,
-//   creation_timestamp
-//   change_lists: [
-//     {
-//       change_list_uuid,
-//       user_uuid,
-//       timestamp,
-//       added_files: [ File.. ],
-//       modified_files: [ FileDelta... ],
-//       removed_files: [ FileInfo... ]
-//     }, { ...
-//   ]
-// }, { ...
-
 class CrucibleModel {
  public:
   CrucibleModel(::mongo::DBClientConnection& connection,
@@ -40,15 +21,16 @@ class CrucibleModel {
       : connection_(connection), table_(table) {}
 
   // Querying
-  bool FindRepoById(::crucible::proto::Repo* repo, const std::string& repo_uuid);
+  bool FindRepoById(::crucible::proto::Repo* repo,
+                    const std::string& repo_uuid);
 
-  bool FindRepoByUserIdAndRepoName(::crucible::proto::Repo* repo,
-                                   const std::string& user_uuid,
-                                   const std::string& repo_name);
+  bool FindRepoByRepoName(::crucible::proto::Repo* repo,
+                          const std::string& repo_name);
 
-  std::vector<::crucible::proto::Repo> FindReposByUserId(const std::string& user_uuid);
+  std::vector<::crucible::proto::RepoHeader> FindRepoHeadersByUserId(
+      const std::string& user_uuid);
 
-  std::vector<::crucible::proto::Repo> FindReposByRepoBaseId(
+  std::vector<::crucible::proto::RepoHeader> FindRepoHeadersByRepoBaseId(
       const std::string& base_repo_uuid);
 
   // Saving
