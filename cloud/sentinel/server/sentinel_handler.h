@@ -4,11 +4,11 @@
 #ifndef CLOUD_SENTINEL_SENTINEL_HANDLER_H_
 #define CLOUD_SENTINEL_SENTINEL_HANDLER_H_
 
-#include "cloud/sentinel/Sentinel.h"
-#include "cloud/sentinel/sentinel_constants.h"
+#include "cloud/sentinel/gen-cpp2/Sentinel.h"
+#include "cloud/sentinel/gen-cpp2/sentinel_constants.h"
+#include "cloud/sentinel/gen-cpp2/sentinel_types.h"
 #include "cloud/sentinel/sentinel_mapper.h"
 #include "cloud/sentinel/sentinel_model.h"
-#include "cloud/sentinel/sentinel_types.h"
 #include "third_party/mongo/client/dbclient.h"
 
 namespace thilenius {
@@ -16,7 +16,7 @@ namespace cloud {
 namespace sentinel {
 namespace server {
 
-class SentinelHandler : virtual public ::sentinel::proto::SentinelIf {
+class SentinelHandler : virtual public ::sentinel::proto::SentinelSvIf {
  public:
   SentinelHandler();
 

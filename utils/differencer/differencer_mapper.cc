@@ -11,19 +11,19 @@ namespace differencer {
 
 DifferencerMapper::DifferencerMapper() {
   // Diff
-  diff_mapper.add_field("diff_type", &::differencer::Diff::diff_type);
-  diff_mapper.add_field("text", &::differencer::Diff::text);
+  diff_mapper.add_field("diff_type", &::differencer::proto::Diff::diff_type);
+  diff_mapper.add_field("text", &::differencer::proto::Diff::text);
 
   // Span
-  span_mapper.add_field("from", &::differencer::Span::from);
-  span_mapper.add_field("length", &::differencer::Span::length);
+  span_mapper.add_field("from", &::differencer::proto::Span::from);
+  span_mapper.add_field("length", &::differencer::proto::Span::length);
 
   // Patch
-  patch_mapper.add_field("from_span", &::differencer::Patch::from_span,
+  patch_mapper.add_field("from_span", &::differencer::proto::Patch::from_span,
                          span_mapper);
-  patch_mapper.add_field("to_span", &::differencer::Patch::to_span,
+  patch_mapper.add_field("to_span", &::differencer::proto::Patch::to_span,
                          span_mapper);
-  patch_mapper.add_field("diffs", &::differencer::Patch::diffs, diff_mapper);
+  patch_mapper.add_field("diffs", &::differencer::proto::Patch::diffs, diff_mapper);
 }
 
 }  // namespace differencer

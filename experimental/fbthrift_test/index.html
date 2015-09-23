@@ -1,0 +1,25 @@
+<script src="thrift.js"></script>
+<script src="gen-js/Calculator.js"></script>
+<script src="gen-js/calculator_types.js"></script>
+
+Hello World
+
+<script>
+    console.log("Hello, world");
+
+    function calc() {
+        var transport = new Thrift.Transport("http://192.168.59.103:3000/");
+        var protocol = new Thrift.Protocol(transport);
+        var client = new CalculatorClient(protocol);
+
+        console.log("About to call service");
+        try {
+            result = client.add(1, 2);
+            console.log("Got back: " + result);
+        } catch (ouch) {
+            console.log("Got back error: " + ouch.why);
+        }
+    }
+
+    calc();
+</script>

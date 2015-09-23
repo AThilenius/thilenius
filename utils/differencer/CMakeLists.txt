@@ -10,35 +10,32 @@ include_directories (
 )
 
 add_subdirectory (/root/thilenius/base /root/thilenius_bin/base)
-add_subdirectory (/root/thilenius/third_party/thrift
-                  /root/thilenius_bin/third_party/thrift)
 
 file(MAKE_DIRECTORY /root/thilenius_gen/utils/differencer)
 add_custom_command(
   OUTPUT
-    /root/thilenius_gen/utils/differencer/differencer_constants.cpp
-    /root/thilenius_gen/utils/differencer/differencer_types.cpp
+    /root/thilenius_gen/utils/differencer/gen-cpp2/differencer_constants.cpp
+    /root/thilenius_gen/utils/differencer/gen-cpp2/differencer_types.cpp
   COMMAND
-    thrift -r --gen cpp -I /root/thilenius
-    -out /root/thilenius_gen/utils/differencer
+    python -m thrift_compiler.main -r --gen cpp2 -I /root/thilenius
+    --install /root/thilenius_gen/utils/differencer
     /root/thilenius/utils/differencer/differencer.thrift
   DEPENDS
-    libthrift
     /root/thilenius/utils/differencer/differencer.thrift
 )
 
 add_library (
-  differencer
+  differencer STATIC
   /root/thilenius/utils/differencer/differencer.cc
   /root/thilenius/utils/differencer/differencer_mapper.cc
-  /root/thilenius_gen/utils/differencer/differencer_constants.cpp
-  /root/thilenius_gen/utils/differencer/differencer_types.cpp
+  /root/thilenius_gen/utils/differencer/gen-cpp2/differencer_constants.cpp
+  /root/thilenius_gen/utils/differencer/gen-cpp2/differencer_types.cpp
 )
 
 target_link_libraries (
   differencer
   base
-  libthrift
+  thriftcpp2
 )
 
 #===  TESTS ====================================================================
@@ -53,5 +50,5 @@ target_link_libraries (
   base
   differencer
   libgtest_main
-  libthrift
+  thriftcpp2
 )

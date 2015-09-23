@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <thrift/lib/cpp/async/TEventServer.h>
+#include <thrift/lib/cpp/server/TConnectionContext.h>
+#include <thrift/lib/cpp/util/TEventServerCreator.h>
 
 #include "base/log.h"
 #include "base/value_of.hh"
-#include "third_party/thrift/protocol/TJSONProtocol.h"
-#include "third_party/thrift/transport/THttpClient.h"
-#include "third_party/thrift/transport/TTransportUtils.h"
 
 using ::thilenius::base::ValueOf;
 
@@ -26,10 +26,11 @@ class ThriftHttpClient {
   typedef std::shared_ptr<T> ClientPtr;
   ThriftHttpClient(const std::string& ip, int port, const std::string& route)
       : connected_(false),
-        transport_(
-            new ::apache::thrift::transport::THttpClient(ip, port, route)),
+        transport_(new ::apache::thrift::transport::THttpClient(ip, port, route)),
         protocol_(new ::apache::thrift::protocol::TJSONProtocol(transport_)),
-        client_(new T(protocol_)) {}
+        client_(new T(protocol_)) {
+          LOG(INFO) << "Thrift HTTP Client: " << ip << ":" << port;
+        }
 
   ~ThriftHttpClient() { transport_->close(); }
 

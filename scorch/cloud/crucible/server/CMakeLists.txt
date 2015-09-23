@@ -21,4 +21,6 @@ add_executable (
 target_link_libraries (
   server
   crucible
+  /usr/local/lib/libthrift.a
+  /usr/local/lib/libthriftnb.a
 )

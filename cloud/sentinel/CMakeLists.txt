@@ -23,28 +23,27 @@ add_subdirectory (/root/thilenius/utils/differencer
 file(MAKE_DIRECTORY /root/thilenius_gen/cloud/sentinel)
 add_custom_command(
   OUTPUT
-    /root/thilenius_gen/cloud/sentinel/Sentinel.cpp
-    /root/thilenius_gen/cloud/sentinel/SentinelInternal.cpp
-    /root/thilenius_gen/cloud/sentinel/sentinel_constants.cpp
-    /root/thilenius_gen/cloud/sentinel/sentinel_types.cpp
+    /root/thilenius_gen/cloud/sentinel/gen-cpp2/Sentinel.cpp
+    /root/thilenius_gen/cloud/sentinel/gen-cpp2/SentinelInternal.cpp
+    /root/thilenius_gen/cloud/sentinel/gen-cpp2/sentinel_constants.cpp
+    /root/thilenius_gen/cloud/sentinel/gen-cpp2/sentinel_types.cpp
   COMMAND
-    thrift -r --gen cpp -I /root/thilenius
-    -out /root/thilenius_gen/cloud/sentinel
+    python -m thrift_compiler.main -r --gen cpp2 -I /root/thilenius
+    --install /root/thilenius_gen/cloud/sentinel
     /root/thilenius/cloud/sentinel/sentinel.thrift
   DEPENDS
-    libthrift
     /root/thilenius/cloud/sentinel/sentinel.thrift
 )
 
 add_library (
-  sentinel
+  sentinel STATIC
   /root/thilenius/cloud/sentinel/sentinel_client.cc
   /root/thilenius/cloud/sentinel/sentinel_mapper.cc
   /root/thilenius/cloud/sentinel/sentinel_model.cc
-  /root/thilenius_gen/cloud/sentinel/Sentinel.cpp
-  /root/thilenius_gen/cloud/sentinel/SentinelInternal.cpp
-  /root/thilenius_gen/cloud/sentinel/sentinel_constants.cpp
-  /root/thilenius_gen/cloud/sentinel/sentinel_types.cpp
+  /root/thilenius_gen/cloud/sentinel/gen-cpp2/Sentinel.cpp
+  /root/thilenius_gen/cloud/sentinel/gen-cpp2/SentinelInternal.cpp
+  /root/thilenius_gen/cloud/sentinel/gen-cpp2/sentinel_constants.cpp
+  /root/thilenius_gen/cloud/sentinel/gen-cpp2/sentinel_types.cpp
 )
 
 target_link_libraries (

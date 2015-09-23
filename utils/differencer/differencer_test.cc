@@ -5,8 +5,8 @@
 #include "base/log.h"
 #include "utils/differencer/differencer.h"
 
-using ::differencer::Diff;
-using ::differencer::Patch;
+using ::differencer::proto::Diff;
+using ::differencer::proto::Patch;
 using ::thilenius::utils::differencer::Differencer;
 
 namespace thilenius {

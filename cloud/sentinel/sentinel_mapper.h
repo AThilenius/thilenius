@@ -4,8 +4,8 @@
 #ifndef CLOUD_SENTINEL_SENTINEL_MAPPER_H_
 #define CLOUD_SENTINEL_SENTINEL_MAPPER_H_
 
-#include "cloud/sentinel/sentinel_constants.h"
-#include "cloud/sentinel/sentinel_types.h"
+#include "cloud/sentinel/gen-cpp2/sentinel_constants.h"
+#include "cloud/sentinel/gen-cpp2/sentinel_types.h"
 #include "third_party/mongoxx/mongoxx.hh"
 
 namespace thilenius {

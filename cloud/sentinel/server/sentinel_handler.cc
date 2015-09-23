@@ -3,8 +3,9 @@
 
 #include "cloud/sentinel/server/sentinel_handler.h"
 
+#include <gflags/gflags.h>
+
 #include "base/crypto.h"
-#include "base/gflags/gflags.h"
 #include "base/guid.h"
 #include "base/string.h"
 
@@ -127,7 +128,7 @@ void SentinelHandler::CreateToken(::sentinel::proto::Token& _return,
   token.token_uuid = new_token_value.GetOrDie();
   token.permission_level = sentinel_entry.user.permission_level;
   if (!model_.SaveToken(token)) {
-    LOG(ERROR) << "Failed to save token to MongoDB: " << token;
+    LOG(ERROR) << "Failed to save token to MongoDB: " << token.token_uuid;
     ThrowOpFailure("Internal server error");
   }
   _return = std::move(token);
@@ -169,7 +170,7 @@ void SentinelHandler::FindUser(::sentinel::proto::User& _return,
   token.token_uuid = new_token_value.GetOrDie();
   token.permission_level = permission_level;
   if (!model_.SaveToken(token)) {
-    LOG(ERROR) << "Failed to save token to MongoDB: " << token;
+    LOG(ERROR) << "Failed to save token to MongoDB: " << token.token_uuid;
     ThrowOpFailure("Internal server error");
   }
   return std::move(token);

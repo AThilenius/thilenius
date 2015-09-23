@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/value_of.hh"
-#include "cloud/sentinel/Sentinel.h"
-#include "cloud/sentinel/sentinel_constants.h"
+#include "cloud/sentinel/gen-cpp2/Sentinel.h"
+//#include "cloud/sentinel/gen-cpp2/sentinel_constants.h"
+//#include "cloud/sentinel/gen-cpp2/sentinel_types.h"
 #include "cloud/sentinel/sentinel_mapper.h"
-#include "cloud/sentinel/sentinel_types.h"
-#include "cloud/utils/thrift_http_client.hh"
+//#include "cloud/utils/thrift_http_client.hh"
 
 using ::thilenius::base::ValueOf;
 using ::thilenius::cloud::sentinel::SentinelMapper;

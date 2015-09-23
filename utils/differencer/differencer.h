@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "utils/differencer/differencer_constants.h"
-#include "utils/differencer/differencer_types.h"
+#include "utils/differencer/gen-cpp2/differencer_constants.h"
+#include "utils/differencer/gen-cpp2/differencer_types.h"
 
 namespace thilenius {
 namespace utils {
@@ -17,14 +17,14 @@ namespace differencer {
 class Differencer {
  public:
 
-  std::vector<::differencer::Patch> PatchesFromStrings(
+  std::vector<::differencer::proto::Patch> PatchesFromStrings(
       const std::string& from, const std::string& to) const;
 
   std::string ApplyPatches(
       const std::string& original,
-      const std::vector<::differencer::Patch>& patches) const;
+      const std::vector<::differencer::proto::Patch>& patches) const;
 
-  void PrintPatchDebugString(const ::differencer::Patch& patch) const;
+  void PrintPatchDebugString(const ::differencer::proto::Patch& patch) const;
 };
 
 }  // namespace differencer

@@ -21,4 +21,11 @@ add_executable (
 target_link_libraries (
   server
   sentinel
+  boost_system
+  pthread
+  glog
+  gflags
+  folly
+  thrift
+  thriftcpp2
 )
