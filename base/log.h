@@ -9,6 +9,10 @@
 namespace thilenius {
 namespace base {
 
+#ifdef LOG
+#undef LOG
+#endif
+
 // Macros
 #define LOG(level) \
   thilenius::base::Log(thilenius::base::LogLevel::level).GetOStringStream()

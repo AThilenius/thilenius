@@ -3,9 +3,10 @@
 
 #include "base/auto_update.h"
 
+#include <gflags/gflags.h>
+
 #include "base/directory.h"
 #include "base/file.h"
-#include "base/gflags/gflags.h"
 #include "base/http.h"
 #include "base/json.h"
 #include "base/log.h"
@@ -44,7 +45,7 @@ void AutoUpdate::UpdateAtCurrentExecutable(const std::string& update_json_url) {
     return;
   }
   ::nlohmann::json json = ::nlohmann::json::parse(json_value.GetOrDie());
-  std::string this_version = gflags::VersionString();
+  std::string this_version = google::VersionString();
   if (!json["latest"].is_object()) {
     LOG(WARNING) << "Failed to parse update JSON";
     return;
@@ -93,7 +94,7 @@ void AutoUpdate::UpdateAtCurrentExecutable(const std::string& update_json_url) {
     LOG(INFO) << "Trying to relaunch...";
     // Need to mark it executable first
     Process::ExecuteCommandSync("chmod", {"+x", exe_path}, true);
-    std::vector<std::string> args = ::gflags::GetArgvs();
+    std::vector<std::string> args = google::GetArgvs();
     args.push_back("--no_update");
     int exit_code = Process::ExecuteCommandSync(exe_path, args, false);
     exit(exit_code);

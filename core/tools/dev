@@ -19,7 +19,7 @@ if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
 else
   if [ ${FLAGS_new} -eq ${FLAGS_TRUE} ]; then
     WARN "Creating a new dev container."
-    docker run --privileged -it -v $HOME/thilenius:/root/thilenius\
+    docker run --privileged -it -v $HOME/thilenius:/root/thilenius -p 3000:80\
         athilenius/dev_env
   else
     # Esiting container
@@ -36,7 +36,7 @@ else
       else
         WARN "Creating a new dev container."
         docker run --privileged -it -v $HOME/thilenius:/root/thilenius\
-            athilenius/dev_env
+            -p 3000:80 athilenius/dev_env
       fi
     fi
   fi

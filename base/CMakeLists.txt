@@ -8,29 +8,6 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Threads REQUIRED)
 include(ExternalProject)
 
-#===  BOOST  ===================================================================
-ExternalProject_Add (
-  boost
-  URL http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz
-  BUILD_IN_SOURCE 1
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
-  CONFIGURE_COMMAND ./bootstrap.sh
-  BUILD_COMMAND  ./b2 install
-    --without-python
-    --without-mpi
-    --disable-icu
-    --prefix=/usr
-    --threading=multi
-    --variant=release
-    -s NO_BZIP2=1
-    -q
-    -j8
-  # Handled by the build command
-  INSTALL_COMMAND ""
-  INSTALL_DIR /usr
-)
-
 ExternalProject_Add (
   boost_process
   URL http://www.highscore.de/boost/process.zip
@@ -46,25 +23,10 @@ ExternalProject_Add (
       /usr/include/boost/process/operations.hpp
 )
 
-#===  GOOGLE FLAGS  ============================================================
-ExternalProject_Add (
-  gflags
-  URL https://github.com/gflags/gflags/archive/v2.1.2.zip
-)
-add_library(libgflags IMPORTED STATIC GLOBAL)
-add_dependencies(libgflags gflags)
-
-ExternalProject_Get_Property(gflags source_dir binary_dir)
-set_target_properties(libgflags PROPERTIES
-    "IMPORTED_LOCATION" "${binary_dir}/lib/libgflags.a"
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-)
-
 #===  GOOGLE TEST  =============================================================
 ExternalProject_Add (
   gtest
   URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
-  DEPENDS gflags
   INSTALL_COMMAND ""
 )
 # Gtest
@@ -89,7 +51,6 @@ ExternalProject_Add (
   gmock
   URL https://googlemock.googlecode.com/files/gmock-1.7.0.zip
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gmock
-  DEPENDS gflags
   INSTALL_COMMAND ""
 )
 add_library(libgmock IMPORTED STATIC GLOBAL)
@@ -134,19 +95,6 @@ set_target_properties(libcurl PROPERTIES
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
-#===  LIB EVENT  ===============================================================
-ExternalProject_Add (
-  event
-  URL https://github.com/libevent/libevent/archive/master.zip
-)
-add_library(libevent IMPORTED STATIC GLOBAL)
-add_dependencies(libevent event)
-
-set_target_properties(libevent PROPERTIES
-    "IMPORTED_LOCATION" "/usr/local/lib/libevent.a"
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-)
-
 #===  BASE LIB  ================================================================
 include_directories("/root/thilenius")
 
@@ -171,11 +119,8 @@ add_library (
 
 add_dependencies (
   base
-  boost
   boost_process
   libcurl
-  libevent
-  libgflags
   libgmock
   libgtest
   libz
@@ -189,12 +134,10 @@ target_link_libraries (
   boost_thread
   crypto
   libcurl
-  libgflags
   libgmock
   libgtest
   ssl
   libz
-  libevent
 )
 
 #===  BASE TESTS  ==============================================================

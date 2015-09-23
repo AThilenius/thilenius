@@ -1,0 +1,47 @@
+#!/bin/bash
+set -ex
+
+mkdir --parent /root/thilenius_bin/third_party/fbthrift
+cd /root/thilenius_bin/third_party/fbthrift
+
+# Get needed Folly version first
+git clone https://github.com/facebook/fbthrift
+FOLLY_VERSION="$(cat fbthrift/thrift/build/FOLLY_VERSION)"
+echo "Folly version: $FOLLY_VERSION"
+
+# Install Folly
+pushd .
+cd fbthrift/thrift/build
+mkdir deps
+cd deps
+git clone https://github.com/facebook/folly
+cd folly/folly
+git checkout "$FOLLY_VERSION"
+if [[ -x "./build/deps_ubuntu_14.04.sh" ]] ; then
+  "./build/deps_ubuntu_14.04.sh"
+fi
+autoreconf -if
+./configure
+make -j8
+make install -j8
+ldconfig
+popd
+
+# Install Wangle
+git clone https://github.com/facebook/wangle
+cd wangle/wangle
+cmake .
+make -j8
+make install -j8
+cd ../..
+
+# Install FB Thrift
+# Already cloned
+cd fbthrift/thrift
+autoreconf -if
+./configure
+make -j8
+make install -j8
+cd ../..
+
+echo "Done."

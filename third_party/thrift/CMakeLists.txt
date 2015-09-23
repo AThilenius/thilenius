@@ -22,18 +22,17 @@ ExternalProject_Add(
   BUILD_IN_SOURCE 1
 )
 include_directories(${thrift_PREFIX}/include)
-set(THRIFT_LIBRARIES /usr/local/lib/libthrift.a)
 
-# Create a libthrift target to be used as a dependency by test programs
 add_library(libthrift IMPORTED STATIC GLOBAL)
 add_dependencies(libthrift thrift)
-
-# Set thrift properties
-ExternalProject_Get_Property(thrift source_dir binary_dir)
 set_target_properties(libthrift PROPERTIES
-    "IMPORTED_LOCATION" "${THRIFT_LIBRARIES}"
+    "IMPORTED_LOCATION" "/usr/local/lib/libthrift.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )
 
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
-include_directories("${source_dir}/include")
+add_library(libthriftnb IMPORTED STATIC GLOBAL)
+add_dependencies(libthriftnb thrift)
+set_target_properties(libthriftnb PROPERTIES
+    "IMPORTED_LOCATION" "/usr/local/lib/libthriftnb.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+)

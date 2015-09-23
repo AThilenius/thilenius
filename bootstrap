@@ -1,0 +1,42 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+# Install Deps
+INFO 'Installing needed apt-get packages'
+apt-get update -y
+apt-get install -y \
+  libdouble-conversion-dev \
+  libssl-dev \
+  make \
+  zip \
+  git \
+  autoconf \
+  libtool \
+  g++ \
+  libboost-all-dev \
+  flex \
+  bison \
+  libgoogle-glog-dev \
+  scons \
+  libkrb5-dev \
+  libsnappy-dev \
+  libsasl2-dev \
+  libnuma-dev \
+  libevent-dev \
+  git || EROR 'Failed to run apt-get'
+
+#INFO 'Buidling Facebook Thrift'
+#pushd /root/thilenius/third_party/fbthrift
+#./install_fbthrift || EROR 'Failed to build FBThrift'
+#popd
+
+#INFO 'Building base libraries'
+#pushd /root/thilenius/base
+#build || EROR 'Failed to build base libs'
+#popd
+
+
+INFO 'Updating libs'
+sudo ldconfig
+
+INFO 'Bootstrap done.'
