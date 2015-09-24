@@ -1,7 +1,8 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
-#include "base/gflags/gflags.h"
+#include <gflags/gflags.h>
+
 #include "base/log.h"
 #include "cloud/utils/thrift_http_server.hh"
 #include "scorch/cloud/crucible/Crucible.h"

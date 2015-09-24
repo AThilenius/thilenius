@@ -1,8 +1,9 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
+#include <gflags/gflags.h>
+
 #include "base/arguments.h"
-#include "base/gflags/gflags.h"
 #include "base/input.hh"
 #include "base/log.h"
 #include "base/path.h"
@@ -88,7 +89,7 @@ int Create(const std::string root_path, const std::vector<std::string>& args) {
 }  // namespace thilenius
 
 int main(int argc, char** argv) {
-  ::gflags::ParseCommandLineFlags(&argc, &argv, true);
+  ::google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
     LOG(FATAL) << "Usage: sentinel <command> <command_args>";
   }

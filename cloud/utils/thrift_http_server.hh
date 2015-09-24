@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <thrift/protocol/TJSONProtocol.h>
+#include <thrift/server/TThreadedServer.h>
+#include <thrift/transport/THttpServer.h>
+#include <thrift/transport/TServerSocket.h>
 
 #include "base/log.h"
-#include "third_party/thrift/protocol/TJSONProtocol.h"
-#include "third_party/thrift/server/TSimpleServer.h"
-#include "third_party/thrift/transport/THttpServer.h"
-#include "third_party/thrift/transport/TServerSocket.h"
 
 namespace thilenius {
 namespace cloud {
@@ -45,7 +45,7 @@ class ThriftHttpServer {
       server_transport_;
   ::boost::shared_ptr<::apache::thrift::transport::TTransportFactory>
       transport_factory_;
-  ::apache::thrift::server::TSimpleServer server_;
+  ::apache::thrift::server::TThreadedServer server_;
 };  // class ThriftHttpClient
 
 }  // namespace utils

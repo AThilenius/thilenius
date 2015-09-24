@@ -3,9 +3,10 @@
 
 #include "cloud/sentinel/sentinel_client.h"
 
+#include <gflags/gflags.h>
+
 #include "base/directory.h"
 #include "base/file.h"
-#include "base/gflags/gflags.h"
 #include "base/input.hh"
 #include "base/path.h"
 #include "base/string.h"
@@ -104,10 +105,12 @@ ValueOf<::sentinel::proto::Token> SentinelClient::LoadProjectToken(
   std::string sentinel_key_json_path =
       Path::Combine(sentinel_dir_path, FLAGS_sentinel_key_file_name);
   if (!Directory::Exists(project_path)) {
-    LOG(FATAL) << "Sentinel failed to find the directory " << project_path;
+    return {::sentinel::proto::Token(),
+            StrCat("Sentinel failed to find the directory ", project_path)};
   }
   if (!File::Exists(sentinel_key_json_path)) {
-    LOG(FATAL) << "Sentinel failed to find a keyfile in " << project_path;
+    return {::sentinel::proto::Token(),
+            StrCat("Sentinel failed to find a keyfile in ", project_path)};
   }
   std::string json = File::ReadContentsOrDie(sentinel_key_json_path);
   return sentinel_mapper_.token_mapper.from_bson(::mongo::fromjson(json));

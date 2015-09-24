@@ -3,8 +3,9 @@
 
 #include "cloud/sentinel/server/sentinel_handler.h"
 
+#include <gflags/gflags.h>
+
 #include "base/crypto.h"
-#include "base/gflags/gflags.h"
 #include "base/guid.h"
 #include "base/string.h"
 

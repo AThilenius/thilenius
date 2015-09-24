@@ -3,11 +3,11 @@
 
 #include "scorch/cloud/crucible/crucible_client.h"
 
+#include <gflags/gflags.h>
 #include <set>
 
 #include "base/directory.h"
 #include "base/file.h"
-#include "base/gflags/gflags.h"
 #include "base/log.h"
 #include "base/path.h"
 #include "base/string.h"
@@ -48,6 +48,7 @@ ValueOf<void> CrucibleClient::Connect(const std::string& crucible_ip,
   sentinel_port_ = sentinel_port;
   sentinel_route_ = sentinel_route;
   // Connect crucible
+  LOG(INFO) << "Connection to Crucible";
   http_client_ptr_ = ProtoCrucibleClientPtr(
       new ThriftHttpClient<::crucible::proto::CrucibleClient>(
           crucible_ip, crucible_port, crucible_route));
@@ -56,6 +57,7 @@ ValueOf<void> CrucibleClient::Connect(const std::string& crucible_ip,
     return {connection.GetError()};
   }
   // Connect sentinel
+  LOG(INFO) << "Connection to Sentinel";
   auto sentinel_connection =
       sentinel_client_.Connect(sentinel_ip_, sentinel_port_, sentinel_route_);
   if (!sentinel_connection.IsValid()) {
@@ -86,7 +88,6 @@ ValueOf<CrucibleRepo> CrucibleClient::CreateNewBaseRepoInDirectory(
     http_client_ptr_->ConnectOrDie()->CreateBaseRepo(repo_proto, token,
                                                      repo_name);
   } catch (::crucible::proto::OperationFailure op_failure) {
-    LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
     return {CrucibleRepo(),
             StrCat("Crucible remote exception: ", op_failure.user_message)};
   } catch (...) {
@@ -127,7 +128,6 @@ ValueOf<CrucibleRepo> CrucibleClient::CloneBaseRepoInDirectory(
     http_client_ptr_->ConnectOrDie()->CreateForkedRepo(repo_proto, token,
                                                        base_repo_name);
   } catch (::crucible::proto::OperationFailure op_failure) {
-    LOG(FATAL) << "Crucible remote exception: " << op_failure.user_message;
     return {CrucibleRepo(),
             StrCat("Crucible remote exception: ", op_failure.user_message)};
   } catch (...) {
@@ -166,14 +166,16 @@ ValueOf<::sentinel::proto::Token> CrucibleClient::LoginAndAuthroSecondary(
   ValueOf<::sentinel::proto::Token> token_value =
       sentinel_client_.LoginUserFromCin();
   if (!token_value.IsValid()) {
-    return {::sentinel::proto::Token(), token_value.GetError()};
+    return {::sentinel::proto::Token(),
+            StrCat("Sentinel Exception: ", token_value.GetError())};
   }
   ::sentinel::proto::Token token = token_value.GetOrDie();
   // Before doing anything else, author a secondary token with the primary
   ValueOf<::sentinel::proto::Token> stoken_value = sentinel_client_.AuthorToken(
       token, ::sentinel::proto::g_sentinel_constants.SECONDARY_THRESHOLD);
   if (!stoken_value.IsValid()) {
-    return {::sentinel::proto::Token(), stoken_value.GetError()};
+    return {::sentinel::proto::Token(),
+            StrCat("Sentinel Exception: ", stoken_value.GetError())};
   }
   sentinel_client_.SaveProjectToken(stoken_value.GetOrDie(), path);
   return std::move(token);

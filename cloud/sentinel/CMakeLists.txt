@@ -53,4 +53,5 @@ target_link_libraries (
   #libthrift
   differencer
   libmongoclient
+  gflags
 )

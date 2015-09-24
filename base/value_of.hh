@@ -16,7 +16,7 @@ class ValueOf {
  public:
   ValueOf(T&& value) : value_(value), is_valid_(true) {}
   ValueOf(T&& value, std::string error)
-      : value_(value), error_(std::move(error)), is_valid_(false) {}
+      : value_(value), error_(std::move(error)), is_valid_(false) { }
 
   T GetOrDie() {
     if (!IsValid()) {

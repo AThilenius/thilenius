@@ -3,15 +3,16 @@
 
 #include "scorch/cloud/crucible/crucible_repo.h"
 
+#include <gflags/gflags.h>
 #include <set>
 
 #include "base/directory.h"
 #include "base/file.h"
-#include "base/gflags/gflags.h"
 #include "base/log.h"
 #include "base/path.h"
 #include "base/string.h"
 #include "base/time.h"
+#include "cloud/sentinel/sentinel_client.h"
 
 DECLARE_string(crucible_dir_name);
 DECLARE_string(crucible_repo_file_cache_name);
@@ -21,6 +22,7 @@ using ::thilenius::base::File;
 using ::thilenius::base::Path;
 using ::thilenius::base::String;
 using ::thilenius::base::Time;
+using ::thilenius::cloud::sentinel::SentinelClient;
 
 namespace thilenius {
 namespace scorch {
@@ -49,10 +51,40 @@ ValueOf<void> CrucibleRepo::Connect(const std::string& crucible_ip,
     return {connection.GetError()};
   }
   connected_ = true;
+  // Load token from file
+  SentinelClient sentinel_client;
+  ValueOf<::sentinel::proto::Token> token_value =
+      sentinel_client.LoadProjectToken(project_path_);
+  if (!token_value.IsValid()) {
+    return {token_value.GetError()};
+  }
+  token_ = token_value.GetOrDie();
+  // Load repo info from disk
+  std::string crucible_dir_path =
+      Path::Combine(project_path_, FLAGS_crucible_dir_name);
+  std::string crucible_repo_json_path =
+      Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
+  if (!File::Exists(crucible_repo_json_path)) {
+    return {StrCat("Failed to find a crucible repo file at ",
+                   crucible_repo_json_path)};
+  }
+  repo_ = crucible_mapper_.repo_mapper.from_bson(
+      ::mongo::fromjson(File::ReadContentsOrDie(crucible_repo_json_path)));
   return {};
 }
 
-ValueOf<void> CrucibleRepo::SyncToHead() { return {}; }
+ValueOf<void> CrucibleRepo::SyncToHead() {
+  std::map<std::string, ::crucible::proto::File> latest_files =
+      ReconstructFilesForCL(repo_.repo_header.latest_change_list_uuid);
+  for (const auto& file : latest_files) {
+    std::string full_path = Path::Combine(project_path_, file.first);
+    if (!File::WriteToFile(full_path, file.second.source)) {
+      LOG(WARNING) << "Failed to write file " << full_path;
+    }
+  }
+  LOG(INFO) << "Synced to CL: " << repo_.repo_header.latest_change_list_uuid;
+  return {};
+}
 
 ValueOf<RepoSyncStatus> CrucibleRepo::SyncStatus() const {
   if (!connected_) {
@@ -98,7 +130,8 @@ ValueOf<RepoSyncStatus> CrucibleRepo::SyncStatus() const {
   ::crucible::proto::ChangeList change_list;
   change_list.user_uuid = repo_.repo_header.user_uuid;
   change_list.timestamp = std::to_string(Time::EpochMilliseconds());
-  // First find all files recursive (Glob them) without the cruible_repo.json
+  change_list.change_list_uuid = "ERROR";
+  // First find all files recursive (Glob them)
   // If this is a forked repo, then just consider files already in the repo,
   // that aren't frozen
   bool is_forked_repo = !String::Empty(repo_.repo_header.base_repo_uuid);
@@ -112,8 +145,8 @@ ValueOf<RepoSyncStatus> CrucibleRepo::SyncStatus() const {
   } else {
     for (const auto& full_path :
          Directory::GetChildrenFilesRecursive(project_path_)) {
-      if (String::EndsWith(Path::WithoutEdgeSlashes(full_path),
-                           FLAGS_crucible_repo_file_cache_name)) {
+      if (String::BeginsWith(Path::RelativePath(full_path, project_path_),
+                             FLAGS_crucible_dir_name)) {
         continue;
       }
       all_files.insert(full_path);
@@ -196,8 +229,7 @@ ValueOf<::crucible::proto::ChangeList> CrucibleRepo::Commit() {
     return {::crucible::proto::ChangeList(),
             "In Commit, Crucible server threw an unhandled exception."};
   }
-  repo_.repo_header.latest_change_list_uuid =
-      new_change_list.change_list_uuid;
+  repo_.repo_header.latest_change_list_uuid = new_change_list.change_list_uuid;
   repo_.change_lists.push_back(new_change_list);
   // Save it to disk
   std::string json = crucible_mapper_.repo_mapper.to_json(repo_);

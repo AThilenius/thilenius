@@ -42,6 +42,9 @@ class Input {
       value = Read<T>();
     }
     SetStdinEcho(true);
+    if (suppress_cout) {
+      std::cout << std::endl;
+    }
     return value.GetOrDie();
   }
 
@@ -50,6 +53,9 @@ class Input {
     SetStdinEcho(!suppress_cout);
     ValueOf<T> val = Read<T>();
     SetStdinEcho(true);
+    if (suppress_cout) {
+      std::cout << std::endl;
+    }
     return val.GetOrDie();
   }
 
@@ -58,6 +64,9 @@ class Input {
     SetStdinEcho(!suppress_cout);
     ValueOf<T> val = Read<T>();
     SetStdinEcho(true);
+    if (suppress_cout) {
+      std::cout << std::endl;
+    }
     return std::move(val);
   }
 

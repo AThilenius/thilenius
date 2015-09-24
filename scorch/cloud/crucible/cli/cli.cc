@@ -1,11 +1,11 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
-#include <vector>
+#include <gflags/gflags.h>
 #include <string>
+#include <vector>
 
 #include "base/arguments.h"
-#include "base/gflags/gflags.h"
 #include "base/log.h"
 #include "base/path.h"
 #include "scorch/cloud/crucible/crucible_client.h"
@@ -67,9 +67,9 @@ int Create(const std::string root_path, const std::vector<std::string>& args) {
     LOG(FATAL) << "Expected 1 argument, got " << args.size();
   }
   CrucibleClient crucible_client;
-  crucible_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                          FLAGS_sentinel_route, FLAGS_crucible_ip,
-                          FLAGS_crucible_port, FLAGS_crucible_route);
+  crucible_client.Connect(FLAGS_crucible_ip, FLAGS_crucible_port,
+                          FLAGS_crucible_route, FLAGS_sentinel_ip,
+                          FLAGS_sentinel_port, FLAGS_sentinel_route);
   CrucibleRepo crucible_repo =
       crucible_client.CreateNewBaseRepoInDirectory(root_path, args[0])
           .GetOrDie();
@@ -77,13 +77,30 @@ int Create(const std::string root_path, const std::vector<std::string>& args) {
   return 0;
 }
 
+int Clone(const std::string root_path, const std::vector<std::string>& args) {
+  if (args.size() < 1) {
+    LOG(ERROR) << "Usage: crucible clone [flags] <repo_name>";
+    LOG(FATAL) << "Expected 1 argument, got " << args.size();
+  }
+  CrucibleClient crucible_client;
+  crucible_client.Connect(FLAGS_crucible_ip, FLAGS_crucible_port,
+                          FLAGS_crucible_route, FLAGS_sentinel_ip,
+                          FLAGS_sentinel_port, FLAGS_sentinel_route);
+  CrucibleRepo crucible_repo =
+      crucible_client.CloneBaseRepoInDirectory(root_path, args[0])
+          .GetOrDie();
+  LOG(INFO) << "Cloned Base: " << args[0];
+  return 0;
+}
+
 int Status(const std::string root_path, const std::vector<std::string>& args) {
   CrucibleClient crucible_client;
-  crucible_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                          FLAGS_sentinel_route, FLAGS_crucible_ip,
-                          FLAGS_crucible_port, FLAGS_crucible_route);
+  crucible_client.Connect(FLAGS_crucible_ip, FLAGS_crucible_port,
+                          FLAGS_crucible_route, FLAGS_sentinel_ip,
+                          FLAGS_sentinel_port, FLAGS_sentinel_route);
   CrucibleRepo repo =
       crucible_client.LoadRepoFromDirectory(root_path).GetOrDie();
+  LOG(INFO) << "Loaded repo from disk at: " << root_path;
   switch (repo.SyncStatus().GetOrDie()) {
     case RepoSyncStatus::HEAD: {
       LOG(INFO) << "Status: HEAD";
@@ -134,7 +151,7 @@ int Status(const std::string root_path, const std::vector<std::string>& args) {
 }  // namespace thilenius
 
 int main(int argc, char** argv) {
-  ::gflags::ParseCommandLineFlags(&argc, &argv, true);
+  ::google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
     LOG(FATAL) << "Usage: crucible <command> <command_args>";
   }
@@ -143,6 +160,8 @@ int main(int argc, char** argv) {
   std::vector<std::string> args = Arguments::ToVector(argc - 2, &argv[2]);
   if (command == "commit") {
     return ::thilenius::scorch::cloud::crucible::cli::Commit(root_path, args);
+  } else if (command == "clone") {
+    return ::thilenius::scorch::cloud::crucible::cli::Clone(root_path, args);
   } else if (command == "create") {
     return ::thilenius::scorch::cloud::crucible::cli::Create(root_path, args);
   } else if (command == "status") {

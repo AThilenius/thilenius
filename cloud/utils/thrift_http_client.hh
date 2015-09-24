@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <thrift/protocol/TJSONProtocol.h>
+#include <thrift/transport/THttpClient.h>
+#include <thrift/transport/TTransportUtils.h>
 
 #include "base/log.h"
 #include "base/value_of.hh"
-#include "third_party/thrift/protocol/TJSONProtocol.h"
-#include "third_party/thrift/transport/THttpClient.h"
-#include "third_party/thrift/transport/TTransportUtils.h"
 
 using ::thilenius::base::ValueOf;
 

@@ -3,7 +3,8 @@
 
 #include "scorch/cloud/crucible/server/crucible_handler.h"
 
-#include "base/gflags/gflags.h"
+#include <gflags/gflags.h>
+
 #include "base/guid.h"
 #include "base/json.h"
 #include "base/log.h"
@@ -58,7 +59,8 @@ void CrucibleHandler::CreateBaseRepo(
   // Make sure the repo doesn't already exit
   ::crucible::proto::Repo repo;
   if (model_.FindRepoByRepoName(&repo, repo_name)) {
-    ThrowOpFailure("A repo with that repo name already exists");
+    _return = std::move(repo);
+    return;
   } else {
     // Create a new one
     ::crucible::proto::RepoHeader repo_header;
@@ -69,7 +71,7 @@ void CrucibleHandler::CreateBaseRepo(
     repo = std::move(::crucible::proto::Repo());
     repo.repo_header = std::move(repo_header);
     model_.SaveRepo(repo);
-    _return = repo;
+    _return = std::move(repo);
   }
 }
 
@@ -87,7 +89,8 @@ void CrucibleHandler::CreateForkedRepo(
   ::crucible::proto::Repo repo;
   // Check if the repo was already created
   if (model_.FindRepoByRepoName(&repo, repo_name)) {
-    ThrowOpFailure("Cloned repo already exists");
+    _return = std::move(repo);
+    return;
   }
   // Find the base repo
   if (model_.FindRepoByRepoName(&repo, base_repo_name)) {
@@ -103,7 +106,7 @@ void CrucibleHandler::CreateForkedRepo(
     cloned_repo.change_lists = std::move(repo.change_lists);
     cloned_repo.repo_header = std::move(repo_header);
     model_.SaveRepo(cloned_repo);
-    _return = cloned_repo;
+    _return = std::move(cloned_repo);
   } else {
     ThrowOpFailure(
         StrCat("Failed to find a base repo with the name ", base_repo_name));
