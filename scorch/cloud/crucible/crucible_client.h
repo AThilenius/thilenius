@@ -41,6 +41,8 @@ class CrucibleClient {
 
   ValueOf<CrucibleRepo> LoadRepoFromDirectory(const std::string& path);
 
+  ValueOf<std::vector<::crucible::proto::RepoHeader>> GetRepoHeadersByUser();
+
  private:
   typedef std::shared_ptr<ThriftHttpClient<::crucible::proto::CrucibleClient>>
       ProtoCrucibleClientPtr;

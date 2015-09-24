@@ -87,9 +87,22 @@ int Clone(const std::string root_path, const std::vector<std::string>& args) {
                           FLAGS_crucible_route, FLAGS_sentinel_ip,
                           FLAGS_sentinel_port, FLAGS_sentinel_route);
   CrucibleRepo crucible_repo =
-      crucible_client.CloneBaseRepoInDirectory(root_path, args[0])
-          .GetOrDie();
+      crucible_client.CloneBaseRepoInDirectory(root_path, args[0]).GetOrDie();
   LOG(INFO) << "Cloned Base: " << args[0];
+  return 0;
+}
+
+int ListRepos(const std::string root_path,
+              const std::vector<std::string>& args) {
+  CrucibleClient crucible_client;
+  crucible_client.Connect(FLAGS_crucible_ip, FLAGS_crucible_port,
+                          FLAGS_crucible_route, FLAGS_sentinel_ip,
+                          FLAGS_sentinel_port, FLAGS_sentinel_route);
+  std::vector<::crucible::proto::RepoHeader> repo_headers =
+      crucible_client.GetRepoHeadersByUser().GetOrDie();
+  for (const auto& repo_header : repo_headers) {
+    LOG(INFO) << "  - " << repo_header.repo_name;
+  }
   return 0;
 }
 
@@ -162,6 +175,9 @@ int main(int argc, char** argv) {
     return ::thilenius::scorch::cloud::crucible::cli::Commit(root_path, args);
   } else if (command == "clone") {
     return ::thilenius::scorch::cloud::crucible::cli::Clone(root_path, args);
+  } else if (command == "list_repos") {
+    return ::thilenius::scorch::cloud::crucible::cli::ListRepos(root_path,
+                                                                args);
   } else if (command == "create") {
     return ::thilenius::scorch::cloud::crucible::cli::Create(root_path, args);
   } else if (command == "status") {

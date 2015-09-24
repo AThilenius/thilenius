@@ -181,6 +181,33 @@ ValueOf<::sentinel::proto::Token> CrucibleClient::LoginAndAuthroSecondary(
   return std::move(token);
 }
 
+ValueOf<std::vector<::crucible::proto::RepoHeader>>
+CrucibleClient::GetRepoHeadersByUser() {
+  if (!connected_) {
+    return {std::vector<::crucible::proto::RepoHeader>(),
+            "Client must be connected before use"};
+  }
+  ValueOf<::sentinel::proto::Token> token_value =
+      sentinel_client_.LoginUserFromCin();
+  if (!token_value.IsValid()) {
+    return {std::vector<::crucible::proto::RepoHeader>(),
+            StrCat("Sentinel Exception: ", token_value.GetError())};
+  }
+  ::sentinel::proto::Token token = token_value.GetOrDie();
+  std::vector<::crucible::proto::RepoHeader> repo_headers;
+  try {
+    http_client_ptr_->ConnectOrDie()->GetRepoHeadersByUser(repo_headers, token);
+  } catch (::crucible::proto::OperationFailure op_failure) {
+    return {std::vector<::crucible::proto::RepoHeader>(),
+            StrCat("Crucible remote exception: ", op_failure.user_message)};
+  } catch (...) {
+    return {std::vector<::crucible::proto::RepoHeader>(),
+            "In GetRepoHeadersByUser, Crucible server threw an unhandled "
+            "exception."};
+  }
+  return {std::move(repo_headers)};
+}
+
 }  // namespace crucible
 }  // namespace cloud
 }  // namespace scorch

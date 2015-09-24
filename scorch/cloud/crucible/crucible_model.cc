@@ -44,10 +44,11 @@ std::vector<::crucible::proto::RepoHeader>
 CrucibleModel::FindRepoHeadersByUserId(const std::string& user_uuid) {
   std::vector<::crucible::proto::RepoHeader> repo_headers;
   ::mongo::BSONObj query = BSON("repo_header.user_uuid" << user_uuid);
-  auto cursor = connection_.query(table_, query);
+  ::mongo::BSONObj filter = BSON("repo_header" << 1);
+  auto cursor = connection_.query(table_, query, 0, 0, &filter);
   while (cursor->more()) {
     // Got a repo header back
-    ::mongo::BSONObj bson = cursor->next();
+    ::mongo::BSONObj bson = cursor->next().getObjectField("repo_header");
     ::crucible::proto::RepoHeader repo_header;
     crucible_mapper_.repo_header_mapper.from_bson(bson, repo_header);
     repo_headers.emplace_back(std::move(repo_header));
