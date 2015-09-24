@@ -44,7 +44,7 @@ struct ChangeList {
 // the client without needing to download everything.
 struct RepoHeader {
   1: string repo_uuid;
-  2: optional string base_repo_uuid;
+  2: string base_repo_uuid;
   3: string user_uuid;
   4: string repo_name;
   5: string creation_timestamp;
