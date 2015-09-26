@@ -17,6 +17,7 @@ SentinelMapper::SentinelMapper() {
   user_mapper.add_field("email_address", &::sentinel::proto::User::email_address);
   user_mapper.add_field("permission_level",
                         &::sentinel::proto::User::permission_level);
+  user_mapper.add_field("student_id", &::sentinel::proto::User::student_id);
 
   // Token
   token_mapper.add_field("user_uuid", &::sentinel::proto::Token::user_uuid);

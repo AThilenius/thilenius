@@ -30,12 +30,6 @@ int Author(const std::string root_path, const std::vector<std::string>& args) {
   SentinelClient sentinel_client;
   sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
                           FLAGS_sentinel_route).GetOrDie();
-  // LOG(INPUT) << "Email address: ";
-  // std::string email_address = Input::WaitOnceOrDie<std::string>();
-  // LOG(INPUT) << "Password: ";
-  // std::string password = Input::WaitOnceOrDie<std::string>();
-  //::sentinel::proto::Token token =
-  // sentinel_client.LoginUser(email_address, password).GetOrDie();
   ::sentinel::proto::Token token =
       sentinel_client.LoginUserFromCin().GetOrDie();
   LOG(INFO) << "Login successful";
@@ -53,14 +47,17 @@ int Login(const std::string root_path, const std::vector<std::string>& args) {
   SentinelClient sentinel_client;
   sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
                           FLAGS_sentinel_route).GetOrDie();
-  //LOG(INPUT) << "Email address: ";
-  //std::string email_address = Input::WaitOnceOrDie<std::string>();
-  //LOG(INPUT) << "Password: ";
-  //std::string password = Input::WaitOnceOrDie<std::string>();
-  //sentinel_client.LoginUser(email_address, password).GetOrDie();
   ::sentinel::proto::Token token =
       sentinel_client.LoginUserFromCin().GetOrDie();
   LOG(INFO) << "Login successful";
+  ::sentinel::proto::User user_partial;
+  user_partial.uuid = token.user_uuid;
+  ::sentinel::proto::User user =
+      sentinel_client.FindUser(token, user_partial).GetOrDie();
+  LOG(INFO) << "First name: " << user.first_name;
+  LOG(INFO) << "Last name: " << user.last_name;
+  LOG(INFO) << "Email Address: " << user.email_address;
+  LOG(INFO) << "Permission Level: " << user.permission_level;
   return 0;
 }
 

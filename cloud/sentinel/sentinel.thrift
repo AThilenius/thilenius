@@ -15,6 +15,8 @@ struct User {
   3: string last_name;
   4: string email_address;
   5: i32 permission_level;
+  // TODO(athilenius): This really should be moved to a new service
+  6: string student_id;
 }
 
 struct Token {

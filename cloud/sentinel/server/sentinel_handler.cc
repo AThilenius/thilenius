@@ -47,9 +47,10 @@ SentinelHandler::SentinelHandler()
   }
 }
 
-void SentinelHandler::CreateUser(::sentinel::proto::User& _return,
-                                 const ::sentinel::proto::User& new_user_partial,
-                                 const std::string& password) {
+void SentinelHandler::CreateUser(
+    ::sentinel::proto::User& _return,
+    const ::sentinel::proto::User& new_user_partial,
+    const std::string& password) {
   if (String::Blank(new_user_partial.first_name) ||
       String::Blank(new_user_partial.last_name) ||
       String::Blank(new_user_partial.email_address) ||
@@ -134,9 +135,9 @@ void SentinelHandler::CreateToken(::sentinel::proto::Token& _return,
   _return = std::move(token);
 }
 
-void SentinelHandler::CreateSecondaryToken(::sentinel::proto::Token& _return,
-                                           const ::sentinel::proto::Token& token,
-                                           const int32_t permission_level) {
+void SentinelHandler::CreateSecondaryToken(
+    ::sentinel::proto::Token& _return, const ::sentinel::proto::Token& token,
+    const int32_t permission_level) {
   if (token.permission_level < sentinel_constants_.USER_THRESHOLD) {
     ThrowOpFailure("Insufficient permissions");
   }
@@ -156,7 +157,22 @@ bool SentinelHandler::CheckToken(const ::sentinel::proto::Token& token) {
 
 void SentinelHandler::FindUser(::sentinel::proto::User& _return,
                                const ::sentinel::proto::Token& token,
-                               const ::sentinel::proto::User& user_partial) {}
+                               const ::sentinel::proto::User& user_partial) {
+  if (!CheckToken(token)) {
+    ThrowOpFailure("Invalid token");
+  }
+  ValueOf<SentinelMapper::SentinelEntry> entry_value =
+      model_.FindUser(user_partial);
+  if (!entry_value.IsValid()) {
+    ThrowOpFailure(entry_value.GetError());
+  }
+  SentinelMapper::SentinelEntry entry = entry_value.GetOrDie();
+  if (entry.user.uuid != token.user_uuid &&
+      entry.user.permission_level > token.permission_level) {
+    ThrowOpFailure("You do not have required permission level");
+  }
+  _return = std::move(entry.user);
+}
 
 ::sentinel::proto::Token SentinelHandler::CreateAndSaveToken(
     const std::string& user_uuid, int permission_level) {

@@ -4,10 +4,9 @@ forgeApp.controller('loginController', [
   '$scope',
   '$location',
   'session',
-  'user',
-  function($scope, $location, session, user) {
+  'crucible',
+  function($scope, $location, session, crucible) {
     $scope.message = 'Look! I am an login page.';
-
     $scope.login = function(username, password) {
       if (isBlank(username) || isBlank(password)) {
         $scope.error = "Missing Fields";
@@ -23,21 +22,21 @@ forgeApp.controller('loginController', [
                 $scope.password = "";
               });
             },
-            function(token) {
+            function(token, user) {
+              // DO NOT SUBMIT - Get repo headers
+              crucible.client.GetRepoHeadersByUser(
+                                  session.session_token, function() {})
+                  .fail(function(jqXHR, status, error) {
+                    console.log("Crucible error: " + error);
+                  })
+                  .done(function(repo_headers) {
+                    console.log("Got repo headers: " +
+                                JSON.stringify(repo_headers, null, 2));
+                  });
               $scope.$apply(function() {
-                // Fetch User Data
-                user.load(
-                    function() {
-                      console.log("Failed to fetch user data after logging in");
-                    },
-                    function(user_data) {
-                      console.log("User logged in: " +
-                                  JSON.stringify(user_data, null, 2));
-                      $scope.$apply(function() {
-                        $scope.username = $scope.password = null;
-                        $location.path("/");
-                      });
-                    });
+                $scope.username = null;
+                $scope.password = null;
+                $location.path("/");
               });
             });
       }

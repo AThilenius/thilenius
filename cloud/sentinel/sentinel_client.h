@@ -44,6 +44,11 @@ class SentinelClient {
   ValueOf<::sentinel::proto::Token> LoadProjectToken(
       const std::string& project_path);
 
+  // Finds user info from the given partial
+  ValueOf<::sentinel::proto::User> FindUser(
+      const ::sentinel::proto::Token& token,
+      const ::sentinel::proto::User& user_partial);
+
   // Saves a token to JSON [default: .anvil/sentinel_key.json]
   bool SaveProjectToken(const ::sentinel::proto::Token& token,
                         const std::string& project_path);

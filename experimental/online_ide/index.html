@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Forge</title>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+<link rel="stylesheet" href="style.css" />
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+<script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
+<script src="scripts.js"></script>
+<base href="/">
+</head>
+
+<body>
+<div class="wrapper-flex">
+  <div class="navbar-flex-header">
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="">
+            <span class="glyphicon glyphicon-play-circle" aria-hidden="true">
+            </span> Run
+          </a></li>
+          <li><a href="">
+            <span class="glyphicon glyphicon-list-alt" aria-hidden="true">
+            </span> Auto Format
+          </a></li>
+          <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
+          <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+            aria-haspopup="true" aria-expanded="false">Dropdown
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="vertical-flex-content">
+
+    <!-- Primary Editor Window -->
+    <div class="horizontal-flex-content-wrapper">
+
+      <div class="left-sidebar-flex">
+        LEFT SIDEBAR
+      </div>
+
+      <div id="editor" class="horizontal-flex-content"></div>
+
+      <div class="right-sidebar-flex">
+        RIGHT SIDEBAR
+      </div>
+
+    </div>
+    <!-- /Primary Editor Window -->
+
+  </div>
+  <div class="vertical-flex-footer">
+    Scorchforge.com &copy; Alec Thilenius 2015</div>
+</div>
+</body>
+
+</html>

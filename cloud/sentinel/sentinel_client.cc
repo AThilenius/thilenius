@@ -116,6 +116,24 @@ ValueOf<::sentinel::proto::Token> SentinelClient::LoadProjectToken(
   return sentinel_mapper_.token_mapper.from_bson(::mongo::fromjson(json));
 }
 
+ValueOf<::sentinel::proto::User> SentinelClient::FindUser(
+    const ::sentinel::proto::Token& token,
+    const ::sentinel::proto::User& user_partial) {
+  ValueOf<void> connection_check = CheckConnection();
+  if (!connection_check.IsValid()) {
+    return {::sentinel::proto::User(), connection_check.GetError()};
+  }
+  auto client = http_client_ptr_->ConnectOrDie();
+  ::sentinel::proto::User user;
+  try {
+    client->FindUser(user, token, user_partial);
+  } catch (::sentinel::proto::OperationFailure op_failure) {
+    return {::sentinel::proto::User(),
+            "Sentinel remote exception: " + op_failure.user_message};
+  }
+  return {std::move(user)};
+}
+
 bool SentinelClient::SaveProjectToken(const ::sentinel::proto::Token& token,
                                       const std::string& project_path) {
   std::string sentinel_dir_path =

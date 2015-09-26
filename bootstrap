@@ -23,6 +23,7 @@ apt-get install -y \
   libsasl2-dev \
   libnuma-dev \
   libevent-dev \
+  nginx \
   git || EROR 'Failed to run apt-get'
 
 #INFO 'Buidling Facebook Thrift'

@@ -2,59 +2,69 @@
 <html ng-app="forgeApp">
 
 <head>
-    <title>Forge</title>
+  <title>Forge</title>
 
-    <!-- Libraries -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+  <!-- Libraries -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+  <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
 
-    <!-- Gen Files -->
-    <script src="gen_files/thrift.js"></script>
-    <script src="gen_files/standard_exceptions_types.js"></script>
-    <script src="gen_files/Authentication.js"></script>
-    <script src="gen_files/authentication_types.js"></script>
-    <script src="gen_files/UserData.js"></script>
-    <script src="gen_files/user_data_types.js"></script>
+  <!-- Thrift -->
+  <script src="gen_files/thrift.js"></script>
 
-    <!-- Common -->
-    <link rel="stylesheet" href="assets/css/common.css" />
+  <!-- Gen Files -->
+  <script src="gen_files/Crucible.js"></script>
+  <script src="gen_files/Sentinel.js"></script>
+  <script src="gen_files/SentinelInternal.js"></script>
+  <script src="gen_files/crucible_types.js"></script>
+  <script src="gen_files/differencer_types.js"></script>
+  <script src="gen_files/sentinel_types.js"></script>
 
-    <script src="app/components/app.module.js"></script>
-    <script src="app/components/app.route.js"></script>
-    <script src="app/shared/js/string.js"></script>
+  <!-- Common -->
+  <link rel="stylesheet" href="assets/css/common.css" />
 
-    <!-- Components -->
-    <script src="app/components/account/login_controller.js"></script>
-    <script src="app/components/account/session_service.js"></script>
-    <script src="app/components/account/user_service.js"></script>
-    <script src="app/components/home/home_controller.js"></script>
+  <script src="app/components/app.module.js"></script>
+  <script src="app/components/app.route.js"></script>
+  <script src="app/shared/js/string.js"></script>
 
-    <base href="/">
+  <!-- Components -->
+  <script src="app/components/account/login_controller.js"></script>
+  <script src="app/components/account/session_service.js"></script>
+  <script src="app/components/home/crucible_service.js"></script>
+  <script src="app/components/home/home_controller.js"></script>
+  <script src="app/components/repo/repo_controller.js"></script>
+
+  <base href="/">
 </head>
 
 <body ng-controller="homeController">
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="navbar-header">
-                <a ng-show="!user.has_data" class="navbar-brand" href="/">Forge</a>
-                <a ng-show="user.has_data" class="navbar-brand" href="/">{{ user.user_data.user_body.first_name.toPascalCase() }}</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#/">Home</a></li>
-                <li ng-show="user.has_data"><a href="" ng-click="user.logout()">Logout</a></li>
-                <li ng-show="!user.has_data"><a href="#login">Login</a></li>
-                <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
-            </ul>
-        </div>
-    </nav>
-    <div id="main">
-        <div ng-view></div>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <a ng-show="!session.user" class="navbar-brand" href="/">Forge</a>
+        <a ng-show="session.user" class="navbar-brand" href="/">
+          {{ session.user.first_name.toPascalCase() }}
+        </a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#/">Home</a></li>
+        <li ng-show="session.user"><a href="#list_repos">Repositories</a></li>
+        <li ng-show="session.user"><a href="" ng-click="session.logout()">
+          Logout
+        </a></li>
+        <li ng-show="!session.user"><a href="#login">Login</a></li>
+        <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
+      </ul>
     </div>
+  </nav>
+  <div id="main">
+      <div ng-view></div>
+  </div>
 </body>
 
 </html>
