@@ -8,69 +8,267 @@
 <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
 <link rel="stylesheet" href="style.css" />
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
 <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
+
+<!-- Common -->
+<script src="app/shared/js/string.js"></script>
+
+<!-- Thrift -->
+<script src="gen_files/thrift.min.js"></script>
+
+<!-- Gen Files -->
+<script src="gen_files/Crucible.js"></script>
+<script src="gen_files/Sentinel.js"></script>
+<script src="gen_files/SentinelInternal.js"></script>
+<script src="gen_files/crucible_types.js"></script>
+<script src="gen_files/differencer_types.js"></script>
+<script src="gen_files/sentinel_types.js"></script>
+
 <script src="scripts.js"></script>
-<base href="/">
+
+<!-- Services -->
+<script src="sentinel_service.js"></script>
+<script src="crucible_service.js"></script>
+
+<!-- Tree View -->
+<script src="/app/directives/tree_view/tree_view.js"></script>
+<link rel="stylesheet" href="/app/directives/tree_view/tree_view.css" />
 </head>
 
-<body>
-<div class="wrapper-flex">
-  <div class="navbar-flex-header">
-    <nav class="navbar navbar-default">
-      <div class="container">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="">
-            <span class="glyphicon glyphicon-play-circle" aria-hidden="true">
-            </span> Run
-          </a></li>
-          <li><a href="">
-            <span class="glyphicon glyphicon-list-alt" aria-hidden="true">
-            </span> Auto Format
-          </a></li>
-          <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
-          <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-            aria-haspopup="true" aria-expanded="false">Dropdown
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
+<body ng-app="forgeApp" ng-controller="forgeController">
 
-  <div class="vertical-flex-content">
-
-    <!-- Primary Editor Window -->
-    <div class="horizontal-flex-content-wrapper">
-
-      <div class="left-sidebar-flex">
-        LEFT SIDEBAR
-      </div>
-
-      <div id="editor" class="horizontal-flex-content"></div>
-
-      <div class="right-sidebar-flex">
-        RIGHT SIDEBAR
-      </div>
-
+<div ng-show="!sentinel.token" class="login-backdrop">
+  <div class="login-middle-align">
+    <div class="login-window">
+      <form role="form-signin">
+        <div ng-show="error" class="alert alert-danger">
+          {{ error }}
+        </div>
+        <h2 class="text-center">Forge</h2>
+        <br>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input class="form-control" ng-model="email" type="email"
+          name="email" placeholder="Email Address">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="form-control" ng-model="password" type="password"
+          name="password" placeholder="Password">
+        </div>
+        <br>
+        <input type="submit" ng-click="login(email, password)"
+        class="btn btn-success" style="width:100px;" value="Sign In">
+      </form>
     </div>
-    <!-- /Primary Editor Window -->
-
   </div>
-  <div class="vertical-flex-footer">
-    Scorchforge.com &copy; Alec Thilenius 2015</div>
+</div>
+
+<div ng-show="sentinel.token">
+  <div class="vertical-flex-content-wrapper">
+    <div class="vertial-flex-header">
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="">
+              <span class="glyphicon glyphicon-play-circle" aria-hidden="true">
+              </span> Run
+            </a></li>
+            <li class="disabled"><a href="">
+              <span class="glyphicon glyphicon-time" aria-hidden="true">
+              </span> File History
+            </a></li>
+            <li><a href="">
+              <span class="glyphicon glyphicon-list-alt" aria-hidden="true">
+              </span> Auto Format
+            </a></li>
+            <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+              role="button" aria-haspopup="true" aria-expanded="false">
+              {{ sentinel.user.last_name.toPascalCase() }} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Action</a></li>
+              <li><a href="#">Another action</a></li>
+              <li><a href="#">Something else here</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#" ng-click="sentinel.logout()">Logout</a></li>
+            </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="vertical-flex-content">
+
+      <!-- Primary Editor Window -->
+      <div class="horizontal-flex-content-wrapper">
+
+        <div class="left-sidebar-flex">
+
+          <div class="sidebar-flex-content-wrapper">
+            <div class="sidebar-flex-header">
+
+              <div class="sidebar-header-icon glyphicon glyphicon-folder-close"
+                ng-class="(activeSidebarTab == 'file') ? 'active' : ''"
+                ng-click="activeSidebarTab = 'file'">
+              </div>
+              <div class="sidebar-header-icon glyphicon glyphicon-time"
+                ng-class="(activeSidebarTab == 'history') ? 'active' : ''"
+                ng-click="activeSidebarTab = 'history'">
+              </div>
+              <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
+                ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
+                ng-click="activeSidebarTab = 'errors'">
+              </div>
+              <div class="sidebar-header-icon glyphicon glyphicon-cog"
+                ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
+                ng-click="activeSidebarTab = 'settings'">
+              </div>
+
+            </div>
+            <div class="sidebar-flex-content">
+              <div ng-show="activeSidebarTab == 'file'" ng-model="fileTree"
+                at-tree-view></div>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="horizontal-flex-content">
+          <div ng-show="!fileTree.selected" id="editor-backdrop" class="noselect">
+          </div>
+          <div ng-show="fileTree.selected" id="editor">// Holy balls this looks awesome!
+            $(function() {
+            // ACE Editor
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/twilight");
+            editor.getSession().setMode("ace/mode/javascript");
+            });</div>
+        </div>
+        <div class="right-sidebar-flex">
+          <button style="background-color: rgba(223, 25, 33, 1); width: 100%;" type="button" class="btn btn-danger">Revert To</button>
+
+          <div class="list-plate-collection">
+            <div class="list-plate-group">
+              <div class="list-plate-header">Sep 24, 2015</div>
+              <div class="list-plate">
+                10:25 AM
+                <span class="label label-default pull-right diff-label">+12 / -5</span>
+              </div>
+              <div class="list-plate">
+                12:32 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:34 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:39 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+            </div>
+
+
+            <div class="list-plate-group">
+              <div class="list-plate-header">Sep 25, 2015</div>
+              <div class="list-plate">
+                10:25 AM
+                <span class="label label-default pull-right diff-label">+12 / -5</span>
+              </div>
+              <div class="list-plate">
+                12:32 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:34 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:39 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+            </div>
+
+
+            <div class="list-plate-group">
+              <div class="list-plate-header">Sep 28, 2015</div>
+              <div class="list-plate">
+                10:25 AM
+                <span class="label label-default pull-right diff-label">+12 / -5</span>
+              </div>
+              <div class="list-plate">
+                12:32 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:34 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:39 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+            </div>
+
+
+            <div class="list-plate-group">
+              <div class="list-plate-header">Sep 29, 2015</div>
+              <div class="list-plate">
+                10:25 AM
+                <span class="label label-default pull-right diff-label">+12 / -5</span>
+              </div>
+              <div class="list-plate">
+                12:32 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:34 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:39 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+            </div>
+
+            <div class="list-plate-group">
+              <div class="list-plate-header">Oct 1, 2015</div>
+              <div class="list-plate">
+                10:25 AM
+                <span class="label label-default pull-right diff-label">+12 / -5</span>
+              </div>
+              <div class="list-plate">
+                12:32 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:34 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+              <div class="list-plate">
+                12:39 AM
+                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <!-- /Primary Editor Window -->
+
+      </div>
+    </div>
+    <div class="vertical-flex-footer">Scorchforge.com &copy; Alec Thilenius 2015</div>
+  </div>
 </div>
 </body>
 

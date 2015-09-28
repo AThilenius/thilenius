@@ -3,23 +3,58 @@ $(function() {
   var editor = ace.edit("editor");
   editor.setTheme("ace/theme/twilight");
   editor.getSession().setMode("ace/mode/javascript");
-
-  // Split Pane
-  var min = 300;
-  var max = 3600;
-  var mainmin = 200;
-  $('#split-bar')
-      .mousedown(function(e) {
-        e.preventDefault();
-        $(document).mousemove(function(e) {
-          e.preventDefault();
-          var x = e.pageX - $('#sidebar').offset().left;
-          if (x > min && x < max && e.pageX < ($(window).width() - mainmin)) {
-            $('#sidebar').css("width", x);
-            $('#main').css("margin-left", x);
-          }
-        });
-      });
-  $(document).mouseup(function(e) { $(document).unbind('mousemove'); });
-
 });
+
+var forgeApp =
+    angular.module('forgeApp', [ 'ngCookies', 'thilenius.tree_view' ]);
+
+forgeApp.controller('forgeController', [
+  '$scope',
+  'sentinel',
+  function($scope, sentinel) {
+    $scope.sentinel = sentinel;
+    $scope.activeSidebarTab = 'file';
+    $scope.fileTree = {
+      parents : [
+        {
+          label : "Sack",
+          children : [
+            {label : "linked_list.h"},
+            {label : "linked_list.cc"},
+            {label : "CMakeLists.txt"}
+          ]
+        },
+        {
+          label : "Linked List",
+          expanded : true,
+          children : [
+            {label : "linked_list.h"},
+            {label : "linked_list.cc"},
+            {label : "CMakeLists.txt"}
+          ]
+        },
+        {
+          label : "Hash Map",
+          children : [
+            {label : "linked_list.h"},
+            {label : "linked_list.cc"},
+            {label : "CMakeLists.txt"}
+          ]
+        },
+        {
+          label : "Dequeue",
+          children : [
+            {label : "linked_list.h"},
+            {label : "linked_list.cc"},
+            {label : "CMakeLists.txt"}
+          ]
+        }
+      ]
+    };
+    $scope.login = function(email, password) {
+      sentinel.login(email, password, function(){}, function(){
+        $scope.$apply();
+      });
+    };
+  }
+]);
