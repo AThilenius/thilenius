@@ -1,5 +1,8 @@
 .list-plate-collection {
-  /* STUB */
+  height: auto;
+  overflow-x: hide;
+  overflow-y: auto;
+  width: auto;
 }
 
 .list-plate-group {

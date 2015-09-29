@@ -8,12 +8,10 @@ var SentinelService = function($cookies) {
   var protocol = new Thrift.Protocol(transport);
   this.client = new SentinelClient(protocol);
   this.token = null;
-  var tokenObj = JSON.parse($cookies.get(FORGE_COOKIE_KEY));
-  if (tokenObj) {
-    this.token = new Token();
-    this.token.user_uuid = tokenObj.user_uuid;
-    this.token.token_uuid = tokenObj.token_uuid;
-    this.token.permission_level = tokenObj.permission_level;
+  if ($cookies.get(FORGE_COOKIE_KEY) &&
+      JSON.parse($cookies.get(FORGE_COOKIE_KEY))) {
+    this.token =
+        jQuery.extend(new Token(), JSON.parse($cookies.get(FORGE_COOKIE_KEY)));
   }
   // Load user if we alrady have a token
   if (this.token) {
