@@ -17,10 +17,12 @@ var CrucibleService = function(sentinel) {
     // void (CrucibleRepo)
     'repoRemoved' : [],
 
-    // void (CrucibleRepo)
+    // void (ChangeList)
+    // Called when a commit is added to the execution pipline
     'preCommit' : [],
 
-    // void (CrucibleRepo)
+    // void (ChangeList)
+    // Called when a commit comes back successful from Crucible
     'postCommit' : [],
 
     // void (String)
@@ -45,10 +47,7 @@ CrucibleService.prototype.loadAllRepos = function() {
   }
   var that = this;
   that.client.GetRepoHeadersByUser(that.sentinel.token, null)
-      .fail(function(jqXHR, status, error) {
-        that.fireEvent('error', 'Crucible server error: ' +
-                                    JSON.stringify(error, null, 2));
-      })
+      .fail(that.firejqXhrErrorFactory())
       .done(function(result) {
         var errorHandler = function(error) { that.error = error; };
         for (var i = 0; i < result.length; i++) {
@@ -62,20 +61,19 @@ CrucibleService.prototype.enqueueCommit = function(
   if (this.errorState) {
     return;
   }
+  that.fireEvent('preCommit', changeList);
   var that = this;
   this.executionPipline.push(function() {
     that.client.CommitAndDownstream(that.sentinel.token, repoProtoHeader,
                                     changeListProto, null)
-        .fail(function(jqXHR, status, error) {
-          that.fireEvent('error', 'Crucible server error: ' +
-                                      JSON.stringify(error, null, 2));
-        })
+        .fail(that.firejqXhrErrorFactory())
         .done(function(result) {
           doneCallback(result);
           console.log("CL commited: " + result.change_list_uuid + ". At: " +
                       repoProtoHeader.latest_change_list_uuid +
                       ". Pipline at " + that.executionPipline.length +
                       " items.");
+          that.fireEvent('postCommit', changeList);
           // Remove ourself from the execution pipline
           that.executionPipline.shift();
           // Execute the next handler if there is one
@@ -105,15 +103,27 @@ CrucibleService.prototype.fireEvent = function(eventName, eventArgs) {
 CrucibleService.prototype.loadRepo = function(repoProtoHeader) {
   var that = this;
   this.client.GetRepoById(this.sentinel.token, repoProtoHeader.repo_uuid, null)
-      .fail(function(jqXHR, status, error) {
-        that.fireEvent('error', 'Crucible server error: ' +
-                                    JSON.stringify(error, null, 2));
-      })
+      .fail(that.firejqXhrErrorFactory())
       .done(function(result) {
         var crucibleRepo = new CrucibleRepo(that, result);
         that.repos.push(crucibleRepo);
         that.fireEvent('repoAdded', crucibleRepo);
       });
+};
+
+// private
+CrucibleService.prototype.firejqXhrErrorFactory = function() {
+  var that = this;
+  return function(jqXhr, stat, error) {
+    if (jqXhr && jqXhr.status === 0) {
+      that.fireEvent('error', 'Status 0 | cannot connect to Crucible');
+    } else if (error && error.user_message && error.user_message.length > 0) {
+      that.fireEvent('error', 'Status ' + stat + ' | ' + error.user_message);
+    } else {
+      that.fireEvent('error',
+                     'Status ' + stat + ' | Something isnt right here...');
+    }
+  };
 };
 
 forgeApp.factory('crucible', [

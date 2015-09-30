@@ -48,6 +48,8 @@
 </head>
 <body ng-app="forgeApp" ng-controller="forgeController">
 
+<div ng-show="error" class="error-overlay">{{ error }}</div>
+
 <div ng-show="!sentinel.token" class="login-backdrop">
   <div class="login-middle-align">
     <div class="login-window">

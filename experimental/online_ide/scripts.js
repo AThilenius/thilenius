@@ -29,6 +29,15 @@ forgeApp.controller('forgeController', [
 
     $scope.contentWindowControl = {};
 
+    $scope.error = null;
+
+    // Watch for Crucible errors
+    crucible.on('error', function(error) {
+      $scope.$apply(function() {
+        $scope.error = error;
+      });
+    });
+
     // Watch for changes to sentinel, load a repo when it changes
     $scope.$watch(function(scope) { return sentinel.token; },
                   function(newValue, oldValue) {
