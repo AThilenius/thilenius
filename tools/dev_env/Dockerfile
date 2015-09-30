@@ -79,6 +79,9 @@ RUN npm install -g mocha
 ADD bashrc /root/env_files/
 RUN mv /root/env_files/bashrc /root/.bashrc
 
+ADD jsbeautifyrc /root/env_files/
+RUN mv /root/env_files/jsbeautifyrc /root/.jsbeautifyrc
+
 ADD clang-format /root/env_files/
 RUN mv /root/env_files/clang-format /root/.clang-format
 

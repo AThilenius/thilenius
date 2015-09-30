@@ -1,99 +1,69 @@
-var forgeApp =
-    angular.module('forgeApp', [ 'ngCookies', 'thilenius.tree_view' ]);
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
+var forgeApp = angular.module(
+    'forgeApp',
+    [ 'ngCookies', 'thilenius.tree_view', 'thilenius.content_window' ]);
 
 forgeApp.controller('forgeController', [
   '$scope',
   'sentinel',
   'crucible',
   function($scope, sentinel, crucible) {
-  $scope.editor = ace.edit("editor");
-  $scope.editor.setTheme("ace/theme/twilight");
-  $scope.editor.getSession().setMode("ace/mode/javascript");
-  $scope.sentinel = sentinel;
-  $scope.activeSidebarTab = 'file';
-  $scope.fileTree = {
-    parents : [
-      {
-        label : "Sack",
-        children : [
-          {label : "linked_list.h"},
-          {label : "linked_list.cc"},
-          {label : "CMakeLists.txt"}
-        ]
-      },
-      {
-        label : "Linked List",
-        expanded : true,
-        children : [
-          {label : "linked_list.h"},
-          {label : "linked_list.cc"},
-          {label : "CMakeLists.txt"}
-        ]
-      },
-      {
-        label : "Hash Map",
-        children : [
-          {label : "linked_list.h"},
-          {label : "linked_list.cc"},
-          {label : "CMakeLists.txt"}
-        ]
-      },
-      {
-        label : "Dequeue",
-        children : [
-          {label : "linked_list.h"},
-          {label : "linked_list.cc"},
-          {label : "CMakeLists.txt"}
-        ]
-      }
-    ]
-  };
-  $scope.login = function(email, password) {
-    sentinel.login(email,
-                   password, function() {}, function() { $scope.$apply(); });
-  };
-  // Watch for changes to sentinel, load a repo when it changes
-  $scope.$watch(function(scope) { return sentinel.token; },
-                function(newValue, oldValue) {
-                  crucible.loadAllRepos(function(newCrucibleRepo) {
-                    var newFileTree = {
-                      parents : []
-                    };
-                    for (var i = 0; i < crucible.repos.length; i++) {
-                      var crucibleRepo = crucible.repos[i];
-                      var entry = {
-                        label : crucibleRepo.repoHeader.repo_name,
+    // Editor
+    //$scope.editor = ace.edit("editor");
+    //$scope.editor.setTheme("ace/theme/twilight");
+    //$scope.editor.getSession().setMode("ace/mode/javascript");
+
+    // Sentinel / Crucible
+    $scope.sentinel = sentinel;
+    $scope.crucible = crucible;
+
+    // Sidebar
+    $scope.activeSidebarTab = 'file';
+    $scope.fileTree = {
+      selected : null,
+      parents : []
+    };
+    $scope.historyTree = {};
+
+    $scope.contentWindowControl = {};
+
+    // Watch for changes to sentinel, load a repo when it changes
+    $scope.$watch(function(scope) { return sentinel.token; },
+                  function(newValue, oldValue) {
+                    crucible.on('repoAdded', function(repo) {
+                      // Create a FileTree parent for it
+                      var fileTreeParent = {
+                        label : repo.repoProto.repo_header.repo_name,
                         children : []
                       };
-                      for (var relativePath in crucibleRepo.headState) {
-                        entry.children.push({
+                      for (var relativePath in repo.headState) {
+                        fileTreeParent.children.push({
                           label : relativePath,
-                          repo : crucibleRepo,
-                          source : crucibleRepo.headState[relativePath]
+                          repo : repo,
+                          source : repo.headState[relativePath]
                         });
                       }
-                      newFileTree.parents.push(entry);
-                    }
-                    $scope.$apply(function() { $scope.fileTree = newFileTree;
+                      $scope.$apply(function() {
+                        $scope.fileTree.parents.push(fileTreeParent);
+                      });
                     });
+                    crucible.loadAllRepos();
                   });
-                });
-  $scope.$watch(function(scope) { return scope.fileTree.selected; },
-                function(newVal, oldVal) {
-                  if (newVal) {
-                    $scope.editor.setValue(newVal.source.source, 1);
-                  }
-                });
-  // Watch for text changes in the editor
-  $scope.editor.on("change", function(e) {
-    // Commit at max once every 1000ms
-    if (!$scope.editorIdleTimer && !crucible.isCommitPending) {
-      $scope.editorIdleTimer = setTimeout(function() {
-        $scope.editorIdleTimer = null;
-        $scope.fileTree.selected.repo.stash($scope.fileTree.selected.label,
-                                            $scope.editor.getValue());
-      }, 1000);
-    }
-  });
-}
+
+    // File selected
+    $scope.$watch('fileTree.selected', function(newVal, oldVal) {
+      if (newVal) {
+        $scope.contentWindowControl.bindRepoFileForEdit(newVal.repo,
+                                                        newVal.label);
+      }
+    });
+
+    // Login Method
+    $scope.login = function(email, password) {
+      sentinel.login(email,
+                     password, function() {}, function() { $scope.$apply(); });
+    };
+  }
 ]);

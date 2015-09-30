@@ -30,6 +30,7 @@
 <script src="gen_files/differencer_types.js"></script>
 <script src="gen_files/sentinel_types.js"></script>
 
+<script src="differencer.js"></script>
 <script src="scripts.js"></script>
 
 <!-- Services -->
@@ -37,11 +38,14 @@
 <script src="sentinel_service.js"></script>
 <script src="crucible_service.js"></script>
 
-<!-- Tree View -->
+<!-- Directives -->
 <script src="/app/directives/tree_view/tree_view.js"></script>
 <link rel="stylesheet" href="/app/directives/tree_view/tree_view.css" />
-</head>
 
+<script src="/app/directives/content_window/content_window.js"></script>
+<link rel="stylesheet" href="/app/directives/content_window/content_window.css" />
+
+</head>
 <body ng-app="forgeApp" ng-controller="forgeController">
 
 <div ng-show="!sentinel.token" class="login-backdrop">
@@ -136,137 +140,27 @@
 
             </div>
             <div class="sidebar-flex-content">
+              <!-- File Explorer -->
               <div ng-show="activeSidebarTab == 'file'" ng-model="fileTree"
                 at-tree-view></div>
+              <!--History Explorer -->
+              <div ng-show="activeSidebarTab == 'history'">
+                <div ng-show="!fileTree.selected" class="history-backdrop">
+                  No project selected
+                </div>
+                <div ng-show="fileTree.selected" ng-model="historyTree"
+                  at-tree-view></div>
+              </div>
+
             </div>
           </div>
 
         </div>
-
 
         <div class="horizontal-flex-content">
-          <div ng-show="!fileTree.selected" id="editor-backdrop" class="noselect">
-          </div>
-          <div ng-show="fileTree.selected" id="editor">// Holy balls this looks awesome!
-            $(function() {
-            // ACE Editor
-            var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/twilight");
-            editor.getSession().setMode("ace/mode/javascript");
-            });</div>
-        </div>
-        <div class="right-sidebar-flex">
-          <button style="background-color: rgba(223, 25, 33, 1); width: 100%;" type="button" class="btn btn-danger">Revert To</button>
-
-          <div class="list-plate-collection">
-            <div class="list-plate-group">
-              <div class="list-plate-header">Sep 24, 2015</div>
-              <div class="list-plate">
-                10:25 AM
-                <span class="label label-default pull-right diff-label">+12 / -5</span>
-              </div>
-              <div class="list-plate">
-                12:32 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:34 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:39 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-            </div>
-
-
-            <div class="list-plate-group">
-              <div class="list-plate-header">Sep 25, 2015</div>
-              <div class="list-plate">
-                10:25 AM
-                <span class="label label-default pull-right diff-label">+12 / -5</span>
-              </div>
-              <div class="list-plate">
-                12:32 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:34 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:39 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-            </div>
-
-
-            <div class="list-plate-group">
-              <div class="list-plate-header">Sep 28, 2015</div>
-              <div class="list-plate">
-                10:25 AM
-                <span class="label label-default pull-right diff-label">+12 / -5</span>
-              </div>
-              <div class="list-plate">
-                12:32 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:34 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:39 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-            </div>
-
-
-            <div class="list-plate-group">
-              <div class="list-plate-header">Sep 29, 2015</div>
-              <div class="list-plate">
-                10:25 AM
-                <span class="label label-default pull-right diff-label">+12 / -5</span>
-              </div>
-              <div class="list-plate">
-                12:32 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:34 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:39 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-            </div>
-
-            <div class="list-plate-group">
-              <div class="list-plate-header">Oct 1, 2015</div>
-              <div class="list-plate">
-                10:25 AM
-                <span class="label label-default pull-right diff-label">+12 / -5</span>
-              </div>
-              <div class="list-plate">
-                12:32 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:34 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-              <div class="list-plate">
-                12:39 AM
-                <span class="label label-default pull-right diff-label">+10 / 42 / -64</span>
-              </div>
-            </div>
-          </div>
-
+          <div control="contentWindowControl" at-content-window>
 
         </div>
-        <!-- /Primary Editor Window -->
-
       </div>
     </div>
     <div class="vertical-flex-footer">Scorchforge.com &copy; Alec Thilenius 2015</div>
