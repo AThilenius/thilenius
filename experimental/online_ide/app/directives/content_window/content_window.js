@@ -23,19 +23,20 @@ angular.module('thilenius.content_window', [])
           // Binds a file from a Repo for edit. Also stashes and commits changes
           scope.internalControl.bindRepoFileForEdit = function(repo,
                                                                relativePath) {
+            scope.unload();
             scope.lastStash = new Date();
-            scope.editor.on("change", function(e) {
-              // Commit at max once every 1000ms
-              //if (new Date() - scope.lastStash >= 1000) {
-                scope.lastStash = new Date();
-                repo.commit(relativePath,
-                            scope.editor.getValue());
-              //}
-            });
             scope.activeRepo = repo;
             scope.relativePath = relativePath;
             scope.editor.setValue(repo.headState[relativePath].source, 1);
             scope.editorVisible = true;
+            scope.changeHandler = function(e) {
+              // Commit at max once every 1000ms
+              // if (new Date() - scope.lastStash >= 1000) {
+              scope.lastStash = new Date();
+              repo.commit(relativePath, scope.editor.getValue());
+              //}
+            };
+            scope.editor.on("change", function(e) { scope.changeHandler(e); });
           };
 
           // Binds a file from a Repo for view (read only).
@@ -46,12 +47,7 @@ angular.module('thilenius.content_window', [])
 
           // private
           // Unloads and loaded repo, commiting any changes to Crucible
-          scope.unload = function() {
-            if (scope.activeRepo) {
-              // Unattach editor hooks
-              scope.editor.on("change", function(e) {});
-            }
-          };
+          scope.unload = function() { scope.changeHandler = function(e) {}; };
 
         }
       };

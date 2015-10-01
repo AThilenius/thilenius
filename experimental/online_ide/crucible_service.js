@@ -61,7 +61,7 @@ CrucibleService.prototype.enqueueCommit = function(
   if (this.errorState) {
     return;
   }
-  that.fireEvent('preCommit', changeList);
+    that.fireEvent('preCommit', changeList);
   var that = this;
   this.executionPipline.push(function() {
     that.client.CommitAndDownstream(that.sentinel.token, repoProtoHeader,
