@@ -42,7 +42,11 @@ angular.module('thilenius.content_window', [])
           // Binds a file from a Repo for view (read only).
           scope.internalControl.bindRepoFileForView = function(repo,
                                                                relativePath) {
-
+            scope.unload();
+            scope.activeRepo = repo;
+            scope.relativePath = relativePath;
+            scope.editor.setValue(repo.headState[relativePath].source, 1);
+            scope.editorVisible = true;
           };
 
           // private

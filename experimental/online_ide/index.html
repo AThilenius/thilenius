@@ -45,18 +45,23 @@
 <script src="/app/directives/content_window/content_window.js"></script>
 <link rel="stylesheet" href="/app/directives/content_window/content_window.css" />
 
+<script src="/app/directives/file_explorer/file_explorer.js"></script>
+<link rel="stylesheet" href="/app/directives/file_explorer/file_explorer.css" />
+
+<script src="/app/directives/history_explorer/history_explorer.js"></script>
+<link rel="stylesheet" href="/app/directives/history_explorer/history_explorer.css" />
+
 </head>
 <body ng-app="forgeApp" ng-controller="forgeController">
 
-<div ng-show="error" class="error-overlay">{{ error }}</div>
+<div ng-show="error" class="error-overlay">
+  <div class="error-label">{{ error }}</div>
+</div>
 
-<div ng-show="!sentinel.token" class="login-backdrop">
+<div ng-show="!sentinel.user" class="login-backdrop">
   <div class="login-middle-align">
     <div class="login-window">
       <form role="form-signin">
-        <div ng-show="error" class="alert alert-danger">
-          {{ error }}
-        </div>
         <h2 class="text-center">Forge</h2>
         <br>
         <div class="form-group">
@@ -70,14 +75,14 @@
           name="password" placeholder="Password">
         </div>
         <br>
-        <input type="submit" ng-click="login(email, password)"
+        <input type="submit" ng-click="sentinel.login(email, password)"
         class="btn btn-success" style="width:100px;" value="Sign In">
       </form>
     </div>
   </div>
 </div>
 
-<div ng-show="sentinel.token">
+<div ng-show="sentinel.user">
   <div class="vertical-flex-content-wrapper">
     <div class="vertial-flex-header">
       <nav class="navbar navbar-default">
@@ -139,35 +144,35 @@
                 ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
                 ng-click="activeSidebarTab = 'settings'">
               </div>
-
             </div>
+
             <div class="sidebar-flex-content">
               <!-- File Explorer -->
-              <div ng-show="activeSidebarTab == 'file'" ng-model="fileTree"
-                at-tree-view></div>
-              <!--History Explorer -->
-              <div ng-show="activeSidebarTab == 'history'">
-                <div ng-show="!fileTree.selected" class="history-backdrop">
-                  No project selected
-                </div>
-                <div ng-show="fileTree.selected" ng-model="historyTree"
-                  at-tree-view></div>
+              <div ng-show="activeSidebarTab == 'file'" class="fill-flex-box">
+                <div control='fileExplorerControl' at-file-explorer></div>
               </div>
-
+              <!--History Explorer -->
+              <div ng-show="activeSidebarTab == 'history'"
+                class="fill-flex-box">
+                <div control='historyExplorerControl' at-history-explorer></div>
+              </div>
             </div>
+
           </div>
 
         </div>
 
         <div class="horizontal-flex-content">
           <div control="contentWindowControl" at-content-window>
-
+            </div>
+          </div>
         </div>
       </div>
+      <div class="vertical-flex-footer">
+        Scorchforge.com &copy; Alec Thilenius 2015
+      </div>
     </div>
-    <div class="vertical-flex-footer">Scorchforge.com &copy; Alec Thilenius 2015</div>
   </div>
-</div>
-</body>
+  </body>
 
-</html>
+  </html>

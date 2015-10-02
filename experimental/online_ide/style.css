@@ -4,6 +4,7 @@ body {
     height: 100%;
     margin: 0px;
     overflow: hidden;
+    width: 100%;
 }
 
 p,
@@ -27,17 +28,26 @@ div {
 }
 
 .error-overlay {
+    clear: both;
+    float: left;
     left: 50%;
+    margin: 10px 0;
+    position: relative;
+    text-align: left;
+    z-index: 5000;
+}
+
+.error-label {
+    background-color: darkred;
+    border: 1px solid white;
+    color: white;
+    height: 30;
+    left: -50%;
     margin-top: 26px;
     padding-left: 10px;
     padding-right: 10px;
-    text-align: center;
-    height: 30;
-    z-index: 5000;
-    background-color: darkred;
-    color: white;
-    border: 1px solid white;
-    position: fixed;
+    position: relative;
+    text-align: left;
 }
 
 .history-backdrop {
@@ -197,6 +207,12 @@ div {
 
 .sidebar-header-icon.active {
     color: white;
+}
+
+.fill-flex-box {
+    height: 100%;
+    position: absolute;
+    width: 100%;
 }
 
 .footer-text {

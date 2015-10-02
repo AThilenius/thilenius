@@ -3,57 +3,29 @@
 
 var forgeApp = angular.module('forgeApp');
 
-var CrucibleService = function(sentinel) {
+// Fires the events:
+// crucible.repoAdded   (CrucibleRepo)
+// crucible.repoRemoved (CrucibleRepo)
+// crucible.preCommit   (ChangeList)
+// crucible.postCommit  (ChangeList)
+// crucible.error       (String)
+// error                (String)
+var CrucibleService = function($rootScope, sentinel) {
+  this.$rootScope = $rootScope;
   this.sentinel = sentinel;
   var transport = new Thrift.Transport("/api/crucible/");
   var protocol = new Thrift.Protocol(transport);
   this.client = new CrucibleClient(protocol);
   this.repos = [];
-
-  this.eventHandlers = {
-    // void (CrucibleRepo)
-    'repoAdded' : [],
-
-    // void (CrucibleRepo)
-    'repoRemoved' : [],
-
-    // void (ChangeList)
-    // Called when a commit is added to the execution pipline
-    'preCommit' : [],
-
-    // void (ChangeList)
-    // Called when a commit comes back successful from Crucible
-    'postCommit' : [],
-
-    // void (String)
-    'error' : []
-  };
-
   this.errorState = false;
 
   // private
   this.executionPipline = [];
-};
 
-// Registers an event handler
-CrucibleService.prototype.on = function(eventName, newHandler) {
-  this.eventHandlers[eventName].push(newHandler);
-};
-
-CrucibleService.prototype.loadAllRepos = function() {
-  if (!this.sentinel.token) {
-    this.fireEvent('error', 'Crucible requires a sentinel token');
-    return;
-  }
-  var that = this;
-  that.client.GetRepoHeadersByUser(that.sentinel.token, null)
-      .fail(that.firejqXhrErrorFactory())
-      .done(function(result) {
-        var errorHandler = function(error) { that.error = error; };
-        for (var i = 0; i < result.length; i++) {
-          that.loadRepo(result[i]);
-        }
-      });
+  // Error redirect
+  $rootScope.$on('crucible.error', function(event, message) {
+    $rootScope.$broadcast('error', message);
+  });
 };
 
 CrucibleService.prototype.enqueueCommit = function(
@@ -61,8 +33,8 @@ CrucibleService.prototype.enqueueCommit = function(
   if (this.errorState) {
     return;
   }
-    that.fireEvent('preCommit', changeList);
   var that = this;
+  that.$rootScope.$broadcast('crucibe.preCommit', changeListProto);
   this.executionPipline.push(function() {
     that.client.CommitAndDownstream(that.sentinel.token, repoProtoHeader,
                                     changeListProto, null)
@@ -73,7 +45,7 @@ CrucibleService.prototype.enqueueCommit = function(
                       repoProtoHeader.latest_change_list_uuid +
                       ". Pipline at " + that.executionPipline.length +
                       " items.");
-          that.fireEvent('postCommit', changeList);
+          that.$rootScope.$broadcast('crucibe.postCommit', result);
           // Remove ourself from the execution pipline
           that.executionPipline.shift();
           // Execute the next handler if there is one
@@ -88,15 +60,29 @@ CrucibleService.prototype.enqueueCommit = function(
 };
 
 // private
-CrucibleService.prototype.fireEvent = function(eventName, eventArgs) {
-  var handlersList = this.eventHandlers[eventName];
-  for (var i = 0; i < handlersList.length; i++) {
-    handlersList[i](eventArgs);
+CrucibleService.prototype.loadAllRepos = function() {
+  if (!this.sentinel.token) {
+    this.$rootScope.$broadcast('crucible.error',
+                               'Crucible requires a sentinel token');
+    return;
   }
-  if (eventName == 'error') {
-    console.error(eventArgs);
-    this.errorState = true;
+  var that = this;
+  that.client.GetRepoHeadersByUser(that.sentinel.token, null)
+      .fail(that.firejqXhrErrorFactory())
+      .done(function(result) {
+        var errorHandler = function(error) { that.error = error; };
+        for (var i = 0; i < result.length; i++) {
+          that.loadRepo(result[i]);
+        }
+      });
+};
+
+// private
+CrucibleService.prototype.unloadAllRepos = function() {
+  for (var i = 0; i < this.repos.length; i++) {
+    this.$rootScope.$broadcast('repoRemoved', this.repos[i]);
   }
+  repos = [];
 };
 
 // private
@@ -107,7 +93,7 @@ CrucibleService.prototype.loadRepo = function(repoProtoHeader) {
       .done(function(result) {
         var crucibleRepo = new CrucibleRepo(that, result);
         that.repos.push(crucibleRepo);
-        that.fireEvent('repoAdded', crucibleRepo);
+        that.$rootScope.$broadcast('crucible.repoAdded', crucibleRepo);
       });
 };
 
@@ -116,17 +102,23 @@ CrucibleService.prototype.firejqXhrErrorFactory = function() {
   var that = this;
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
-      that.fireEvent('error', 'Status 0 | cannot connect to Crucible');
+      that.$rootScope.$broadcast('crucibe.error',
+                                 'Status 0 | cannot connect to Crucible');
     } else if (error && error.user_message && error.user_message.length > 0) {
-      that.fireEvent('error', 'Status ' + stat + ' | ' + error.user_message);
+      that.$rootScope.$broadcast('crucibe.error',
+                                 'Status ' + stat + ' | ' + error.user_message);
     } else {
-      that.fireEvent('error',
-                     'Status ' + stat + ' | Something isnt right here...');
+      that.$rootScope.$broadcast('crucibe.error',
+                                 'Status ' + stat +
+                                     ' | Something isnt right here...');
     }
   };
 };
 
 forgeApp.factory('crucible', [
+  '$rootScope',
   'sentinel',
-  function(sentinel) { return new CrucibleService(sentinel); }
+  function($rootScope, sentinel) {
+    return new CrucibleService($rootScope, sentinel);
+  }
 ]);
