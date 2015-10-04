@@ -6,13 +6,11 @@
 
 #include <unordered_map>
 
-#include "cloud/sentinel/sentinel_client.h"
 #include "cloud/sentinel/sentinel_types.h"
 #include "scorch/cloud/billet/Billet.h"
 #include "scorch/cloud/billet/billet_session.h"
 #include "scorch/cloud/billet/billet_types.h"
 
-using ::thilenius::cloud::sentinel::SentinelClient;
 using ::thilenius::scorch::cloud::billet::BilletSession;
 
 namespace thilenius {
@@ -43,7 +41,6 @@ class BilletHandler : virtual public ::billet::proto::BilletIf {
 
   void AuthenticateOrThrow(const ::sentinel::proto::Token& token);
 
-  SentinelClient sentinel_client_;
   std::unordered_map<std::string, BilletSession> sessions_;
 };
 

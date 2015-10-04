@@ -5,11 +5,8 @@
 #define CLOUD_SENTINEL_SENTINEL_HANDLER_H_
 
 #include "cloud/sentinel/Sentinel.h"
-#include "cloud/sentinel/sentinel_constants.h"
 #include "cloud/sentinel/sentinel_mapper.h"
-#include "cloud/sentinel/sentinel_model.h"
 #include "cloud/sentinel/sentinel_types.h"
-#include "third_party/mongo/client/dbclient.h"
 
 namespace thilenius {
 namespace cloud {
@@ -40,9 +37,6 @@ class SentinelHandler : virtual public ::sentinel::proto::SentinelIf {
   ::sentinel::proto::Token CreateAndSaveToken(const std::string& user_uuid,
                                        int permission_level);
 
-  ::mongo::DBClientConnection mongo_connection_;
-  ::sentinel::proto::sentinelConstants sentinel_constants_;
-  SentinelModel model_;
   SentinelMapper mapper_;
 };
 

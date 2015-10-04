@@ -4,14 +4,9 @@
 #ifndef SCORCH_CLOUD_CRUCIBLE_SERVER_CRUCIBLE_HANDLER_H_
 #define SCORCH_CLOUD_CRUCIBLE_SERVER_CRUCIBLE_HANDLER_H_
 
-#include "cloud/sentinel/sentinel_client.h"
 #include "cloud/sentinel/sentinel_types.h"
 #include "scorch/cloud/crucible/Crucible.h"
 #include "scorch/cloud/crucible/crucible_mapper.h"
-#include "scorch/cloud/crucible/crucible_model.h"
-#include "third_party/mongo/client/dbclient.h"
-
-using ::thilenius::cloud::sentinel::SentinelClient;
 
 namespace thilenius {
 namespace scorch {
@@ -52,10 +47,7 @@ class CrucibleHandler : virtual public ::crucible::proto::CrucibleIf {
 
   void AuthenticateOrThrow(const ::sentinel::proto::Token& token);
 
-  ::mongo::DBClientConnection mongo_connection_;
   CrucibleMapper crucible_mapper_;
-  CrucibleModel model_;
-  SentinelClient sentinel_client_;
 
 };
 

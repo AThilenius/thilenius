@@ -16,9 +16,7 @@ namespace crucible {
 
 class CrucibleModel {
  public:
-  CrucibleModel(::mongo::DBClientConnection& connection,
-                const std::string table)
-      : connection_(connection), table_(table) {}
+  CrucibleModel();
 
   // Querying
   bool FindRepoById(::crucible::proto::Repo* repo,
@@ -35,8 +33,7 @@ class CrucibleModel {
 
  private:
   CrucibleMapper crucible_mapper_;
-  ::mongo::DBClientConnection& connection_;
-  const std::string table_;
+  ::mongo::DBClientConnection connection_;
 };
 
 }  // namespace crucible

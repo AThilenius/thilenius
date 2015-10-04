@@ -27,6 +27,12 @@ div {
   user-select: none;
 }
 
+.console-window {
+  height: 200px;
+  width: 100%;
+  background: solid red;
+}
+
 .error-overlay {
   clear: both;
   float: left;

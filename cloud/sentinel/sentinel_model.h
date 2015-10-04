@@ -16,11 +16,7 @@ namespace sentinel {
 
 class SentinelModel {
  public:
-  SentinelModel(::mongo::DBClientConnection& connection,
-                const std::string user_table, const std::string& token_table)
-      : connection_(connection),
-        user_table_(user_table),
-        token_table_(token_table) {}
+  SentinelModel();
 
   ValueOf<SentinelMapper::SentinelEntry> FindUser(
       const ::sentinel::proto::User& user_partial);
@@ -33,10 +29,8 @@ class SentinelModel {
 
  private:
   SentinelMapper sentinel_mapper_;
-  ::mongo::DBClientConnection& connection_;
+  ::mongo::DBClientConnection connection_;
   ::sentinel::proto::sentinelConstants constants_;
-  const std::string user_table_;
-  const std::string token_table_;
 };
 
 }  // namespace sentinel

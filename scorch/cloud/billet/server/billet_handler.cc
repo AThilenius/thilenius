@@ -9,6 +9,7 @@
 #include "base/guid.h"
 #include "base/log.h"
 #include "base/value_of.hh"
+#include "cloud/sentinel/sentinel_client.h"
 
 DEFINE_string(sentinel_ip, "localhost", "The Sentinel instance ip address.");
 DEFINE_int32(sentinel_port, 2100, "The Sentinel instance port number.");
@@ -17,6 +18,7 @@ DEFINE_string(sentinel_route, "/", "The Sentinel instance route.");
 using ::thilenius::base::Guid;
 using ::thilenius::base::String;
 using ::thilenius::base::ValueOf;
+using ::thilenius::cloud::sentinel::SentinelClient;
 
 namespace thilenius {
 namespace scorch {
@@ -24,12 +26,7 @@ namespace cloud {
 namespace billet {
 namespace server {
 
-BilletHandler::BilletHandler() {
-  LOG(INFO) << "Connecting to Sentinel at " << FLAGS_sentinel_ip << ":"
-            << FLAGS_sentinel_port;
-  sentinel_client_.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
-                           FLAGS_sentinel_route).GetOrDie();
-}
+BilletHandler::BilletHandler() { }
 
 void BilletHandler::CreateSession(
     ::billet::proto::Session& _return,
@@ -90,7 +87,10 @@ void BilletHandler::ThrowOpFailure(const std::string& message) {
 
 void BilletHandler::AuthenticateOrThrow(const ::sentinel::proto::Token& token) {
   // Authenticate
-  if (!sentinel_client_.ValidateToken(token).IsValid()) {
+  SentinelClient sentinel_client;
+  sentinel_client.Connect(FLAGS_sentinel_ip, FLAGS_sentinel_port,
+                          FLAGS_sentinel_route);
+  if (!sentinel_client.ValidateToken(token).IsValid()) {
     ThrowOpFailure("Sentinel failure, invalid token");
   }
 }
