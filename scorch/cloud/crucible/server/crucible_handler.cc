@@ -14,7 +14,7 @@
 #include "scorch/cloud/crucible/crucible_constants.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 
-DEFINE_string(mongo_ip, "192.168.59.103", "The MongoDB instance ip address.");
+DEFINE_string(mongo_ip, "172.17.42.1", "The MongoDB instance ip address.");
 DEFINE_string(mongo_port, "27017", "The MongoDB instance port number.");
 DEFINE_string(mongo_table, "crucible.repos",
               "The MongoDB database and table name to use.");

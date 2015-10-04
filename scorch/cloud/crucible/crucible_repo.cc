@@ -86,6 +86,86 @@ ValueOf<void> CrucibleRepo::SyncToHead() {
   return {};
 }
 
+ValueOf<void> CrucibleRepo::SyncToChangeListForced(
+    const std::string& change_list_uuid,
+    const std::vector<::crucible::proto::ChangeList>& stages_change_lists) {
+  std::string crucible_dir_path =
+      Path::Combine(project_path_, FLAGS_crucible_dir_name);
+  std::string crucible_repo_json_path =
+      Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
+  // Check if we have this CL, or if we need to re-pull the repo from Crucible
+  bool has_cl = false;
+  for (const auto& change_list : repo_.change_lists) {
+    if (change_list.change_list_uuid == change_list_uuid) {
+      has_cl = true;
+      break;
+    }
+  }
+  if (!has_cl) {
+    // Pull down from Crucible again
+    ::crucible::proto::Repo new_repo;
+    try {
+      if (http_client_ptr_ == nullptr) {
+        LOG(ERROR) << "HTTP Client pointer is null WHY!!!!";
+      }
+      http_client_ptr_->ConnectOrDie()->GetRepoById(
+          new_repo, token_, repo_.repo_header.repo_uuid);
+    } catch (::crucible::proto::OperationFailure op_failure) {
+      return {StrCat("Crucible remote exception: ", op_failure.user_message)};
+    } catch (...) {
+      return {"In GetRepoById, Crucible server threw an unhandled exception."};
+    }
+    repo_ = std::move(new_repo);
+    // Save it to file again
+    std::string json = crucible_mapper_.repo_mapper.to_json(repo_);
+    File::WriteToFile(crucible_repo_json_path, json);
+  }
+  // Check if we now have the CL
+  for (const auto& change_list : repo_.change_lists) {
+    if (change_list.change_list_uuid == change_list_uuid) {
+      has_cl = true;
+      break;
+    }
+  }
+  if (!has_cl) {
+    return {StrCat("CL ", change_list_uuid, " does not exist")};
+  }
+  // We have the CL, bring the repo to that point
+  std::map<std::string, ::crucible::proto::File> active_files =
+      ReconstructFilesForCL(change_list_uuid);
+  // Also add in the stages changes
+  for (const auto& change_list : stages_change_lists) {
+    for (const auto& file : change_list.added_files) {
+      active_files[file.file_info.relative_path] = file;
+    }
+    for (const auto& file_delta : change_list.modified_files) {
+      ::crucible::proto::File& file =
+          active_files[file_delta.file_info.relative_path];
+      file.source = differencer_.ApplyPatches(file.source, file_delta.patches);
+    }
+    for (const auto& file_info : change_list.removed_files) {
+      auto iter = active_files.find(file_info.relative_path);
+      active_files.erase(iter);
+    }
+  }
+  for (const auto& file : active_files) {
+    std::string full_path = Path::Combine(project_path_, file.first);
+    // If the file already exists, then only overwrite it if the contents
+    // changed to preserve CMake caching
+    if (File::Exists(full_path) &&
+        File::ReadContentsOrDie(full_path) != file.second.source) {
+      if (!File::WriteToFile(full_path, file.second.source)) {
+        LOG(WARNING) << "Failed to write file " << full_path;
+      }
+    } else {
+      if (!File::WriteToFile(full_path, file.second.source)) {
+        LOG(WARNING) << "Failed to write file " << full_path;
+      }
+    }
+  }
+  return {};
+}
+
 ValueOf<RepoSyncStatus> CrucibleRepo::SyncStatus() const {
   if (!connected_) {
     return {RepoSyncStatus::UNKNOWN, "Must be connected before using a repo"};
@@ -203,6 +283,9 @@ CrucibleRepo::ReconstructFilesForCL(const std::string& change_list_uuid) const {
     for (const auto& file_info : change_list.removed_files) {
       auto iter = active_files.find(file_info.relative_path);
       active_files.erase(iter);
+    }
+    if (change_list.change_list_uuid == change_list_uuid) {
+      break;
     }
   }
   return std::move(active_files);

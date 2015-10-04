@@ -34,6 +34,12 @@ class CrucibleRepo {
 
   ValueOf<void> SyncToHead();
 
+  // Syncs a repo to the given CL, and applies the gives staged change lists,
+  // deleting any uncommited changes
+  ValueOf<void> SyncToChangeListForced(
+      const std::string& change_list_uuid,
+      const std::vector<::crucible::proto::ChangeList>& stages_change_lists);
+
   ValueOf<RepoSyncStatus> SyncStatus() const;
 
   // Gets all pending (added, modified, or removed) files, as they differ from

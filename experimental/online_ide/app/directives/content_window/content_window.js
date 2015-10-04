@@ -20,6 +20,14 @@ angular.module('thilenius.content_window', [])
           // Expose a control object
           scope.internalControl = scope.control || {};
 
+          scope.internalControl.commitPending = function() {
+            if (scope.activeRepo && !scope.editor.getReadOnly()) {
+              // Commit any pending code
+              scope.activeRepo.commit(scope.relativePath,
+                                      scope.editor.getValue());
+            }
+          };
+
           // Binds a file from a Repo for edit. Also stashes and commits changes
           scope.internalControl.bindRepoFileForEdit = function(repo,
                                                                relativePath) {
@@ -30,28 +38,45 @@ angular.module('thilenius.content_window', [])
             scope.editor.setValue(repo.headState[relativePath].source, 1);
             scope.editorVisible = true;
             scope.changeHandler = function(e) {
-              // Commit at max once every 1000ms
-              // if (new Date() - scope.lastStash >= 1000) {
-              scope.lastStash = new Date();
-              repo.commit(relativePath, scope.editor.getValue());
-              //}
+              if (!scope.lastStash) {
+                scope.lastStash = new Date();
+              }
+              // Commit at max once every 15 seconds
+              if (new Date() - scope.lastStash >= 15000) {
+                scope.lastStash = new Date();
+                repo.commit(relativePath, scope.editor.getValue());
+              }
             };
+            scope.editor.setReadOnly(false);
             scope.editor.on("change", function(e) { scope.changeHandler(e); });
           };
 
           // Binds a file from a Repo for view (read only).
-          scope.internalControl.bindRepoFileForView = function(repo,
-                                                               relativePath) {
+          scope.internalControl.bindRepoFileForView = function(
+              repo, relativePath, changeList) {
             scope.unload();
             scope.activeRepo = repo;
             scope.relativePath = relativePath;
-            scope.editor.setValue(repo.headState[relativePath].source, 1);
+            scope.editor.setValue(
+                repo.reconstructFilesForCL(
+                         changeList.change_list_uuid)[relativePath].source,
+                1);
+            scope.editor.setReadOnly(true);
             scope.editorVisible = true;
           };
 
           // private
           // Unloads and loaded repo, commiting any changes to Crucible
-          scope.unload = function() { scope.changeHandler = function(e) {}; };
+          scope.unload = function() {
+            scope.changeHandler = function(e) {};
+            if (scope.activeRepo && !scope.editor.getReadOnly()) {
+              // Commit any pending code
+              scope.activeRepo.commit(scope.relativePath,
+                                      scope.editor.getValue());
+            }
+            scope.activeRepo = null;
+            scope.relativePath = null;
+          };
 
         }
       };

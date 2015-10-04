@@ -107,6 +107,52 @@ ValueOf<CrucibleRepo> CrucibleClient::CreateNewBaseRepoInDirectory(
   return std::move(crucible_repo);
 }
 
+ValueOf<CrucibleRepo> CrucibleClient::CloneRepoInDirectory(
+    const std::string& path, const std::string& repo_uuid,
+    const ::sentinel::proto::Token* optional_token) {
+  ::sentinel::proto::Token token;
+  if (optional_token == nullptr) {
+    ValueOf<::sentinel::proto::Token> token_value = LoginAndAuthroSecondary(path);
+    if (!token_value.IsValid()) {
+      return {CrucibleRepo(), token_value.GetError()};
+    }
+    token = token_value.GetOrDie();
+  } else {
+    token = *optional_token;
+  }
+  // Set up a crucible project
+  std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
+  std::string crucible_repo_json_path =
+      Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
+  if (File::Exists(crucible_repo_json_path)) {
+    return {CrucibleRepo(), StrCat("Cannot create a new repo at ", path,
+                                   ", a repo already exists there")};
+  }
+  Directory::Create(crucible_dir_path);
+  ::crucible::proto::Repo repo_proto;
+  try {
+    http_client_ptr_->ConnectOrDie()->GetRepoById(repo_proto, token, repo_uuid);
+  } catch (::crucible::proto::OperationFailure op_failure) {
+    return {CrucibleRepo(),
+            StrCat("Crucible remote exception: ", op_failure.user_message)};
+  } catch (...) {
+    return {CrucibleRepo(),
+            "In CloneRepoInDirectory, Crucible server threw an unhandled "
+            "exception."};
+  }
+  // Write the repo state proto to file before passing it off to CrucibleRepo
+  // for management
+  std::string json = crucible_mapper_.repo_mapper.to_json(repo_proto);
+  File::WriteToFile(crucible_repo_json_path, json);
+  CrucibleRepo crucible_repo;
+  crucible_repo.Connect(crucible_ip_, crucible_port_, crucible_route_, path);
+  ValueOf<void> results = crucible_repo.SyncToHead();
+  if (!results.IsValid()) {
+    return {CrucibleRepo(), results.GetError()};
+  }
+  return std::move(crucible_repo);
+}
+
 ValueOf<CrucibleRepo> CrucibleClient::CloneBaseRepoInDirectory(
     const std::string& path, const std::string& base_repo_name) {
   ValueOf<::sentinel::proto::Token> token_value = LoginAndAuthroSecondary(path);
@@ -152,6 +198,12 @@ ValueOf<CrucibleRepo> CrucibleClient::LoadRepoFromDirectory(
     const std::string& path) {
   if (!connected_) {
     return {CrucibleRepo(), "Client must be connected before use"};
+  }
+  std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
+  std::string crucible_repo_json_path =
+      Path::Combine(crucible_dir_path, FLAGS_crucible_repo_file_cache_name);
+  if (!File::Exists(crucible_repo_json_path)) {
+    return {CrucibleRepo(), "No repo file was found"};
   }
   CrucibleRepo crucible_repo;
   crucible_repo.Connect(crucible_ip_, crucible_port_, crucible_route_, path);

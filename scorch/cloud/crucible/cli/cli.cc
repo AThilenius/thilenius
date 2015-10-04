@@ -87,6 +87,38 @@ int Clone(const std::string root_path, const std::vector<std::string>& args) {
                           FLAGS_crucible_route, FLAGS_sentinel_ip,
                           FLAGS_sentinel_port, FLAGS_sentinel_route);
   CrucibleRepo crucible_repo =
+      crucible_client.CloneRepoInDirectory(root_path, args[0], nullptr).GetOrDie();
+  LOG(INFO) << "Cloned repo: " << args[0];
+  return 0;
+}
+
+int SyncTo(const std::string root_path, const std::vector<std::string>& args) {
+  if (args.size() < 1) {
+    LOG(ERROR) << "Usage: crucible sync_to [flags] <ChangeList UUID>";
+    LOG(FATAL) << "Expected 1 argument, got " << args.size();
+  }
+  CrucibleClient crucible_client;
+  crucible_client.Connect(FLAGS_crucible_ip, FLAGS_crucible_port,
+                          FLAGS_crucible_route, FLAGS_sentinel_ip,
+                          FLAGS_sentinel_port, FLAGS_sentinel_route);
+  CrucibleRepo crucible_repo =
+      crucible_client.LoadRepoFromDirectory(root_path).GetOrDie();
+  crucible_repo.SyncToChangeListForced(args[0], {});
+  LOG(INFO) << "Synced repo to CL: " << args[0];
+  return 0;
+}
+
+int CloneBase(const std::string root_path,
+              const std::vector<std::string>& args) {
+  if (args.size() < 1) {
+    LOG(ERROR) << "Usage: crucible clone_base [flags] <repo_name>";
+    LOG(FATAL) << "Expected 1 argument, got " << args.size();
+  }
+  CrucibleClient crucible_client;
+  crucible_client.Connect(FLAGS_crucible_ip, FLAGS_crucible_port,
+                          FLAGS_crucible_route, FLAGS_sentinel_ip,
+                          FLAGS_sentinel_port, FLAGS_sentinel_route);
+  CrucibleRepo crucible_repo =
       crucible_client.CloneBaseRepoInDirectory(root_path, args[0]).GetOrDie();
   LOG(INFO) << "Cloned Base: " << args[0];
   return 0;
@@ -175,6 +207,11 @@ int main(int argc, char** argv) {
     return ::thilenius::scorch::cloud::crucible::cli::Commit(root_path, args);
   } else if (command == "clone") {
     return ::thilenius::scorch::cloud::crucible::cli::Clone(root_path, args);
+  } else if (command == "sync_to") {
+    return ::thilenius::scorch::cloud::crucible::cli::SyncTo(root_path, args);
+  } else if (command == "clone_base") {
+    return ::thilenius::scorch::cloud::crucible::cli::CloneBase(root_path,
+                                                                args);
   } else if (command == "list_repos") {
     return ::thilenius::scorch::cloud::crucible::cli::ListRepos(root_path,
                                                                 args);

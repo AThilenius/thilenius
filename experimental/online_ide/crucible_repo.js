@@ -30,6 +30,10 @@ CrucibleRepo.prototype.commit = function(relativePath, newSource) {
   fileDelta.file_info.modify_timestamp = (new Date()).getTime().toString();
   fileDelta.file_info.md5 = "JS client, no md5";
   fileDelta.patches = this.differencer.patchesFromStrings(oldSource, newSource);
+  if (fileDelta.patches.length === 0) {
+    // No changes to commit
+    return;
+  }
   var changeList = new ChangeList();
   changeList.change_list_uuid = "Pending CL: " + this.nextClId++;
   changeList.user_uuid = "Pending CL";
@@ -57,7 +61,6 @@ CrucibleRepo.prototype.commit = function(relativePath, newSource) {
       });
 };
 
-// private
 CrucibleRepo.prototype.reconstructFilesForCL = function(changeListUuid) {
   var activeFiles = {};
   for (var i = 0; i < this.repoProto.change_lists.length; i++) {

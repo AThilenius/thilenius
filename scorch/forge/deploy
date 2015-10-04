@@ -21,6 +21,13 @@ thrift -r --gen js:jquery -I /root/thilenius \
     /root/thilenius/scorch/cloud/crucible/crucible.thrift || \
     EROR 'Failed to build Crucible service files'
 
+INFO 'Compiling Billet service files'
+mkdir --parent /root/thilenius_gen/scorch/forge
+thrift -r --gen js:jquery -I /root/thilenius \
+    -out /root/thilenius_gen/scorch/forge \
+    /root/thilenius/scorch/cloud/billet/billet.thrift || \
+    EROR 'Failed to build Billet service files'
+
 INFO "Making sure ${FLAGS_mount_point} exsits"
 mkdir -p ${FLAGS_mount_point} || \
     EROR "Failed to make ${FLAGS_mount_point} directory"

@@ -102,13 +102,13 @@ CrucibleService.prototype.firejqXhrErrorFactory = function() {
   var that = this;
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
-      that.$rootScope.$broadcast('crucibe.error',
+      that.$rootScope.$broadcast('crucible.error',
                                  'Status 0 | cannot connect to Crucible');
     } else if (error && error.user_message && error.user_message.length > 0) {
-      that.$rootScope.$broadcast('crucibe.error',
+      that.$rootScope.$broadcast('crucible.error',
                                  'Status ' + stat + ' | ' + error.user_message);
     } else {
-      that.$rootScope.$broadcast('crucibe.error',
+      that.$rootScope.$broadcast('crucible.error',
                                  'Status ' + stat +
                                      ' | Something isnt right here...');
     }

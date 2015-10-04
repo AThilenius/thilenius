@@ -1,1 +1,11 @@
-<div ng-model="historyTree" class="history-tree-view" at-tree-view></div>
+<div class="vertical-flex-content-wrapper">
+  <div class="vertial-flex-header control-header">
+    <button ng-disabled="!canRevert" ng-click="revertToCl()" class="btn btn-danger revert-button">
+      Revert {{ selectedFile }}
+    </button>
+  </div>
+  <div class="vertical-flex-content">
+    <div ng-model="historyTree" at-tree-view></div>
+    <div class="end-marker">End of History</div>
+  </div>
+</div>

@@ -19,16 +19,18 @@ angular.module('thilenius.file_explorer', [])
             parents : []
           };
 
+          // Expose a control object
+          scope.internalControl = scope.control || {};
+          scope.internalControl.selected = null;
+
           // Watch for selections
           scope.$watch('fileTree.selected', function(newVal, oldVal) {
             if (newVal) {
               $rootScope.$broadcast('fileExplorer.fileSelected', newVal.repo,
                                     newVal.relativePath);
+              scope.internalControl.selected = newVal;
             }
           });
-
-          // Expose a control object
-          scope.internalControl = scope.control || {};
 
           // Sorts repos by field, in the given order.
           // field is one of: ['date', 'name']
@@ -56,7 +58,9 @@ angular.module('thilenius.file_explorer', [])
             }
             scope.fileTree.parents.push(newParent);
             scope.loadedRepos[repo.repoProto.repo_header.repo_uuid] = newParent;
+            scope.fileTree.parents = scope.fileTree.parents;
             this.sortBy();
+            scope.$apply();
           };
 
           // Parses and removed a ::crucible::Repo from the file tree

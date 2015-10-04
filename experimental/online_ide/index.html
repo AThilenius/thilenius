@@ -23,9 +23,11 @@
 <script src="gen_files/thrift.min.js"></script>
 
 <!-- Gen Files -->
+<script src="gen_files/Billet.js"></script>
 <script src="gen_files/Crucible.js"></script>
 <script src="gen_files/Sentinel.js"></script>
 <script src="gen_files/SentinelInternal.js"></script>
+<script src="gen_files/billet_types.js"></script>
 <script src="gen_files/crucible_types.js"></script>
 <script src="gen_files/differencer_types.js"></script>
 <script src="gen_files/sentinel_types.js"></script>
@@ -35,8 +37,9 @@
 
 <!-- Services -->
 <script src="crucible_repo.js"></script>
-<script src="sentinel_service.js"></script>
+<script src="billet_service.js"></script>
 <script src="crucible_service.js"></script>
+<script src="sentinel_service.js"></script>
 
 <!-- Directives -->
 <script src="/app/directives/tree_view/tree_view.js"></script>
@@ -88,7 +91,7 @@
       <nav class="navbar navbar-default">
         <div class="container">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="">
+            <li><a href="" ng-click="run()">
               <span class="glyphicon glyphicon-play-circle" aria-hidden="true">
               </span> Run
             </a></li>
@@ -130,11 +133,11 @@
 
               <div class="sidebar-header-icon glyphicon glyphicon-folder-close"
                 ng-class="(activeSidebarTab == 'file') ? 'active' : ''"
-                ng-click="activeSidebarTab = 'file'">
+                ng-click="activeSidebarTab = 'file'; editOn();">
               </div>
               <div class="sidebar-header-icon glyphicon glyphicon-time"
                 ng-class="(activeSidebarTab == 'history') ? 'active' : ''"
-                ng-click="activeSidebarTab = 'history'">
+                ng-click="activeSidebarTab = 'history'; buildHistory();">
               </div>
               <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
                 ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
