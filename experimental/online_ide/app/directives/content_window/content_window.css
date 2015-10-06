@@ -1,20 +1,17 @@
-#editor-backdrop {
+.editor-backdrop {
   background-color: rgba(41, 41, 41, 1);
   box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
   color: grey;
   font-size: 6em;
-  height: 100%;
-  position: absolute;
   padding-top: 50px;
   text-align: center;
-  width: 100%;
 }
 
 #editor {
   box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
   height: 100%;
-  width: 100%;
   position: absolute;
+  width: 100%;
 }
 
 .editor-header {
@@ -22,9 +19,6 @@
   border-bottom: 1px solid black;
   box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
   color: white;
-  height: 35px;
-  width: 100%;
   padding-left: 20px;
   padding-top: 3px;
 }
-

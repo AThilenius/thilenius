@@ -4,6 +4,7 @@
 #ifndef SCORCH_CLOUD_BILLET_BILLET_SESSION_H_
 #define SCORCH_CLOUD_BILLET_BILLET_SESSION_H_
 
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,7 @@
 #include "scorch/cloud/crucible/crucible_types.h"
 #include "utils/differencer/differencer.h"
 
-using ::thilenius::base::Process;
+using ::thilenius::base::ProcessPtr;
 using ::thilenius::base::ValueOf;
 using ::thilenius::utils::differencer::Differencer;
 
@@ -25,17 +26,33 @@ namespace billet {
 
 class BilletSession {
  public:
+  enum class SessionState {
+    UNKNOWN,
+    IDLE,
+    COMPILING,
+    COMPILATION_DONE,
+    RUNNING,
+    RUNNING_DONE,
+  };
+
+  BilletSession() = default;
+
   // Creates a local session (run unprotected in the same process space as the
   // server)
-  static BilletSession CreateLocalSession(
-      const ::billet::proto::Session& billet_session_proto);
+  BilletSession(const ::billet::proto::Session& billet_session_proto);
 
-  ValueOf<void> ExecuteCMakeRepo(
+  ValueOf<void> CompileCMakeRepo(
       const ::crucible::proto::RepoHeader& repo_header_proto,
       const std::vector<::crucible::proto::ChangeList>& staged_change_list,
       const std::vector<std::string>& application_args);
 
-  ValueOf<::billet::proto::ApplicationOutput> GetOutputTillLine(int line);
+  ValueOf<void> ExecuteCMakeRepo();
+
+  ValueOf<::billet::proto::ApplicationOutput> GetCompilerOutputTillLine(
+      int line);
+
+  ValueOf<::billet::proto::ApplicationOutput> GetApplicationOutputTillLine(
+      int line);
 
   ::billet::proto::Session billet_session_proto;
 
@@ -43,13 +60,13 @@ class BilletSession {
   // Sets up a local folder and clones a crucible repo into it, bringing that
   // repo to the given CL and applying the given staged change lists.
   ValueOf<void> BringRepoToCL(
-      const std::string& repo_path,
-      const ::sentinel::proto::Token& token,
+      const std::string& repo_path, const ::sentinel::proto::Token& token,
       const ::crucible::proto::RepoHeader& repo_header,
       const std::vector<::crucible::proto::ChangeList>& staged_change_list);
 
-  bool is_running;
-  Process process_;
+  SessionState session_state_;
+  ProcessPtr compiler_process_;
+  ProcessPtr execute_process_;
   Differencer differencer_;
 };
 

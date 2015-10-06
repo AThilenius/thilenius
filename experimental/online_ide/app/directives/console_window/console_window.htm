@@ -1,0 +1,21 @@
+<div class="v-flex-wrapper">
+  <div class="flex-header console-header">
+    <div class="btn-group btn-group-xs" style="border-radius:0px;" role="group">
+      <div ng-class="activeTab == 'compilerOutput' ? 'active' : ''"
+        ng-click="activeTab = 'compilerOutput'"
+        style="border-bottom-left-radius: 0px;"
+        class="btn dark-button">Compiler Output</div>
+      <div ng-class="activeTab == 'consoleOutput' ? 'active' : ''"
+        ng-click="activeTab = 'consoleOutput'"
+        style="border-bottom-right-radius: 0px;"
+        class="btn dark-button">Console Output</div>
+    </div>
+  </div>
+  <div class="flex-body">
+    <div class="console fill-flex-box">
+      <div ng-repeat="line in content">
+        <div class="console-line" ng-bind-html="line"></div>
+      </div>
+    </div>
+  </div>
+</div>

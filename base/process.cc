@@ -90,14 +90,14 @@ int Process::ExecuteCommandSync(
   return (status.exited() ? !!status.exit_status() : EXIT_FAILURE);
 }
 
-Process Process::FromFork(std::function<int()> child_task) {
-  Process process;
-  process.child_task_ = child_task;
-  process.pid_ = 0;
-  return std::move(process);
+ProcessPtr Process::FromFork(std::function<int()> child_task) {
+  ProcessPtr process (new Process());
+  process->child_task_ = child_task;
+  process->pid_ = 0;
+  return process;
 }
 
-Process Process::FromExecv(const std::string& full_path,
+ProcessPtr Process::FromExecv(const std::string& full_path,
                            const std::vector<std::string> args) {
   // Must be a vector of char* because execv is a crappy C call. I hate C
   std::function<int()> child_task = [full_path, args]() -> int {
@@ -111,10 +111,10 @@ Process Process::FromExecv(const std::string& full_path,
     // Exec it
     return execv(full_path.c_str(), final_args.data());
   };
-  return std::move(Process::FromFork(child_task));
+  return Process::FromFork(child_task);
 }
 
-bool Process::Execute() {
+bool Process::Execute(bool blocking, int timeout_ms) {
   // pipes for parent to write and read
   pipe(pipes_[CIN]);
   pipe(pipes_[COUT]);
@@ -133,13 +133,37 @@ bool Process::Execute() {
     close(pipes_[COUT][WRITE]);
     close(pipes_[CERR][WRITE]);
     start_time_ = std::chrono::system_clock::now();
+    // Source from cout
+    blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
+      return ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+    });
+    // Source from cerr
+    blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
+      return ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
+    });
+    // Wait if blocking, otherwise source end from wait
+    if (blocking) {
+      return Wait(timeout_ms);
+      blocking_ostream_.WriteEndOfStream();
+    } else {
+      blocking_ostream_.EndFrom([this, timeout_ms]() { Wait(timeout_ms); });
+    }
     return true;
   }
 }
 
+bool Process::WriteCin(const std::string& value) {
+  return write(pipes_[CIN][WRITE], value.c_str(), value.length()) ==
+         value.length();
+}
+
+ValueOf<std::vector<Process::OStreamToken>> Process::ReadOutputAfterIndex(
+    int index) {
+  return blocking_ostream_.ReadItemsAfterIndex(index);
+}
+
 int Process::Wait(int timeout_ms) {
   // This is a simple spin-wait because i'm too lazy to do anything better
-  bool warning_issued = false;
   while (true) {
     int status;
     int rc = waitpid(pid_, &status, WNOHANG);
@@ -151,8 +175,9 @@ int Process::Wait(int timeout_ms) {
       return WEXITSTATUS(status);
     }
     // Terminate time (timeout)
-    if ((start_time_ + std::chrono::milliseconds(timeout_ms)) <=
-        std::chrono::system_clock::now()) {
+    if (timeout_ms > 0 &&
+        (start_time_ + std::chrono::milliseconds(timeout_ms)) <=
+            std::chrono::system_clock::now()) {
       kill(pid_, SIGKILL);
       waitpid(pid_, 0, 0);
       return -1;
@@ -161,35 +186,27 @@ int Process::Wait(int timeout_ms) {
   }
 }
 
-bool Process::WriteCin(const std::string& value) {
-  return write(pipes_[CIN][WRITE], value.c_str(), value.length()) ==
-         value.length();
-}
-
-std::string Process::GetOut() {
-  std::stringstream string_stream;
-  char buffer[1024];
-  while (true) {
-    int count = read(pipes_[COUT][READ], buffer, sizeof(buffer));
-    if (count <= 0) {
-      break;
+ValueOf<Process::OStreamToken> Process::ReadLineFrom(
+    std::string* read_ahead_buffer, int fd) const {
+  std::string::iterator pos;
+  while ((pos = find(read_ahead_buffer->begin(), read_ahead_buffer->end(),
+                     '\n')) == read_ahead_buffer->end()) {
+    char buf[1025];
+    int n = read(fd, buf, 1024);
+    if (n <= 0) {
+      return {OStreamToken(), "End of cout stream"};
     }
-    string_stream.write(buffer, count);
+    buf[n] = 0;
+    *read_ahead_buffer += buf;
   }
-  return string_stream.str();
-}
-
-std::string Process::GetErr() {
-  std::stringstream string_stream;
-  char buffer[1024];
-  while (true) {
-    int count = read(pipes_[CERR][READ], buffer, sizeof(buffer));
-    if (count <= 0) {
-      break;
-    }
-    string_stream.write(buffer, count);
+  // Split the buffer around '\n' found and return first part.
+  OStreamToken ostream_token;
+  if (fd == pipes_[CERR][READ]) {
+    ostream_token.is_err_stream = true;
   }
-  return string_stream.str();
+  ostream_token.content = std::string(read_ahead_buffer->begin(), pos);
+  *read_ahead_buffer = std::string(pos + 1, read_ahead_buffer->end());
+  return std::move(ostream_token);
 }
 
 }  // namespace base

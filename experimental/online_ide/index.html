@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
 <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
-<link rel="stylesheet" href="style.css" />
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -14,6 +13,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
 <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
+<link rel="stylesheet" href="style.css" />
 
 <!-- Common -->
 <script src="app/shared/js/string.js"></script>
@@ -44,6 +44,9 @@
 <!-- Directives -->
 <script src="/app/directives/tree_view/tree_view.js"></script>
 <link rel="stylesheet" href="/app/directives/tree_view/tree_view.css" />
+
+<script src="/app/directives/console_window/console_window.js"></script>
+<link rel="stylesheet" href="/app/directives/console_window/console_window.css" />
 
 <script src="/app/directives/content_window/content_window.js"></script>
 <link rel="stylesheet" href="/app/directives/content_window/content_window.css" />
@@ -86,8 +89,8 @@
 </div>
 
 <div ng-show="sentinel.user">
-  <div class="vertical-flex-content-wrapper">
-    <div class="vertial-flex-header">
+  <div class="v-flex-wrapper">
+    <div class="flex-header">
       <nav class="navbar navbar-default">
         <div class="container">
           <ul class="nav navbar-nav navbar-right">
@@ -99,7 +102,7 @@
               <span class="glyphicon glyphicon-time" aria-hidden="true">
               </span> File History
             </a></li>
-            <li><a href="">
+            <li ng-disabled="!autoFormat"><a href="" ng-click="autoFormat()">
               <span class="glyphicon glyphicon-list-alt" aria-hidden="true">
               </span> Auto Format
             </a></li>
@@ -121,57 +124,58 @@
       </nav>
     </div>
 
-    <div class="vertical-flex-content">
+    <div class="flex-body">
 
       <!-- Primary Editor Window -->
-      <div class="horizontal-flex-content-wrapper">
+      <div class="h-flex-wrapper">
 
-        <div class="left-sidebar-flex">
+        <div class="flex-header sidebar">
 
-          <div class="sidebar-flex-content-wrapper">
-            <div class="sidebar-flex-header">
+            <div class="v-flex-wrapper">
+              <div class="flex-header sidebar-header">
 
-              <div class="sidebar-header-icon glyphicon glyphicon-folder-close"
-                ng-class="(activeSidebarTab == 'file') ? 'active' : ''"
-                ng-click="activeSidebarTab = 'file'; editOn();">
+                <div class="sidebar-header-icon glyphicon glyphicon-folder-close"
+                  ng-class="(activeSidebarTab == 'file') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'file'; editOn();">
+                </div>
+                <div class="sidebar-header-icon glyphicon glyphicon-time"
+                  ng-class="(activeSidebarTab == 'history') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'history'; buildHistory();">
+                </div>
+                <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
+                  ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'errors'">
+                </div>
+                <div class="sidebar-header-icon glyphicon glyphicon-cog"
+                  ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'settings'">
+                </div>
               </div>
-              <div class="sidebar-header-icon glyphicon glyphicon-time"
-                ng-class="(activeSidebarTab == 'history') ? 'active' : ''"
-                ng-click="activeSidebarTab = 'history'; buildHistory();">
+
+              <div class="flex-body">
+                <!-- File Explorer -->
+                <div ng-show="activeSidebarTab == 'file'" class="fill-flex-box">
+                  <div control='fileExplorerControl' at-file-explorer></div>
+                </div>
+                <!--History Explorer -->
+                <div ng-show="activeSidebarTab == 'history'"
+                  class="fill-flex-box">
+                  <div control='historyExplorerControl' at-history-explorer></div>
+                </div>
               </div>
-              <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
-                ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
-                ng-click="activeSidebarTab = 'errors'">
-              </div>
-              <div class="sidebar-header-icon glyphicon glyphicon-cog"
-                ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
-                ng-click="activeSidebarTab = 'settings'">
-              </div>
+
             </div>
-
-            <div class="sidebar-flex-content">
-              <!-- File Explorer -->
-              <div ng-show="activeSidebarTab == 'file'" class="fill-flex-box">
-                <div control='fileExplorerControl' at-file-explorer></div>
-              </div>
-              <!--History Explorer -->
-              <div ng-show="activeSidebarTab == 'history'"
-                class="fill-flex-box">
-                <div control='historyExplorerControl' at-history-explorer></div>
-              </div>
-            </div>
-
-          </div>
 
         </div>
 
-        <div class="horizontal-flex-content">
-          <div control="contentWindowControl" at-content-window></div>
-          <div class="console-window"></div>
+        <div class="v-flex-wrapper">
+          <div class="flex-body">
+            <div control="contentWindowControl" at-content-window></div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="vertical-flex-footer">
+    <div class="flex-footer editor-footer">
       Scorchforge.com &copy; Alec Thilenius 2015
     </div>
   </div>

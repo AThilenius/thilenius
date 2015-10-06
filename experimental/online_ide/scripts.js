@@ -53,8 +53,11 @@ forgeApp.controller('forgeController', [
           $scope.fileExplorerControl.selected.repo.repoProto.repo_header, []);
     };
 
-    $rootScope.$on(
-        'error', function(event, message) { $scope.error = message; });
+    $rootScope.$on('error', function(event, message) {
+      $scope.$apply(function() {
+        $scope.error = message;
+      });
+    });
 
     $rootScope.$on('crucible.repoAdded', function(event, repo) {
       $scope.fileExplorerControl.addRepo(repo);
@@ -63,6 +66,10 @@ forgeApp.controller('forgeController', [
     $rootScope.$on(
         'fileExplorer.fileSelected', function(event, repo, relativePath) {
           $scope.contentWindowControl.bindRepoFileForEdit(repo, relativePath);
+          $scope.contentWindowControl.billet = billet;
+          $scope.autoFormat = function() {
+            $scope.contentWindowControl.formatCode();
+          };
         });
 
     $rootScope.$on('historyExplorer.snapshotSelected', function(event, repo,

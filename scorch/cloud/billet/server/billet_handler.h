@@ -26,15 +26,23 @@ class BilletHandler : virtual public ::billet::proto::BilletIf {
   void CreateSession(::billet::proto::Session& _return,
                      const ::sentinel::proto::Token& sentinel_token);
 
-  void ExecuteCMakeRepo(
+  void BuildCMakeRepo(
       const ::billet::proto::Session& session,
       const ::crucible::proto::RepoHeader& repo_header,
       const std::vector< ::crucible::proto::ChangeList>& staged_change_lists,
       const std::vector<std::string>& application_args);
 
-  void QueryOutputAfterLine(::billet::proto::ApplicationOutput& _return,
-                            const ::billet::proto::Session& session,
-                            const int32_t line);
+  void RunRepo (const ::billet::proto::Session& session);
+
+  void QueryCompilerOutputAfterLine(::billet::proto::ApplicationOutput& _return,
+                                    const ::billet::proto::Session& session,
+                                    const int32_t line);
+
+  void QueryApplicationOutputAfterLine(
+      ::billet::proto::ApplicationOutput& _return,
+      const ::billet::proto::Session& session, const int32_t line);
+
+  void ClangFormat(std::string& _return, const std::string& source);
 
  private:
   void ThrowOpFailure(const std::string& message);

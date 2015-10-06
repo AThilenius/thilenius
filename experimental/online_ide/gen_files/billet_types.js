@@ -316,11 +316,76 @@ CompilerMessage.prototype.write = function(output) {
   return;
 };
 
+OutputToken = function(args) {
+  this.is_cerr = null;
+  this.content = null;
+  if (args) {
+    if (args.is_cerr !== undefined) {
+      this.is_cerr = args.is_cerr;
+    }
+    if (args.content !== undefined) {
+      this.content = args.content;
+    }
+  }
+};
+OutputToken.prototype = {};
+OutputToken.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.BOOL) {
+        this.is_cerr = input.readBool().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRING) {
+        this.content = input.readString().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+OutputToken.prototype.write = function(output) {
+  output.writeStructBegin('OutputToken');
+  if (this.is_cerr !== null && this.is_cerr !== undefined) {
+    output.writeFieldBegin('is_cerr', Thrift.Type.BOOL, 1);
+    output.writeBool(this.is_cerr);
+    output.writeFieldEnd();
+  }
+  if (this.content !== null && this.content !== undefined) {
+    output.writeFieldBegin('content', Thrift.Type.STRING, 2);
+    output.writeString(this.content);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 ApplicationOutput = function(args) {
   this.did_terminate = null;
   this.termination_code = null;
-  this.standard_out = null;
-  this.error_out = null;
+  this.output_tokens = null;
   if (args) {
     if (args.did_terminate !== undefined) {
       this.did_terminate = args.did_terminate;
@@ -328,11 +393,8 @@ ApplicationOutput = function(args) {
     if (args.termination_code !== undefined) {
       this.termination_code = args.termination_code;
     }
-    if (args.standard_out !== undefined) {
-      this.standard_out = args.standard_out;
-    }
-    if (args.error_out !== undefined) {
-      this.error_out = args.error_out;
+    if (args.output_tokens !== undefined) {
+      this.output_tokens = args.output_tokens;
     }
   }
 };
@@ -365,15 +427,22 @@ ApplicationOutput.prototype.read = function(input) {
       }
       break;
       case 3:
-      if (ftype == Thrift.Type.STRING) {
-        this.standard_out = input.readString().value;
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.STRING) {
-        this.error_out = input.readString().value;
+      if (ftype == Thrift.Type.LIST) {
+        var _size0 = 0;
+        var _rtmp34;
+        this.output_tokens = [];
+        var _etype3 = 0;
+        _rtmp34 = input.readListBegin();
+        _etype3 = _rtmp34.etype;
+        _size0 = _rtmp34.size;
+        for (var _i5 = 0; _i5 < _size0; ++_i5)
+        {
+          var elem6 = null;
+          elem6 = new OutputToken();
+          elem6.read(input);
+          this.output_tokens.push(elem6);
+        }
+        input.readListEnd();
       } else {
         input.skip(ftype);
       }
@@ -399,14 +468,18 @@ ApplicationOutput.prototype.write = function(output) {
     output.writeI32(this.termination_code);
     output.writeFieldEnd();
   }
-  if (this.standard_out !== null && this.standard_out !== undefined) {
-    output.writeFieldBegin('standard_out', Thrift.Type.STRING, 3);
-    output.writeString(this.standard_out);
-    output.writeFieldEnd();
-  }
-  if (this.error_out !== null && this.error_out !== undefined) {
-    output.writeFieldBegin('error_out', Thrift.Type.STRING, 4);
-    output.writeString(this.error_out);
+  if (this.output_tokens !== null && this.output_tokens !== undefined) {
+    output.writeFieldBegin('output_tokens', Thrift.Type.LIST, 3);
+    output.writeListBegin(Thrift.Type.STRUCT, this.output_tokens.length);
+    for (var iter7 in this.output_tokens)
+    {
+      if (this.output_tokens.hasOwnProperty(iter7))
+      {
+        iter7 = this.output_tokens[iter7];
+        iter7.write(output);
+      }
+    }
+    output.writeListEnd();
     output.writeFieldEnd();
   }
   output.writeFieldStop();

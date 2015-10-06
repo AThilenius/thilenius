@@ -1,5 +1,5 @@
 .control-header {
-  border-bottom: 1px solid rgba(15, 15, 15, 1);
+  border-bottom: 1px solid white;
   color: white;
   padding-bottom: 10px;
 }
@@ -10,11 +10,16 @@
   width: 100%;
 }
 
+.revert-button-disabled {
+  background: darkgrey;
+  padding-top: 5px;
+  width: 100%;
+}
+
 .end-marker {
   border-bottom: 1px solid rgba(15, 15, 15, 1);
   color: darkgrey;
   margin-bottom: 10px;
   margin-top: 10px;
   text-align: center;
-  width: 100%;
 }

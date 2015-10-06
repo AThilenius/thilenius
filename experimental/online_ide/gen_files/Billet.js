@@ -133,7 +133,7 @@ Billet_CreateSession_result.prototype.write = function(output) {
   return;
 };
 
-Billet_ExecuteCMakeRepo_args = function(args) {
+Billet_BuildCMakeRepo_args = function(args) {
   this.session = null;
   this.repo_header = null;
   this.staged_change_lists = null;
@@ -153,8 +153,8 @@ Billet_ExecuteCMakeRepo_args = function(args) {
     }
   }
 };
-Billet_ExecuteCMakeRepo_args.prototype = {};
-Billet_ExecuteCMakeRepo_args.prototype.read = function(input) {
+Billet_BuildCMakeRepo_args.prototype = {};
+Billet_BuildCMakeRepo_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -185,19 +185,19 @@ Billet_ExecuteCMakeRepo_args.prototype.read = function(input) {
       break;
       case 3:
       if (ftype == Thrift.Type.LIST) {
-        var _size0 = 0;
-        var _rtmp34;
+        var _size8 = 0;
+        var _rtmp312;
         this.staged_change_lists = [];
-        var _etype3 = 0;
-        _rtmp34 = input.readListBegin();
-        _etype3 = _rtmp34.etype;
-        _size0 = _rtmp34.size;
-        for (var _i5 = 0; _i5 < _size0; ++_i5)
+        var _etype11 = 0;
+        _rtmp312 = input.readListBegin();
+        _etype11 = _rtmp312.etype;
+        _size8 = _rtmp312.size;
+        for (var _i13 = 0; _i13 < _size8; ++_i13)
         {
-          var elem6 = null;
-          elem6 = new ChangeList();
-          elem6.read(input);
-          this.staged_change_lists.push(elem6);
+          var elem14 = null;
+          elem14 = new ChangeList();
+          elem14.read(input);
+          this.staged_change_lists.push(elem14);
         }
         input.readListEnd();
       } else {
@@ -206,18 +206,18 @@ Billet_ExecuteCMakeRepo_args.prototype.read = function(input) {
       break;
       case 4:
       if (ftype == Thrift.Type.LIST) {
-        var _size7 = 0;
-        var _rtmp311;
+        var _size15 = 0;
+        var _rtmp319;
         this.application_args = [];
-        var _etype10 = 0;
-        _rtmp311 = input.readListBegin();
-        _etype10 = _rtmp311.etype;
-        _size7 = _rtmp311.size;
-        for (var _i12 = 0; _i12 < _size7; ++_i12)
+        var _etype18 = 0;
+        _rtmp319 = input.readListBegin();
+        _etype18 = _rtmp319.etype;
+        _size15 = _rtmp319.size;
+        for (var _i20 = 0; _i20 < _size15; ++_i20)
         {
-          var elem13 = null;
-          elem13 = input.readString().value;
-          this.application_args.push(elem13);
+          var elem21 = null;
+          elem21 = input.readString().value;
+          this.application_args.push(elem21);
         }
         input.readListEnd();
       } else {
@@ -233,8 +233,8 @@ Billet_ExecuteCMakeRepo_args.prototype.read = function(input) {
   return;
 };
 
-Billet_ExecuteCMakeRepo_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_ExecuteCMakeRepo_args');
+Billet_BuildCMakeRepo_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_BuildCMakeRepo_args');
   if (this.session !== null && this.session !== undefined) {
     output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
     this.session.write(output);
@@ -248,12 +248,12 @@ Billet_ExecuteCMakeRepo_args.prototype.write = function(output) {
   if (this.staged_change_lists !== null && this.staged_change_lists !== undefined) {
     output.writeFieldBegin('staged_change_lists', Thrift.Type.LIST, 3);
     output.writeListBegin(Thrift.Type.STRUCT, this.staged_change_lists.length);
-    for (var iter14 in this.staged_change_lists)
+    for (var iter22 in this.staged_change_lists)
     {
-      if (this.staged_change_lists.hasOwnProperty(iter14))
+      if (this.staged_change_lists.hasOwnProperty(iter22))
       {
-        iter14 = this.staged_change_lists[iter14];
-        iter14.write(output);
+        iter22 = this.staged_change_lists[iter22];
+        iter22.write(output);
       }
     }
     output.writeListEnd();
@@ -262,12 +262,12 @@ Billet_ExecuteCMakeRepo_args.prototype.write = function(output) {
   if (this.application_args !== null && this.application_args !== undefined) {
     output.writeFieldBegin('application_args', Thrift.Type.LIST, 4);
     output.writeListBegin(Thrift.Type.STRING, this.application_args.length);
-    for (var iter15 in this.application_args)
+    for (var iter23 in this.application_args)
     {
-      if (this.application_args.hasOwnProperty(iter15))
+      if (this.application_args.hasOwnProperty(iter23))
       {
-        iter15 = this.application_args[iter15];
-        output.writeString(iter15);
+        iter23 = this.application_args[iter23];
+        output.writeString(iter23);
       }
     }
     output.writeListEnd();
@@ -278,7 +278,7 @@ Billet_ExecuteCMakeRepo_args.prototype.write = function(output) {
   return;
 };
 
-Billet_ExecuteCMakeRepo_result = function(args) {
+Billet_BuildCMakeRepo_result = function(args) {
   this.operation_failure = null;
   if (args instanceof OperationFailure) {
     this.operation_failure = args;
@@ -290,8 +290,8 @@ Billet_ExecuteCMakeRepo_result = function(args) {
     }
   }
 };
-Billet_ExecuteCMakeRepo_result.prototype = {};
-Billet_ExecuteCMakeRepo_result.prototype.read = function(input) {
+Billet_BuildCMakeRepo_result.prototype = {};
+Billet_BuildCMakeRepo_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -324,8 +324,8 @@ Billet_ExecuteCMakeRepo_result.prototype.read = function(input) {
   return;
 };
 
-Billet_ExecuteCMakeRepo_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_ExecuteCMakeRepo_result');
+Billet_BuildCMakeRepo_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_BuildCMakeRepo_result');
   if (this.operation_failure !== null && this.operation_failure !== undefined) {
     output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
     this.operation_failure.write(output);
@@ -336,7 +336,119 @@ Billet_ExecuteCMakeRepo_result.prototype.write = function(output) {
   return;
 };
 
-Billet_QueryOutputAfterLine_args = function(args) {
+Billet_RunRepo_args = function(args) {
+  this.session = null;
+  if (args) {
+    if (args.session !== undefined) {
+      this.session = args.session;
+    }
+  }
+};
+Billet_RunRepo_args.prototype = {};
+Billet_RunRepo_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.session = new Session();
+        this.session.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_RunRepo_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_RunRepo_args');
+  if (this.session !== null && this.session !== undefined) {
+    output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
+    this.session.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_RunRepo_result = function(args) {
+  this.operation_failure = null;
+  if (args instanceof OperationFailure) {
+    this.operation_failure = args;
+    return;
+  }
+  if (args) {
+    if (args.operation_failure !== undefined) {
+      this.operation_failure = args.operation_failure;
+    }
+  }
+};
+Billet_RunRepo_result.prototype = {};
+Billet_RunRepo_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.operation_failure = new OperationFailure();
+        this.operation_failure.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_RunRepo_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_RunRepo_result');
+  if (this.operation_failure !== null && this.operation_failure !== undefined) {
+    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
+    this.operation_failure.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_QueryCompilerOutputAfterLine_args = function(args) {
   this.session = null;
   this.line = null;
   if (args) {
@@ -348,8 +460,8 @@ Billet_QueryOutputAfterLine_args = function(args) {
     }
   }
 };
-Billet_QueryOutputAfterLine_args.prototype = {};
-Billet_QueryOutputAfterLine_args.prototype.read = function(input) {
+Billet_QueryCompilerOutputAfterLine_args.prototype = {};
+Billet_QueryCompilerOutputAfterLine_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -386,8 +498,8 @@ Billet_QueryOutputAfterLine_args.prototype.read = function(input) {
   return;
 };
 
-Billet_QueryOutputAfterLine_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_QueryOutputAfterLine_args');
+Billet_QueryCompilerOutputAfterLine_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_QueryCompilerOutputAfterLine_args');
   if (this.session !== null && this.session !== undefined) {
     output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
     this.session.write(output);
@@ -403,7 +515,7 @@ Billet_QueryOutputAfterLine_args.prototype.write = function(output) {
   return;
 };
 
-Billet_QueryOutputAfterLine_result = function(args) {
+Billet_QueryCompilerOutputAfterLine_result = function(args) {
   this.success = null;
   this.operation_failure = null;
   if (args instanceof OperationFailure) {
@@ -419,8 +531,8 @@ Billet_QueryOutputAfterLine_result = function(args) {
     }
   }
 };
-Billet_QueryOutputAfterLine_result.prototype = {};
-Billet_QueryOutputAfterLine_result.prototype.read = function(input) {
+Billet_QueryCompilerOutputAfterLine_result.prototype = {};
+Billet_QueryCompilerOutputAfterLine_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -458,11 +570,274 @@ Billet_QueryOutputAfterLine_result.prototype.read = function(input) {
   return;
 };
 
-Billet_QueryOutputAfterLine_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_QueryOutputAfterLine_result');
+Billet_QueryCompilerOutputAfterLine_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_QueryCompilerOutputAfterLine_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.operation_failure !== null && this.operation_failure !== undefined) {
+    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
+    this.operation_failure.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_QueryApplicationOutputAfterLine_args = function(args) {
+  this.session = null;
+  this.line = null;
+  if (args) {
+    if (args.session !== undefined) {
+      this.session = args.session;
+    }
+    if (args.line !== undefined) {
+      this.line = args.line;
+    }
+  }
+};
+Billet_QueryApplicationOutputAfterLine_args.prototype = {};
+Billet_QueryApplicationOutputAfterLine_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.session = new Session();
+        this.session.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I32) {
+        this.line = input.readI32().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_QueryApplicationOutputAfterLine_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_QueryApplicationOutputAfterLine_args');
+  if (this.session !== null && this.session !== undefined) {
+    output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
+    this.session.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.line !== null && this.line !== undefined) {
+    output.writeFieldBegin('line', Thrift.Type.I32, 2);
+    output.writeI32(this.line);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_QueryApplicationOutputAfterLine_result = function(args) {
+  this.success = null;
+  this.operation_failure = null;
+  if (args instanceof OperationFailure) {
+    this.operation_failure = args;
+    return;
+  }
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+    if (args.operation_failure !== undefined) {
+      this.operation_failure = args.operation_failure;
+    }
+  }
+};
+Billet_QueryApplicationOutputAfterLine_result.prototype = {};
+Billet_QueryApplicationOutputAfterLine_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new ApplicationOutput();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.operation_failure = new OperationFailure();
+        this.operation_failure.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_QueryApplicationOutputAfterLine_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_QueryApplicationOutputAfterLine_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.operation_failure !== null && this.operation_failure !== undefined) {
+    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
+    this.operation_failure.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_ClangFormat_args = function(args) {
+  this.source = null;
+  if (args) {
+    if (args.source !== undefined) {
+      this.source = args.source;
+    }
+  }
+};
+Billet_ClangFormat_args.prototype = {};
+Billet_ClangFormat_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.source = input.readString().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_ClangFormat_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_ClangFormat_args');
+  if (this.source !== null && this.source !== undefined) {
+    output.writeFieldBegin('source', Thrift.Type.STRING, 1);
+    output.writeString(this.source);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_ClangFormat_result = function(args) {
+  this.success = null;
+  this.operation_failure = null;
+  if (args instanceof OperationFailure) {
+    this.operation_failure = args;
+    return;
+  }
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+    if (args.operation_failure !== undefined) {
+      this.operation_failure = args.operation_failure;
+    }
+  }
+};
+Billet_ClangFormat_result.prototype = {};
+Billet_ClangFormat_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRING) {
+        this.success = input.readString().value;
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.operation_failure = new OperationFailure();
+        this.operation_failure.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_ClangFormat_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_ClangFormat_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRING, 0);
+    output.writeString(this.success);
     output.writeFieldEnd();
   }
   if (this.operation_failure !== null && this.operation_failure !== undefined) {
@@ -524,20 +899,20 @@ BilletClient.prototype.recv_CreateSession = function() {
   }
   throw 'CreateSession failed: unknown result';
 };
-BilletClient.prototype.ExecuteCMakeRepo = function(session, repo_header, staged_change_lists, application_args, callback) {
+BilletClient.prototype.BuildCMakeRepo = function(session, repo_header, staged_change_lists, application_args, callback) {
   if (callback === undefined) {
-    this.send_ExecuteCMakeRepo(session, repo_header, staged_change_lists, application_args);
-    this.recv_ExecuteCMakeRepo();
+    this.send_BuildCMakeRepo(session, repo_header, staged_change_lists, application_args);
+    this.recv_BuildCMakeRepo();
   } else {
-    var postData = this.send_ExecuteCMakeRepo(session, repo_header, staged_change_lists, application_args, true);
+    var postData = this.send_BuildCMakeRepo(session, repo_header, staged_change_lists, application_args, true);
     return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_ExecuteCMakeRepo);
+      .jqRequest(this, postData, arguments, this.recv_BuildCMakeRepo);
   }
 };
 
-BilletClient.prototype.send_ExecuteCMakeRepo = function(session, repo_header, staged_change_lists, application_args, callback) {
-  this.output.writeMessageBegin('ExecuteCMakeRepo', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_ExecuteCMakeRepo_args();
+BilletClient.prototype.send_BuildCMakeRepo = function(session, repo_header, staged_change_lists, application_args, callback) {
+  this.output.writeMessageBegin('BuildCMakeRepo', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_BuildCMakeRepo_args();
   args.session = session;
   args.repo_header = repo_header;
   args.staged_change_lists = staged_change_lists;
@@ -547,7 +922,7 @@ BilletClient.prototype.send_ExecuteCMakeRepo = function(session, repo_header, st
   return this.output.getTransport().flush(callback);
 };
 
-BilletClient.prototype.recv_ExecuteCMakeRepo = function() {
+BilletClient.prototype.recv_BuildCMakeRepo = function() {
   var ret = this.input.readMessageBegin();
   var fname = ret.fname;
   var mtype = ret.mtype;
@@ -558,7 +933,7 @@ BilletClient.prototype.recv_ExecuteCMakeRepo = function() {
     this.input.readMessageEnd();
     throw x;
   }
-  var result = new Billet_ExecuteCMakeRepo_result();
+  var result = new Billet_BuildCMakeRepo_result();
   result.read(this.input);
   this.input.readMessageEnd();
 
@@ -567,28 +942,27 @@ BilletClient.prototype.recv_ExecuteCMakeRepo = function() {
   }
   return;
 };
-BilletClient.prototype.QueryOutputAfterLine = function(session, line, callback) {
+BilletClient.prototype.RunRepo = function(session, callback) {
   if (callback === undefined) {
-    this.send_QueryOutputAfterLine(session, line);
-    return this.recv_QueryOutputAfterLine();
+    this.send_RunRepo(session);
+    this.recv_RunRepo();
   } else {
-    var postData = this.send_QueryOutputAfterLine(session, line, true);
+    var postData = this.send_RunRepo(session, true);
     return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_QueryOutputAfterLine);
+      .jqRequest(this, postData, arguments, this.recv_RunRepo);
   }
 };
 
-BilletClient.prototype.send_QueryOutputAfterLine = function(session, line, callback) {
-  this.output.writeMessageBegin('QueryOutputAfterLine', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_QueryOutputAfterLine_args();
+BilletClient.prototype.send_RunRepo = function(session, callback) {
+  this.output.writeMessageBegin('RunRepo', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_RunRepo_args();
   args.session = session;
-  args.line = line;
   args.write(this.output);
   this.output.writeMessageEnd();
   return this.output.getTransport().flush(callback);
 };
 
-BilletClient.prototype.recv_QueryOutputAfterLine = function() {
+BilletClient.prototype.recv_RunRepo = function() {
   var ret = this.input.readMessageBegin();
   var fname = ret.fname;
   var mtype = ret.mtype;
@@ -599,7 +973,48 @@ BilletClient.prototype.recv_QueryOutputAfterLine = function() {
     this.input.readMessageEnd();
     throw x;
   }
-  var result = new Billet_QueryOutputAfterLine_result();
+  var result = new Billet_RunRepo_result();
+  result.read(this.input);
+  this.input.readMessageEnd();
+
+  if (null !== result.operation_failure) {
+    throw result.operation_failure;
+  }
+  return;
+};
+BilletClient.prototype.QueryCompilerOutputAfterLine = function(session, line, callback) {
+  if (callback === undefined) {
+    this.send_QueryCompilerOutputAfterLine(session, line);
+    return this.recv_QueryCompilerOutputAfterLine();
+  } else {
+    var postData = this.send_QueryCompilerOutputAfterLine(session, line, true);
+    return this.output.getTransport()
+      .jqRequest(this, postData, arguments, this.recv_QueryCompilerOutputAfterLine);
+  }
+};
+
+BilletClient.prototype.send_QueryCompilerOutputAfterLine = function(session, line, callback) {
+  this.output.writeMessageBegin('QueryCompilerOutputAfterLine', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_QueryCompilerOutputAfterLine_args();
+  args.session = session;
+  args.line = line;
+  args.write(this.output);
+  this.output.writeMessageEnd();
+  return this.output.getTransport().flush(callback);
+};
+
+BilletClient.prototype.recv_QueryCompilerOutputAfterLine = function() {
+  var ret = this.input.readMessageBegin();
+  var fname = ret.fname;
+  var mtype = ret.mtype;
+  var rseqid = ret.rseqid;
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(this.input);
+    this.input.readMessageEnd();
+    throw x;
+  }
+  var result = new Billet_QueryCompilerOutputAfterLine_result();
   result.read(this.input);
   this.input.readMessageEnd();
 
@@ -609,5 +1024,92 @@ BilletClient.prototype.recv_QueryOutputAfterLine = function() {
   if (null !== result.success) {
     return result.success;
   }
-  throw 'QueryOutputAfterLine failed: unknown result';
+  throw 'QueryCompilerOutputAfterLine failed: unknown result';
+};
+BilletClient.prototype.QueryApplicationOutputAfterLine = function(session, line, callback) {
+  if (callback === undefined) {
+    this.send_QueryApplicationOutputAfterLine(session, line);
+    return this.recv_QueryApplicationOutputAfterLine();
+  } else {
+    var postData = this.send_QueryApplicationOutputAfterLine(session, line, true);
+    return this.output.getTransport()
+      .jqRequest(this, postData, arguments, this.recv_QueryApplicationOutputAfterLine);
+  }
+};
+
+BilletClient.prototype.send_QueryApplicationOutputAfterLine = function(session, line, callback) {
+  this.output.writeMessageBegin('QueryApplicationOutputAfterLine', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_QueryApplicationOutputAfterLine_args();
+  args.session = session;
+  args.line = line;
+  args.write(this.output);
+  this.output.writeMessageEnd();
+  return this.output.getTransport().flush(callback);
+};
+
+BilletClient.prototype.recv_QueryApplicationOutputAfterLine = function() {
+  var ret = this.input.readMessageBegin();
+  var fname = ret.fname;
+  var mtype = ret.mtype;
+  var rseqid = ret.rseqid;
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(this.input);
+    this.input.readMessageEnd();
+    throw x;
+  }
+  var result = new Billet_QueryApplicationOutputAfterLine_result();
+  result.read(this.input);
+  this.input.readMessageEnd();
+
+  if (null !== result.operation_failure) {
+    throw result.operation_failure;
+  }
+  if (null !== result.success) {
+    return result.success;
+  }
+  throw 'QueryApplicationOutputAfterLine failed: unknown result';
+};
+BilletClient.prototype.ClangFormat = function(source, callback) {
+  if (callback === undefined) {
+    this.send_ClangFormat(source);
+    return this.recv_ClangFormat();
+  } else {
+    var postData = this.send_ClangFormat(source, true);
+    return this.output.getTransport()
+      .jqRequest(this, postData, arguments, this.recv_ClangFormat);
+  }
+};
+
+BilletClient.prototype.send_ClangFormat = function(source, callback) {
+  this.output.writeMessageBegin('ClangFormat', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_ClangFormat_args();
+  args.source = source;
+  args.write(this.output);
+  this.output.writeMessageEnd();
+  return this.output.getTransport().flush(callback);
+};
+
+BilletClient.prototype.recv_ClangFormat = function() {
+  var ret = this.input.readMessageBegin();
+  var fname = ret.fname;
+  var mtype = ret.mtype;
+  var rseqid = ret.rseqid;
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(this.input);
+    this.input.readMessageEnd();
+    throw x;
+  }
+  var result = new Billet_ClangFormat_result();
+  result.read(this.input);
+  this.input.readMessageEnd();
+
+  if (null !== result.operation_failure) {
+    throw result.operation_failure;
+  }
+  if (null !== result.success) {
+    return result.success;
+  }
+  throw 'ClangFormat failed: unknown result';
 };

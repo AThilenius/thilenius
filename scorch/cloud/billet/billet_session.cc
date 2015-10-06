@@ -8,6 +8,7 @@
 #include "base/directory.h"
 #include "base/file.h"
 #include "base/log.h"
+#include "base/log.h"
 #include "base/path.h"
 #include "base/process.h"
 #include "base/string.h"
@@ -24,6 +25,7 @@ DEFINE_string(session_files_root_path, "/billet/local_sessions",
 using ::thilenius::base::Directory;
 using ::thilenius::base::File;
 using ::thilenius::base::Path;
+using ::thilenius::base::Process;
 using ::thilenius::base::String;
 using ::thilenius::cloud::utils::ThriftHttpClient;
 
@@ -32,21 +34,20 @@ namespace scorch {
 namespace cloud {
 namespace billet {
 
-BilletSession BilletSession::CreateLocalSession(
-    const ::billet::proto::Session& billet_session_proto) {
-  BilletSession billet_session;
-  billet_session.is_running = false;
-  billet_session.billet_session_proto = billet_session_proto;
-  return std::move(billet_session);
-}
+BilletSession::BilletSession(
+    const ::billet::proto::Session& billet_session_proto)
+    : session_state_(SessionState::IDLE),
+      billet_session_proto(billet_session_proto) {}
 
-ValueOf<void> BilletSession::ExecuteCMakeRepo(
+ValueOf<void> BilletSession::CompileCMakeRepo(
     const ::crucible::proto::RepoHeader& repo_header_proto,
     const std::vector<::crucible::proto::ChangeList>& staged_change_list,
     const std::vector<std::string>& application_args) {
-  if (is_running) {
+  if (session_state_ != SessionState::IDLE &&
+      session_state_ <= SessionState::RUNNING) {
     return {"A task is already running"};
   }
+  session_state_ = SessionState::COMPILING;
   // Path is: FLAGS_session_files_root_path/<USER_UUID>/<REPO_UUID>/
   std::string repo_path =
       Path::Combine(Path::Combine(FLAGS_session_files_root_path,
@@ -63,32 +64,81 @@ ValueOf<void> BilletSession::ExecuteCMakeRepo(
                    repo_sync_value.GetError())};
   }
   // CMake . && make && ./runnable
+  std::string build_path = Path::Combine(repo_path, "build");
+  if (!Directory::Exists(build_path) && !Directory::Create(build_path)) {
+    return {StrCat("Failed to create directory ", build_path)};
+  };
   std::string bash_path = Process::FindExecutable("bash");
-  std::string bash_command = StrCat(
+  std::string executable_path = Path::Combine(build_path, "runnable");
+  std::string cmake_bash_command = StrCat(
       "export CC=/usr/bin/clang-3.6;", "export CXX=/usr/bin/clang++-3.6;",
-      "cd ", repo_path, ";", "mkdir -p build;", "cd build;", "cmake ..;",
-      "make;", "./runnable;");
-  process_ = std::move(Process::FromExecv("/bin/bash", {"-c", bash_command}));
-  if (process_.Execute()) {
-    is_running = true;
-  } else {
+      "cd ", build_path, ";", "cmake .. && make");
+  compiler_process_ = Process::FromExecv(bash_path, {"-c", cmake_bash_command});
+  execute_process_ = Process::FromExecv(executable_path, application_args);
+  if (!compiler_process_->Execute(false, 120000)) {
     return {"Failed to start child process"};
   }
   return {};
 }
 
-ValueOf<::billet::proto::ApplicationOutput> BilletSession::GetOutputTillLine(
-    int line) {
-  if (!is_running) {
-    return {::billet::proto::ApplicationOutput(), "No tasks are running"};
+ValueOf<void> BilletSession::ExecuteCMakeRepo() {
+  if (session_state_ != SessionState::COMPILATION_DONE) {
+    return {"Compilation still going on, or stream not read to end"};
   }
-  // TODO(athilenius): Don't block
+  if (!execute_process_->Execute(false, 120000)) {
+    return {"Failed to start child process"};
+  }
+  return {};
+}
+
+ValueOf<::billet::proto::ApplicationOutput>
+BilletSession::GetCompilerOutputTillLine(int line) {
+  auto ostream_token_value = compiler_process_->ReadOutputAfterIndex(line);
+  if (!ostream_token_value.IsValid()) {
+    session_state_ = SessionState::COMPILATION_DONE;
+    ::billet::proto::ApplicationOutput application_output;
+    application_output.did_terminate = true;
+    // TODO(athilenius): Not sure how to get at this yet
+    application_output.termination_code = 0;
+  }
   ::billet::proto::ApplicationOutput application_output;
-  application_output.did_terminate = true;
-  application_output.termination_code = process_.Wait(1000000);
-  application_output.standard_out = process_.GetOut();
-  application_output.error_out = process_.GetErr();
-  is_running = false;
+  auto ostream_tokens_value = ostream_token_value;
+  if (!ostream_tokens_value.IsValid()) {
+    application_output.did_terminate = true;
+    session_state_ = SessionState::IDLE;
+    return std::move(application_output);
+  }
+  auto ostream_tokens = ostream_tokens_value.GetOrDie();
+  application_output.did_terminate = false;
+  for (const auto& ostream_token : ostream_tokens) {
+    ::billet::proto::OutputToken output_token;
+    output_token.is_cerr = ostream_token.is_err_stream;
+    output_token.content = ostream_token.content;
+    application_output.output_tokens.push_back(std::move(output_token));
+  }
+  return std::move(application_output);
+}
+
+ValueOf<::billet::proto::ApplicationOutput>
+BilletSession::GetApplicationOutputTillLine(int line) {
+  auto ostream_token_value = execute_process_->ReadOutputAfterIndex(line);
+  if (!ostream_token_value.IsValid()) {
+    session_state_ = SessionState::RUNNING_DONE;
+    ::billet::proto::ApplicationOutput application_output;
+    application_output.did_terminate = true;
+    // TODO(athilenius): Not sure how to get at this yet
+    application_output.termination_code = 0;
+  }
+  ::billet::proto::ApplicationOutput application_output;
+  std::vector<Process::OStreamToken> ostream_tokens =
+      ostream_token_value.GetOrDie();
+  application_output.did_terminate = false;
+  for (const auto& ostream_token : ostream_tokens) {
+    ::billet::proto::OutputToken output_token;
+    output_token.is_cerr = ostream_token.is_err_stream;
+    output_token.content = ostream_token.content;
+    application_output.output_tokens.push_back(std::move(output_token));
+  }
   return std::move(application_output);
 }
 

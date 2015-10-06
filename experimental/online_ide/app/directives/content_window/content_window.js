@@ -1,8 +1,8 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
 
-angular.module('thilenius.content_window', [])
-    .directive('atContentWindow', function() {
+angular.module('thilenius.content_window', ['thilenius.console_window'])
+    .directive('atContentWindow', [function() {
       return {
         restrict : 'AE',
         scope : {control : '='},
@@ -16,6 +16,8 @@ angular.module('thilenius.content_window', [])
           scope.editorVisible = false;
           scope.activeRepo = null;
           scope.relativePath = null;
+
+          scope.consoleWindowControl = {};
 
           // Expose a control object
           scope.internalControl = scope.control || {};
@@ -65,6 +67,21 @@ angular.module('thilenius.content_window', [])
             scope.editorVisible = true;
           };
 
+          scope.internalControl.formatCode = function(formatHandler) {
+            if (scope.activeRepo && scope.internalControl.billet) {
+              var wasReadOnly = scope.editor.getReadOnly();
+              scope.editor.setReadOnly(true);
+              scope.internalControl.billet.clangFormat(
+                  scope.editor.getValue(),
+                  function(newSource) {
+                    scope.editor.setValue(newSource,
+                                          scope.editor.getCursorPosition());
+                    scope.editor.setReadOnly(wasReadOnly);
+                  },
+                  function(err) { scope.editor.setReadOnly(wasReadOnly); });
+            }
+          };
+
           // private
           // Unloads and loaded repo, commiting any changes to Crucible
           scope.unload = function() {
@@ -80,4 +97,4 @@ angular.module('thilenius.content_window', [])
 
         }
       };
-    });
+    }]);

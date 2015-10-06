@@ -44,24 +44,34 @@ billetService.prototype.runCMakeRepo = function(repoHeaderProto,
     return;
   }
   var that = this;
-  this.client.ExecuteCMakeRepo(this.billetSessionProto, repoHeaderProto,
-                               stagedChangeListProtos, [], null)
+  this.client.BuildCMakeRepo(this.billetSessionProto, repoHeaderProto,
+                             stagedChangeListProtos, [], null)
       .fail(this.firejqXhrErrorFactory())
       .done(function() {
         that.$rootScope.$broadcast('billet.runBegin');
-        console.log("Execute returned");
         // TODO(athilenius): Add line number here
-        that.client.QueryOutputAfterLine(that.billetSessionProto, 0, null)
-            .fail(that.firejqXhrErrorFactory())
-            .done(function(result) {
-              if (result.did_terminate) {
-                that.$rootScope.$broadcast('billet.runEnd');
-              }
-              that.$rootScope.$broadcast('billet.runOutput', result);
-              console.log("Got run cout: " + result.standard_out);
-              console.log("Got run cerr: " + result.error_out);
-            });
+        var queryOutput = function(after_line) {
+          that.client.QueryCompilerOutputAfterLine(that.billetSessionProto,
+                                                   after_line, null)
+              .fail(that.firejqXhrErrorFactory())
+              .done(function(result) {
+                if (result.did_terminate) {
+                  that.$rootScope.$broadcast('billet.runEnd');
+                } else {
+                  that.$rootScope.$broadcast('billet.runOutput', result);
+                  queryOutput(after_line + result.output_tokens.length);
+                }
+              });
+        };
+        queryOutput(0);
       });
+};
+
+billetService.prototype.clangFormat = function(source, callback, error) {
+  var that = this;
+  this.client.ClangFormat(source, null)
+      .fail(function(jqXhr, stat, err) { error(err); })
+      .done(function(result) { callback(result); });
 };
 
 // private

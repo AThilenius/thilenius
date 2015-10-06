@@ -34,11 +34,15 @@ struct CompilerMessage {
   6: string full_message;
 }
 
+struct OutputToken {
+  1: bool is_cerr;
+  2: string content;
+}
+
 struct ApplicationOutput {
   1: bool did_terminate;
   2: i32 termination_code;
-  3: string standard_out;
-  4: string error_out;
+  3: list<OutputToken> output_tokens;
 }
 
 exception OperationFailure {
@@ -50,13 +54,24 @@ service Billet {
   Session CreateSession(1: sentinel.Token sentinel_token)
       throws (1: OperationFailure operation_failure);
 
-  void ExecuteCMakeRepo(1: Session session,
-                        2: crucible.RepoHeader repo_header,
-                        3: list<crucible.ChangeList> staged_change_lists,
-                        4: list<string> application_args)
+  void BuildCMakeRepo(1: Session session,
+                      2: crucible.RepoHeader repo_header,
+                      3: list<crucible.ChangeList> staged_change_lists,
+                      4: list<string> application_args)
       throws (1: OperationFailure operation_failure);
 
-  ApplicationOutput QueryOutputAfterLine(1: Session session, 2: i32 line)
+  void RunRepo (1: Session session)
+      throws (1: OperationFailure operation_failure);
+
+  ApplicationOutput QueryCompilerOutputAfterLine(1: Session session,
+                                                 2: i32 line)
+      throws (1: OperationFailure operation_failure);
+
+  ApplicationOutput QueryApplicationOutputAfterLine(1: Session session,
+                                                    2: i32 line)
+      throws (1: OperationFailure operation_failure);
+
+  string ClangFormat(1: string source)
       throws (1: OperationFailure operation_failure);
 
 }
