@@ -43,8 +43,8 @@ ValueOf<void> BilletSession::CompileCMakeRepo(
     const ::crucible::proto::RepoHeader& repo_header_proto,
     const std::vector<::crucible::proto::ChangeList>& staged_change_list,
     const std::vector<std::string>& application_args) {
-  if (session_state_ != SessionState::IDLE &&
-      session_state_ <= SessionState::RUNNING) {
+  if (session_state_ == SessionState::COMPILING ||
+      session_state_ == SessionState::RUNNING) {
     return {"A task is already running"};
   }
   session_state_ = SessionState::COMPILING;
@@ -93,19 +93,12 @@ ValueOf<void> BilletSession::ExecuteCMakeRepo() {
 
 ValueOf<::billet::proto::ApplicationOutput>
 BilletSession::GetCompilerOutputTillLine(int line) {
-  auto ostream_token_value = compiler_process_->ReadOutputAfterIndex(line);
-  if (!ostream_token_value.IsValid()) {
-    session_state_ = SessionState::COMPILATION_DONE;
-    ::billet::proto::ApplicationOutput application_output;
-    application_output.did_terminate = true;
-    // TODO(athilenius): Not sure how to get at this yet
-    application_output.termination_code = 0;
-  }
+  auto ostream_tokens_value = compiler_process_->ReadOutputAfterIndex(line);
   ::billet::proto::ApplicationOutput application_output;
-  auto ostream_tokens_value = ostream_token_value;
   if (!ostream_tokens_value.IsValid()) {
+    session_state_ = SessionState::COMPILATION_DONE;
     application_output.did_terminate = true;
-    session_state_ = SessionState::IDLE;
+    application_output.termination_code = compiler_process_->GetExitCode();
     return std::move(application_output);
   }
   auto ostream_tokens = ostream_tokens_value.GetOrDie();
@@ -121,17 +114,15 @@ BilletSession::GetCompilerOutputTillLine(int line) {
 
 ValueOf<::billet::proto::ApplicationOutput>
 BilletSession::GetApplicationOutputTillLine(int line) {
-  auto ostream_token_value = execute_process_->ReadOutputAfterIndex(line);
-  if (!ostream_token_value.IsValid()) {
-    session_state_ = SessionState::RUNNING_DONE;
-    ::billet::proto::ApplicationOutput application_output;
-    application_output.did_terminate = true;
-    // TODO(athilenius): Not sure how to get at this yet
-    application_output.termination_code = 0;
-  }
+  auto ostream_tokens_value = execute_process_->ReadOutputAfterIndex(line);
   ::billet::proto::ApplicationOutput application_output;
-  std::vector<Process::OStreamToken> ostream_tokens =
-      ostream_token_value.GetOrDie();
+  if (!ostream_tokens_value.IsValid()) {
+    session_state_ = SessionState::RUNNING_DONE;
+    application_output.did_terminate = true;
+    application_output.termination_code = execute_process_->GetExitCode();
+    return std::move(application_output);
+  }
+  auto ostream_tokens = ostream_tokens_value.GetOrDie();
   application_output.did_terminate = false;
   for (const auto& ostream_token : ostream_tokens) {
     ::billet::proto::OutputToken output_token;

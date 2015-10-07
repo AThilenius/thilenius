@@ -30,7 +30,7 @@ class Process {
     std::string content;
   };
 
-  Process() = default;
+  Process();
 
   static std::string FindExecutable(const std::string& name);
 
@@ -59,6 +59,8 @@ class Process {
 
   ValueOf<std::vector<OStreamToken>> ReadOutputAfterIndex(int index);
 
+  int GetExitCode();
+
  private:
   int Wait(int timeout_ms);
 
@@ -68,6 +70,7 @@ class Process {
   std::function<int()> child_task_;
   pid_t pid_;
   int pipes_[3][2];
+  int exit_code;
   std::chrono::time_point<std::chrono::system_clock> start_time_;
   BlockingStream<OStreamToken> blocking_ostream_;
   std::string cout_read_ahead_buffer_;

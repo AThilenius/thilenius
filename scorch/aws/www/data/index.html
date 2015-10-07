@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Forge</title>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+<script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
+<link rel="stylesheet" href="style.css" />
+
+<!-- Common -->
+<script src="app/shared/js/string.js"></script>
+<script src="diff_match_patch.js"></script>
+
+<!-- Thrift -->
+<script src="gen_files/thrift.min.js"></script>
+
+<!-- Gen Files -->
+<script src="gen_files/Billet.js"></script>
+<script src="gen_files/Crucible.js"></script>
+<script src="gen_files/Sentinel.js"></script>
+<script src="gen_files/SentinelInternal.js"></script>
+<script src="gen_files/billet_types.js"></script>
+<script src="gen_files/crucible_types.js"></script>
+<script src="gen_files/differencer_types.js"></script>
+<script src="gen_files/sentinel_types.js"></script>
+
+<script src="differencer.js"></script>
+<script src="scripts.js"></script>
+
+<!-- Services -->
+<script src="crucible_repo.js"></script>
+<script src="billet_service.js"></script>
+<script src="crucible_service.js"></script>
+<script src="sentinel_service.js"></script>
+
+<!-- Directives -->
+<script src="/app/directives/tree_view/tree_view.js"></script>
+<link rel="stylesheet" href="/app/directives/tree_view/tree_view.css" />
+
+<script src="/app/directives/console_window/console_window.js"></script>
+<link rel="stylesheet" href="/app/directives/console_window/console_window.css" />
+
+<script src="/app/directives/content_window/content_window.js"></script>
+<link rel="stylesheet" href="/app/directives/content_window/content_window.css" />
+
+<script src="/app/directives/file_explorer/file_explorer.js"></script>
+<link rel="stylesheet" href="/app/directives/file_explorer/file_explorer.css" />
+
+<script src="/app/directives/history_explorer/history_explorer.js"></script>
+<link rel="stylesheet" href="/app/directives/history_explorer/history_explorer.css" />
+
+</head>
+<body ng-app="forgeApp" ng-controller="forgeController">
+
+<div ng-show="error" class="error-overlay">
+  <div class="error-label">{{ error }}</div>
+</div>
+
+<div ng-show="!sentinel.user" class="login-backdrop">
+  <div class="login-middle-align">
+    <div class="login-window">
+      <form role="form-signin">
+        <h2 class="text-center">Forge</h2>
+        <br>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input class="form-control" ng-model="email" type="email"
+          name="email" placeholder="Email Address">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="form-control" ng-model="password" type="password"
+          name="password" placeholder="Password">
+        </div>
+        <br>
+        <input type="submit" ng-click="sentinel.login(email, password)"
+        class="btn btn-success" style="width:100px;" value="Sign In">
+      </form>
+    </div>
+  </div>
+</div>
+
+<div ng-show="sentinel.user">
+  <div class="v-flex-wrapper">
+    <div class="flex-header">
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="" ng-click="run()">
+              <span class="glyphicon glyphicon-play-circle" aria-hidden="true">
+              </span> Run
+            </a></li>
+            <li class="disabled"><a href="">
+              <span class="glyphicon glyphicon-time" aria-hidden="true">
+              </span> File History
+            </a></li>
+            <li ng-disabled="!autoFormat"><a href="" ng-click="autoFormat()">
+              <span class="glyphicon glyphicon-list-alt" aria-hidden="true">
+              </span> Auto Format
+            </a></li>
+            <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+              role="button" aria-haspopup="true" aria-expanded="false">
+              {{ sentinel.user.last_name.toPascalCase() }} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Action</a></li>
+              <li><a href="#">Another action</a></li>
+              <li><a href="#">Something else here</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#" ng-click="sentinel.logout()">Logout</a></li>
+            </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="flex-body">
+
+      <!-- Primary Editor Window -->
+      <div class="h-flex-wrapper">
+
+        <div class="flex-header sidebar">
+
+            <div class="v-flex-wrapper">
+              <div class="flex-header sidebar-header">
+
+                <div class="sidebar-header-icon glyphicon glyphicon-folder-close"
+                  ng-class="(activeSidebarTab == 'file') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'file'; editOn();">
+                </div>
+                <div class="sidebar-header-icon glyphicon glyphicon-time"
+                  ng-class="(activeSidebarTab == 'history') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'history'; buildHistory();">
+                </div>
+                <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
+                  ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'errors'">
+                </div>
+                <div class="sidebar-header-icon glyphicon glyphicon-cog"
+                  ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
+                  ng-click="activeSidebarTab = 'settings'">
+                </div>
+              </div>
+
+              <div class="flex-body">
+                <!-- File Explorer -->
+                <div ng-show="activeSidebarTab == 'file'" class="fill-flex-box">
+                  <div control='fileExplorerControl' at-file-explorer></div>
+                </div>
+                <!--History Explorer -->
+                <div ng-show="activeSidebarTab == 'history'"
+                  class="fill-flex-box">
+                  <div control='historyExplorerControl' at-history-explorer></div>
+                </div>
+              </div>
+
+            </div>
+
+        </div>
+
+        <div class="v-flex-wrapper">
+          <div class="flex-body">
+            <div control="contentWindowControl" at-content-window></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-footer editor-footer">
+      Scorchforge.com &copy; Alec Thilenius 2015
+    </div>
+  </div>
+</div>
+</body>
+
+</html>

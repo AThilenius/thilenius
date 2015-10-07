@@ -3,11 +3,41 @@
 
 var forgeApp = angular.module('forgeApp', [
   'ngCookies',
+  'ngRoute',
   'thilenius.tree_view',
   'thilenius.content_window',
   'thilenius.file_explorer',
   'thilenius.history_explorer'
 ]);
+
+forgeApp.config(function($routeProvider) {
+  $routeProvider
+
+      .when('/',
+            {
+              templateUrl: 'forge.html',
+              controller: 'forgeController'
+            })
+
+      .when('/login',
+            {
+              templateUrl: 'login.html',
+              controller: 'loginController'
+            });
+
+      //.when('/list_repos',
+            //{
+              //templateUrl: 'app/components/repo/list_repos.html',
+              //controller: 'repoController'
+            //})
+
+      //.when('/contact', {
+        //templateUrl: 'app/components/contact/contact.html',
+        //controller: 'contactController'
+      //});
+});
+
+forgeApp.controller('loginControll', [function(){}]);
 
 forgeApp.controller('forgeController', [
   '$rootScope',

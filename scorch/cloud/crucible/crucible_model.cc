@@ -10,7 +10,7 @@
 #include "base/string.h"
 #include "base/types.h"
 
-DEFINE_string(mongo_ip, "172.17.42.1", "The MongoDB instance ip address.");
+DEFINE_string(mongo_ip, "localhost", "The MongoDB instance ip address.");
 DEFINE_string(mongo_port, "27017", "The MongoDB instance port number.");
 DEFINE_string(mongo_repos_table, "crucible.repos",
               "The MongoDB database and table name to use.");

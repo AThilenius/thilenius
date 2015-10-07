@@ -1,0 +1,25 @@
+<br>
+<br>
+<form role="form-signin">
+  <div class="thin_window">
+    <h3 class="text-center"> Forge Sign In </h3>
+    <hr>
+    <div ng-show="is_invalid" class="alert alert-danger">
+      {{ error }}
+    </div>
+    <br>
+    <div class="form-group">
+      <label for="username">User Name</label>
+      <input class="form-control" ng-model="username" type="username" name="username" placeholder="User Name">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input class="form-control" ng-model="password" type="password" name="password" placeholder="Password">
+    </div>
+    <input type="submit" ng-click="login(username, password)" class="btn btn-default btn-primary auto_width" value="Sign In">
+    <hr>
+  </div>
+</form>
+<div class="thin_window">
+  <p class="small text-center">Forge, your portal to Scorch</p>
+</div>

@@ -25,6 +25,8 @@
 namespace thilenius {
 namespace base {
 
+Process::Process() : exit_code(-1) {}
+
 std::string Process::FindExecutable(const std::string& name) {
   if (File::Exists(name)) {
     return name;
@@ -91,14 +93,14 @@ int Process::ExecuteCommandSync(
 }
 
 ProcessPtr Process::FromFork(std::function<int()> child_task) {
-  ProcessPtr process (new Process());
+  ProcessPtr process(new Process());
   process->child_task_ = child_task;
   process->pid_ = 0;
   return process;
 }
 
 ProcessPtr Process::FromExecv(const std::string& full_path,
-                           const std::vector<std::string> args) {
+                              const std::vector<std::string> args) {
   // Must be a vector of char* because execv is a crappy C call. I hate C
   std::function<int()> child_task = [full_path, args]() -> int {
     std::vector<char*> final_args(args.size() + 2);
@@ -143,10 +145,12 @@ bool Process::Execute(bool blocking, int timeout_ms) {
     });
     // Wait if blocking, otherwise source end from wait
     if (blocking) {
-      return Wait(timeout_ms);
       blocking_ostream_.WriteEndOfStream();
+      exit_code = Wait(timeout_ms);
+      return exit_code == 0;
     } else {
-      blocking_ostream_.EndFrom([this, timeout_ms]() { Wait(timeout_ms); });
+      blocking_ostream_.EndFrom(
+          [this, timeout_ms]() { exit_code = Wait(timeout_ms); });
     }
     return true;
   }
@@ -161,6 +165,8 @@ ValueOf<std::vector<Process::OStreamToken>> Process::ReadOutputAfterIndex(
     int index) {
   return blocking_ostream_.ReadItemsAfterIndex(index);
 }
+
+int Process::GetExitCode() { return exit_code; }
 
 int Process::Wait(int timeout_ms) {
   // This is a simple spin-wait because i'm too lazy to do anything better

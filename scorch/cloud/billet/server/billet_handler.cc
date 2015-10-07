@@ -63,11 +63,22 @@ void BilletHandler::BuildCMakeRepo(
       repo_header, staged_change_lists, application_args);
   if (!execute_value.IsValid()) {
     ThrowOpFailure(
-        StrCat("Failed to execute CMake repo: ", execute_value.GetError()));
+        StrCat("Failed to build CMake repo: ", execute_value.GetError()));
   }
 }
 
-void BilletHandler::RunRepo (const ::billet::proto::Session& session) {}
+void BilletHandler::RunRepo (const ::billet::proto::Session& session) {
+  AuthenticateOrThrow(session.session_key);
+  if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
+    ThrowOpFailure("You do not have an active session");
+  }
+  auto& user_session = sessions_[session.session_key.user_uuid];
+  ValueOf<void> execute_value = user_session.ExecuteCMakeRepo();
+  if (!execute_value.IsValid()) {
+    ThrowOpFailure(
+        StrCat("Failed to execute CMake repo: ", execute_value.GetError()));
+  }
+}
 
 void BilletHandler::QueryCompilerOutputAfterLine(
     ::billet::proto::ApplicationOutput& _return,
@@ -87,7 +98,19 @@ void BilletHandler::QueryCompilerOutputAfterLine(
 
 void BilletHandler::QueryApplicationOutputAfterLine(
       ::billet::proto::ApplicationOutput& _return,
-      const ::billet::proto::Session& session, const int32_t line) {}
+      const ::billet::proto::Session& session, const int32_t line) {
+  AuthenticateOrThrow(session.session_key);
+  if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
+    ThrowOpFailure("You do not have an active application");
+  }
+  auto& user_session = sessions_[session.session_key.user_uuid];
+  ValueOf<::billet::proto::ApplicationOutput> output_value =
+      user_session.GetApplicationOutputTillLine(line);
+  if (!output_value.IsValid()) {
+    ThrowOpFailure(StrCat("Failed to get output: ", output_value.GetError()));
+  }
+  _return = std::move(output_value.GetOrDie());
+}
 
 void BilletHandler::ClangFormat(std::string& _return,
                                 const std::string& source) {

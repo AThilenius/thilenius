@@ -30,8 +30,8 @@ class BilletSession {
     UNKNOWN,
     IDLE,
     COMPILING,
-    COMPILATION_DONE,
     RUNNING,
+    COMPILATION_DONE,
     RUNNING_DONE,
   };
 

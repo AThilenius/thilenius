@@ -7,6 +7,8 @@ DEFINE_boolean test_all false 'Build and run all tests under /thilenius' a
 DEFINE_boolean clean false 'Clean the bin and gen dirs before building' c
 DEFINE_boolean clean_all false 'Removes all bin and gen files before building' d
 DEFINE_boolean verbose false 'Use verbose output' v
+DEFINE_boolean package false 'Gathers dependencies and stores them in /package' p
+DEFINE_boolean release false 'Build for release' e
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
@@ -50,7 +52,12 @@ fi
 
 # Build
 INFO 'Running CMake'
-cmake -H. -B/root/thilenius_bin/$RPATH || EROR 'CMake command failed.'
+if [ ${FLAGS_release} -eq ${FLAGS_TRUE} ]; then
+  cmake -DCMAKE_BUILD_TYPE=Release -H. -B/root/thilenius_bin/$RPATH \
+    || EROR 'CMake command failed.'
+else
+  cmake -H. -B/root/thilenius_bin/$RPATH || EROR 'CMake command failed.'
+fi
 
 INFO 'Running Make'
 cd /root/thilenius_bin/$RPATH
@@ -90,4 +97,20 @@ if [ ${FLAGS_test_all} -eq ${FLAGS_TRUE} ]; then
     popd
   done
   INFO 'All tests passing.'
+fi
+
+# Package
+if [ ${FLAGS_package} -eq ${FLAGS_TRUE} ]; then
+  mkdir -p /root/thilenius_bin/$RPATH/${PWDD}_package
+  INFO "Collecting the shared library dependencies for $PWDD"
+  deps=$(ldd /root/thilenius_bin/$RPATH/$PWDD | awk 'BEGIN{ORS=" "}$1\
+  ~/^\//{print $1}$3~/^\//{print $3}' | sed 's/,$/\n/')
+  INFO "Copying dependencies to /root/thilenius_bin/$RPATH/${PWDD}_package"
+  for dep in $deps; do
+      INFO " - $dep"
+      cp "$dep" "/root/thilenius_bin/$RPATH/${PWDD}_package/"
+  done
+  INFO "Copying ${PWDD} binary"
+  cp "/root/thilenius_bin/${RPATH}/${PWDD}" \
+      "/root/thilenius_bin/$RPATH/${PWDD}_package/"
 fi

@@ -7,7 +7,7 @@
 
 #include "base/string.h"
 
-DEFINE_string(mongo_ip, "172.17.42.1", "The MongoDB instance ip address.");
+DEFINE_string(mongo_ip, "localhost", "The MongoDB instance ip address.");
 DEFINE_string(mongo_port, "27017", "The MongoDB instance port number.");
 DEFINE_string(mongo_user_table, "sentinel.users",
               "The MongoDB database and table name for user entries.");

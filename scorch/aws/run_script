@@ -1,0 +1,26 @@
+#! /bin/bash
+
+# sudo docker run -d -p 80:80 -p 443:443 -v /data:/data --name forge
+
+echo 'Starting nginx'
+sudo nginx
+
+echo 'Starting mognoDB'
+sudo mongod --dbpath=/data/mongo &
+
+echo 'Starting Sentinel'
+export LD_LIBRARY_PATH="/etc/scorch/packages/sentinel_package";
+/etc/scorch/packages/sentinel_package/server &
+
+echo 'Starting Crucible'
+export LD_LIBRARY_PATH="/etc/scorch/packages/crucible_package";
+/etc/scorch/packages/crucible_package/server &
+
+echo 'Starting Billet'
+export LD_LIBRARY_PATH="/etc/scorch/packages/billet_package";
+/etc/scorch/packages/billet_package/server &
+
+echo 'Sleeping. Forever... Sheee, go to sleep.'
+while true; do
+  sleep 100000
+done

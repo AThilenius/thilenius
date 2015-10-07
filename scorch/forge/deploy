@@ -48,7 +48,7 @@ INFO "Copying src to ${FLAGS_mount_point}/"
 cp -r $HOME/thilenius/scorch/forge/src/* ${FLAGS_mount_point}
 
 INFO 'Changing owner to www-data'
-sudo chown -R www-data /data
+sudo chown -R www-data /data/nginx
 
 INFO 'Reloading nginx'
 nginx -s reopen
