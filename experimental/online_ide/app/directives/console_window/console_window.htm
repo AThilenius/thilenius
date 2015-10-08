@@ -1,5 +1,12 @@
 <div class="v-flex-wrapper">
-  <div class="flex-header console-header">
+  <div class="flex-header console-header noselect">
+      <div ng-click="show=!show;"
+        style="border-bottom-left-radius: 0px;"
+        class="btn close-button">
+        <span class="glyphicon" aria-hidden="true"
+          ng-class="'glyphicon-chevron-' + (!show ? 'up' : 'down')">
+        </span>
+      </div>
     <div class="btn-group btn-group-xs" role="group">
       <div ng-class="activeTab == 'compilerOutput' ? 'active' : ''"
         ng-click="activeTab = 'compilerOutput'"

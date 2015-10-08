@@ -45,8 +45,10 @@ angular.module('thilenius.file_explorer', [])
             if (scope.loadedRepos[repo.repoProto.repo_header.repo_uuid]) {
               return;
             }
+            var repoFullName = repo.repoProto.repo_header.repo_name;
+            var humanRepoName = repoFullName.split('/')[0];
             var newParent = {
-              label : repo.repoProto.repo_header.repo_name,
+              label : humanRepoName,
               children : []
             };
             for (var relativePath in repo.headState) {

@@ -77,8 +77,6 @@ angular.module('thilenius.content_window', ['thilenius.console_window'])
             scope.run = function() {
               var stashedCl = scope.activeRepo.getPendingChangeList(
                   scope.relativePath, scope.editor.getValue());
-              console.log("Running repo with stashed CL: " +
-                          JSON.stringify(stashedCl, null, 2));
               if (stashedCl) {
                 billet.runCMakeRepo(scope.activeRepo.repoProto.repo_header,
                                     [stashedCl]);

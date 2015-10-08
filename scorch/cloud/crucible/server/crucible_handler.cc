@@ -2,7 +2,7 @@
 // All rights reserved.
 
 #include "scorch/cloud/crucible/server/crucible_handler.h"
-
+#include <algorithm>
 #include <gflags/gflags.h>
 
 #include "base/guid.h"
@@ -21,6 +21,7 @@ DEFINE_int32(sentinel_port, 2100, "The Sentinel instance port number.");
 DEFINE_string(sentinel_route, "/", "The Sentinel instance route.");
 
 using ::thilenius::base::Guid;
+using ::thilenius::base::String;
 using ::thilenius::base::Time;
 using ::thilenius::cloud::sentinel::SentinelClient;
 
@@ -105,7 +106,49 @@ void CrucibleHandler::GetRepoHeadersByUser(
     const ::sentinel::proto::Token& user_stoken) {
   CrucibleModel model;
   AuthenticateOrThrow(user_stoken);
-  _return = std::move(model.FindRepoHeadersByUserId(user_stoken.user_uuid));
+  std::vector<::crucible::proto::RepoHeader> users_repos =
+      model.FindRepoHeadersByUserId(user_stoken.user_uuid);
+  std::unordered_map<std::string, const ::crucible::proto::RepoHeader&> lookup;
+  for (const auto& user_repo : users_repos) {
+    if (!String::Blank(user_repo.base_repo_uuid)) {
+      lookup.insert({user_repo.base_repo_uuid, user_repo});
+    }
+  }
+  std::vector<::crucible::proto::RepoHeader> all_base_repos =
+      model.FindAllBaseRepos();
+  for (const auto& base_repo : all_base_repos) {
+    LOG(INFO) << "Exiting base repo: " << base_repo.repo_name;
+  }
+  for (const auto& base_repo : all_base_repos) {
+    auto iter = lookup.find(base_repo.repo_uuid);
+    if (iter == lookup.end()) {
+      // User doesn't have this base repo clones, clone it.
+      LOG(INFO) << "Cloning " << base_repo.repo_name;
+      std::string repo_name =
+          StrCat(base_repo.repo_name, "/", user_stoken.user_uuid);
+      // Load up the full repo (We need it's change lists)
+      ::crucible::proto::Repo repo;
+      if (model.FindRepoByRepoName(&repo, base_repo.repo_name)) {
+        // Create a new cloned repo from the base
+        ::crucible::proto::RepoHeader repo_header;
+        repo_header.repo_uuid = Guid::NewGuid();
+        repo_header.user_uuid = user_stoken.user_uuid;
+        repo_header.repo_name = repo_name;
+        repo_header.creation_timestamp =
+            std::to_string(Time::EpochMilliseconds());
+        repo_header.base_repo_uuid = repo.repo_header.repo_uuid;
+        ::crucible::proto::Repo cloned_repo;
+        // Copy change list from base
+        cloned_repo.change_lists = std::move(repo.change_lists);
+        cloned_repo.repo_header = std::move(repo_header);
+        model.SaveRepo(cloned_repo);
+        users_repos.emplace_back(cloned_repo.repo_header);
+      } else {
+        // Not sure what to do with this. I guess ignore that repo?
+      }
+    }
+  }
+  _return = std::move(users_repos);
 }
 
 void CrucibleHandler::GetRepoById(::crucible::proto::Repo& _return,

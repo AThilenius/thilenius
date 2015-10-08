@@ -8,7 +8,7 @@ angular.module('thilenius.console_window', [])
       function($sce, $rootScope) {
         return {
           restrict : 'AE',
-          scope : {control : '='},
+          scope : {control : '=', show : '='},
           templateUrl : 'app/directives/console_window/console_window.htm',
           link : function(scope, iElement, iAttrs) {
 
@@ -50,7 +50,7 @@ angular.module('thilenius.console_window', [])
               }
             };
 
-            // Expose a control object
+            // Expose a control object and show
             scope.internalControl = scope.control || {};
 
             $rootScope.$on('billet.compileBegin', function(eventArgs) {
@@ -58,6 +58,7 @@ angular.module('thilenius.console_window', [])
                 scope.activeTab = 'compilerOutput';
                 scope.compilerContent = [];
                 scope.applicationContent = [];
+                scope.show = true;
               });
             });
 
@@ -80,6 +81,7 @@ angular.module('thilenius.console_window', [])
                 scope.write("Ended with exit code: " +
                                 app_output.termination_code,
                             scope.compilerContent);
+                scope.show = true;
               });
               $('#compilerScroller')
                   .animate(
@@ -87,7 +89,10 @@ angular.module('thilenius.console_window', [])
             });
 
             $rootScope.$on('billet.runBegin', function(eventArgs) {
-              scope.$apply(function() { scope.activeTab = 'consoleOutput'; });
+              scope.$apply(function() {
+                scope.activeTab = 'consoleOutput';
+                scope.show = true;
+              });
             });
 
             $rootScope.$on('billet.runOutput', function(eventArgs, app_output) {
@@ -107,6 +112,7 @@ angular.module('thilenius.console_window', [])
                 scope.write("Ended with exit code: " +
                                 app_output.termination_code,
                             scope.applicationContent);
+                scope.show = true;
               });
               $('#consoleScroller')
                   .animate({scrollTop : $('#consoleScroller')[0].scrollHeight},

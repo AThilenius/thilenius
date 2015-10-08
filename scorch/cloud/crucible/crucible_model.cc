@@ -62,7 +62,24 @@ CrucibleModel::FindRepoHeadersByUserId(const std::string& user_uuid) {
   std::vector<::crucible::proto::RepoHeader> repo_headers;
   ::mongo::BSONObj query = BSON("repo_header.user_uuid" << user_uuid);
   ::mongo::BSONObj filter = BSON("repo_header" << 1);
-  auto cursor = connection_.query(FLAGS_mongo_repos_table, query, 0, 0, &filter);
+  auto cursor =
+      connection_.query(FLAGS_mongo_repos_table, query, 0, 0, &filter);
+  while (cursor->more()) {
+    // Got a repo header back
+    ::mongo::BSONObj bson = cursor->next().getObjectField("repo_header");
+    ::crucible::proto::RepoHeader repo_header;
+    crucible_mapper_.repo_header_mapper.from_bson(bson, repo_header);
+    repo_headers.emplace_back(std::move(repo_header));
+  }
+  return std::move(repo_headers);
+}
+
+std::vector<::crucible::proto::RepoHeader> CrucibleModel::FindAllBaseRepos() {
+  std::vector<::crucible::proto::RepoHeader> repo_headers;
+  ::mongo::BSONObj query = BSON("repo_header.base_repo_uuid" << "");
+  ::mongo::BSONObj filter = BSON("repo_header" << 1);
+  auto cursor =
+      connection_.query(FLAGS_mongo_repos_table, query, 0, 0, &filter);
   while (cursor->more()) {
     // Got a repo header back
     ::mongo::BSONObj bson = cursor->next().getObjectField("repo_header");
@@ -75,9 +92,10 @@ CrucibleModel::FindRepoHeadersByUserId(const std::string& user_uuid) {
 
 bool CrucibleModel::SaveRepo(const ::crucible::proto::Repo repo) {
   connection_.update(
-      FLAGS_mongo_repos_table, BSON("repo_header.repo_name" << repo.repo_header.repo_name
-                                           << "repo_header.user_uuid"
-                                           << repo.repo_header.user_uuid),
+      FLAGS_mongo_repos_table,
+      BSON("repo_header.repo_name" << repo.repo_header.repo_name
+                                   << "repo_header.user_uuid"
+                                   << repo.repo_header.user_uuid),
       crucible_mapper_.repo_mapper.to_bson(repo), true);
 
   std::string last_error = connection_.getLastError();

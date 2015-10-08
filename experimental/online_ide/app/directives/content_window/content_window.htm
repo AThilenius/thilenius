@@ -21,7 +21,9 @@
       <div id="editor"></div>
     </div>
   </div>
-  <div class="flex-footer console-window">
-    <div contol="consoleWindowControl" at-console-window></div>
+  <div class="flex-footer console-window"
+       ng-class="showConsole ? 'maximize-console' : 'minimize-console'">
+    <div contol="consoleWindowControl" show="showConsole" at-console-window>
+    </div>
   </div>
 </div>

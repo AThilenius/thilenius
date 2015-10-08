@@ -28,6 +28,8 @@ class CrucibleModel {
   std::vector<::crucible::proto::RepoHeader> FindRepoHeadersByUserId(
       const std::string& user_uuid);
 
+  std::vector<::crucible::proto::RepoHeader> FindAllBaseRepos();
+
   // Saving
   bool SaveRepo(const ::crucible::proto::Repo repo);
 
