@@ -59,14 +59,16 @@ RUN apt-get install -y wget
 #===  UNZIP  ===================================================================
 RUN apt-get install -y unzip
 
-# Fix for:
-# http://stackoverflow.com/questions/8926715/missing-exception-in-boost-process
-#RUN sed -i -e \
-    #'s#<boost/filesystem/path.hpp>#<boost/filesystem/operations.hpp>#g' \
-    #/usr/include/boost/process/operations.hpp
-
 #===  SCONS  ===================================================================
 RUN apt-get install -y scons
+
+#===  MongoDB  =================================================================
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+RUN echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > /etc/apt/sources.list.d/mongodb.list
+# Re-Update from custom list
+RUN apt-get update
+RUN apt-get install -y mongodb-org
+RUN rm -rf /var/lib/apt/lists/*
 
 #===  VIM RC  ==================================================================
 ADD vimrc /root/env_files/

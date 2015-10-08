@@ -23,7 +23,7 @@ var SentinelService = function($rootScope, $cookies) {
 
 SentinelService.prototype.login = function(login, password) {
   var that = this;
-  that.client.CreateToken(login, password, function() {})
+  that.client.CreateToken(login, password, null)
       .fail(that.firejqXhrErrorFactory())
       .done(function(result) {
         that.token = result;
@@ -39,6 +39,21 @@ SentinelService.prototype.logout = function() {
   this.$rootScope.$broadcast('sentinel.logout');
 };
 
+SentinelService.prototype.createAccount = function(firstName, lastName, email,
+                                                   password) {
+  // Create a user partial
+  var user = new User();
+  user.first_name = firstName;
+  user.last_name = lastName;
+  user.email_address = email;
+  var that = this;
+  this.client.CreateUser(user, password, null)
+      .fail(that.firejqXhrErrorFactory())
+      .done(function(user) {
+        that.login(email, password);
+      });
+};
+
 SentinelService.prototype.tryLoadingFromCookie = function() {
   if (!this.token && !this.user && this.$cookies.get(FORGE_COOKIE_KEY) &&
       JSON.parse(this.$cookies.get(FORGE_COOKIE_KEY))) {
@@ -46,7 +61,7 @@ SentinelService.prototype.tryLoadingFromCookie = function() {
                                JSON.parse(this.$cookies.get(FORGE_COOKIE_KEY)));
     // Validate the token
     var that = this;
-    this.client.CheckToken(this.token, function() {})
+    this.client.CheckToken(this.token, null)
         .fail(that.firejqXhrErrorFactory())
         .done(function(isValid) {
           if (isValid) {

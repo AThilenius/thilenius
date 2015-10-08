@@ -1,45 +1,32 @@
 var forgeApp = angular.module('forgeApp');
 
 forgeApp.controller('loginController', [
-  '$scope',
   '$location',
-  'session',
-  'crucible',
-  function($scope, $location, session, crucible) {
-    $scope.message = 'Look! I am an login page.';
-    $scope.login = function(username, password) {
-      if (isBlank(username) || isBlank(password)) {
-        $scope.error = "Missing Fields";
-        $scope.is_invalid = true;
-      } else {
-        session.login(
-            username, password,
-            function(error) {
-              console.log("Got error: " + JSON.stringify(error, null, 2));
-              $scope.$apply(function() {
-                $scope.error = "Invalid Username or Password";
-                $scope.is_invalid = true;
-                $scope.password = "";
-              });
-            },
-            function(token, user) {
-              // DO NOT SUBMIT - Get repo headers
-              crucible.client.GetRepoHeadersByUser(
-                                  session.session_token, function() {})
-                  .fail(function(jqXHR, status, error) {
-                    console.log("Crucible error: " + error);
-                  })
-                  .done(function(repo_headers) {
-                    console.log("Got repo headers: " +
-                                JSON.stringify(repo_headers, null, 2));
-                  });
-              $scope.$apply(function() {
-                $scope.username = null;
-                $scope.password = null;
-                $location.path("/");
-              });
-            });
-      }
+  '$rootScope',
+  '$scope',
+  'sentinel',
+  function($location, $rootScope, $scope, sentinel) {
+    $scope.sentinel = sentinel;
+
+    $rootScope.$on('sentinel.login', function(event, token, user) {
+      $scope.$apply(function() { $location.path("/forge"); });
+    });
+
+    $rootScope.$on(
+        'sentinel.logout', function(event) { $location.path('/login'); });
+
+    $rootScope.$on('sentinel.error', function(event, message) {
+      $scope.error = message;
+      $scope.password = '';
+      console.log("Sentinel failure: " + message);
+    });
+
+    $scope.createAccount = function() {
+      sentinel.createAccount($scope.create.firstName, $scope.create.lastName,
+                             $scope.create.email, $scope.create.password);
     };
+
+    // Finally let Sentinel load from cookie (if we have one)
+    sentinel.tryLoadingFromCookie();
   }
 ]);

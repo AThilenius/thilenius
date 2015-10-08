@@ -32,8 +32,8 @@ INFO "Making sure ${FLAGS_mount_point} exsits"
 mkdir -p ${FLAGS_mount_point} || \
     EROR "Failed to make ${FLAGS_mount_point} directory"
 
-INFO "Clearing ${FLAGS_mount_point}"
-rm -rf ${FLAGS_mount_point}/* || EROR "Failed to clear ${FLAGS_mount_point}"
+#INFO "Clearing ${FLAGS_mount_point}"
+#rm -rf ${FLAGS_mount_point}/* || EROR "Failed to clear ${FLAGS_mount_point}"
 
 INFO "Copying gen_files to ${FLAGS_mount_point}/gen_files"
 cp -r $HOME/thilenius_gen/scorch/forge ${FLAGS_mount_point}/gen_files || \
@@ -41,11 +41,11 @@ cp -r $HOME/thilenius_gen/scorch/forge ${FLAGS_mount_point}/gen_files || \
 
 INFO "Copying thrift.min.js to ${FLAGS_mount_point}/gen_files"
 cp /root/thilenius/scorch/forge/thrift.min.js \
-    ${FLAGS_mount_point}/gen_files/thrift.js || \
-    EROR "Failed to copy thrift.min.js to ${FLAGS_output}/thrift.js"
+    ${FLAGS_mount_point}/gen_files/thrift.min.js || \
+    EROR "Failed to copy thrift.min.js to ${FLAGS_mount_point}/gen_files/thrift.js"
 
-INFO "Copying src to ${FLAGS_mount_point}/"
-cp -r $HOME/thilenius/scorch/forge/src/* ${FLAGS_mount_point}
+#INFO "Copying src to ${FLAGS_mount_point}/"
+#cp -r $HOME/thilenius/scorch/forge/src/* ${FLAGS_mount_point}
 
 INFO 'Changing owner to www-data'
 sudo chown -R www-data /data/nginx

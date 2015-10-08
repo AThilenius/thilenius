@@ -21,7 +21,9 @@ var CrucibleRepo = function(crucible, repoProto) {
 // TODO(athilenius): Add support for addFile and removeFile (see commit on how
 // to do that)
 
-CrucibleRepo.prototype.commit = function(relativePath, newSource) {
+// Returns an array of patches for uncommited changes to a repo
+CrucibleRepo.prototype.getPendingChangeList = function(relativePath,
+                                                       newSource) {
   var oldSource = this.headState[relativePath].source;
   // TODO(athilenius): Need to get the MD5 as well somehow
   var fileDelta = new FileDelta();
@@ -32,7 +34,7 @@ CrucibleRepo.prototype.commit = function(relativePath, newSource) {
   fileDelta.patches = this.differencer.patchesFromStrings(oldSource, newSource);
   if (fileDelta.patches.length === 0) {
     // No changes to commit
-    return;
+    return null;
   }
   var changeList = new ChangeList();
   changeList.change_list_uuid = "Pending CL: " + this.nextClId++;
@@ -41,6 +43,15 @@ CrucibleRepo.prototype.commit = function(relativePath, newSource) {
   changeList.modified_files = [fileDelta];
   changeList.added_files = [];
   changeList.removed_files = [];
+  return changeList;
+};
+
+// Commits any changes to the file relativePath, no matter how small.
+CrucibleRepo.prototype.commit = function(relativePath, newSource) {
+  var changeList = this.getPendingChangeList(relativePath, newSource);
+  if (!changeList) {
+    return;
+  }
   // We create a mock CL, and 'commit' it to the local repo, then update the
   // headState immediately. Once the commit comes back from Crucible, we modify
   // the mock commit.
@@ -61,6 +72,7 @@ CrucibleRepo.prototype.commit = function(relativePath, newSource) {
       });
 };
 
+// Returns a map of <relativePath : crucible::proto::File>
 CrucibleRepo.prototype.reconstructFilesForCL = function(changeListUuid) {
   var activeFiles = {};
   for (var i = 0; i < this.repoProto.change_lists.length; i++) {

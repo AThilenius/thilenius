@@ -1,33 +1,42 @@
 var forgeApp = angular.module('forgeApp');
 
-// configure our routes
 forgeApp.config(function($routeProvider) {
   $routeProvider
 
       .when('/',
             {
-              templateUrl: 'app/components/home/home.html',
-              controller: 'homeController'
+              templateUrl: 'app/components/login/login.html',
+              controller: 'loginController'
             })
 
       .when('/login',
             {
-              templateUrl: 'app/components/account/login.html',
+              templateUrl: 'app/components/login/login.html',
               controller: 'loginController'
             })
 
-      .when('/list_repos',
+      .when('/forge',
             {
-              templateUrl: 'app/components/repo/list_repos.html',
-              controller: 'repoController'
-            })
+              templateUrl: 'app/components/forge/forge.html',
+              controller: 'forgeController'
+            });
 
-      .when('/contact', {
-        templateUrl: 'app/components/contact/contact.html',
-        controller: 'contactController'
-      });
 });
 
-forgeApp.controller('contactController', function($scope) {
-  $scope.message = 'Contact us! JK. This is just a demo.';
-});
+// Set up automatic forwarding to login for all routes
+forgeApp.run([
+  '$rootScope',
+  '$location',
+  'sentinel',
+  function($rootScope, $location, sentinel) {
+    $rootScope.$on("$routeChangeStart", function(event, next, current) {
+      if (!sentinel.user) {
+        if (next.templateUrl == "app/components/login/login.html") {
+          // already going to #login, no redirect needed
+        } else {
+          $location.path("/login");
+        }
+      }
+    });
+  }
+]);

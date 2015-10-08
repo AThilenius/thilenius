@@ -34,8 +34,6 @@ billetService.prototype.createSession = function(sentinelToken) {
         .done(function(result) {
           that.billetSessionProto = result;
           that.$rootScope.$broadcast('billet.sessionCreated', result);
-          console.log("Got a Billet session: " +
-                      JSON.stringify(result, null, 2));
         });
   }
 };
@@ -61,7 +59,7 @@ billetService.prototype.compileCMakeRepo = function(repoHeaderProto,
                                                     stagedChangeListProtos) {
   var that = this;
   this.client.BuildCMakeRepo(this.billetSessionProto, repoHeaderProto,
-                             stagedChangeListProtos, [], null)
+                             stagedChangeListProtos, [/* App Args*/], null)
       .fail(this.firejqXhrErrorFactory())
       .done(function() {
         that.$rootScope.$broadcast('billet.compileBegin');

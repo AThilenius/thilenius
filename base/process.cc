@@ -135,20 +135,34 @@ bool Process::Execute(bool blocking, int timeout_ms) {
     close(pipes_[COUT][WRITE]);
     close(pipes_[CERR][WRITE]);
     start_time_ = std::chrono::system_clock::now();
-    // Source from cout
-    blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
-      return ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
-    });
-    // Source from cerr
-    blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
-      return ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
-    });
     // Wait if blocking, otherwise source end from wait
     if (blocking) {
-      blocking_ostream_.WriteEndOfStream();
+      // If we are blocking mode, then source cout/cerr directly
       exit_code = Wait(timeout_ms);
+      while (true) {
+        auto cout_line_value = ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+        if (!cout_line_value.IsValid()) {
+          break;
+        }
+        blocking_ostream_.Write(cout_line_value.GetOrDie());
+      }
+      while (true) {
+        auto cerr_line_value = ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
+        if (!cerr_line_value.IsValid()) {
+          break;
+        }
+        blocking_ostream_.Write(cerr_line_value.GetOrDie());
+      }
       return exit_code == 0;
     } else {
+      // Source from cout
+      blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
+        return ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+      });
+      // Source from cerr
+      blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
+        return ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
+      });
       blocking_ostream_.EndFrom(
           [this, timeout_ms]() { exit_code = Wait(timeout_ms); });
     }

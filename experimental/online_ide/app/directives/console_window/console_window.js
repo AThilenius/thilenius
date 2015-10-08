@@ -54,7 +54,6 @@ angular.module('thilenius.console_window', [])
             scope.internalControl = scope.control || {};
 
             $rootScope.$on('billet.compileBegin', function(eventArgs) {
-              console.log("Compile begin");
               scope.$apply(function() {
                 scope.activeTab = 'compilerOutput';
                 scope.compilerContent = [];
@@ -64,8 +63,6 @@ angular.module('thilenius.console_window', [])
 
             $rootScope.$on('billet.compileOutput', function(eventArgs,
                                                             app_output) {
-              console.log("Compile Output: " +
-                          JSON.stringify(app_output, null, 2));
               scope.$apply(function() {
                 for (var i = 0; i < app_output.output_tokens.length; i++) {
                   var output_token = app_output.output_tokens[i];
@@ -79,7 +76,6 @@ angular.module('thilenius.console_window', [])
 
             $rootScope.$on('billet.compileEnd', function(eventArgs,
                                                          app_output) {
-              console.log("Compile end: " + app_output.termination_code);
               scope.$apply(function() {
                 scope.write("Ended with exit code: " +
                                 app_output.termination_code,
@@ -95,7 +91,6 @@ angular.module('thilenius.console_window', [])
             });
 
             $rootScope.$on('billet.runOutput', function(eventArgs, app_output) {
-              console.log("Run Output: " + JSON.stringify(app_output, null, 2));
               scope.$apply(function() {
                 for (var i = 0; i < app_output.output_tokens.length; i++) {
                   var output_token = app_output.output_tokens[i];
@@ -108,7 +103,6 @@ angular.module('thilenius.console_window', [])
             });
 
             $rootScope.$on('billet.runEnd', function(eventArgs, app_output) {
-              console.log("run end: " + app_output.termination_code);
               scope.$apply(function() {
                 scope.write("Ended with exit code: " +
                                 app_output.termination_code,

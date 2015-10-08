@@ -67,7 +67,7 @@ void BilletHandler::BuildCMakeRepo(
   }
 }
 
-void BilletHandler::RunRepo (const ::billet::proto::Session& session) {
+void BilletHandler::RunRepo(const ::billet::proto::Session& session) {
   AuthenticateOrThrow(session.session_key);
   if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
     ThrowOpFailure("You do not have an active session");
@@ -97,8 +97,8 @@ void BilletHandler::QueryCompilerOutputAfterLine(
 }
 
 void BilletHandler::QueryApplicationOutputAfterLine(
-      ::billet::proto::ApplicationOutput& _return,
-      const ::billet::proto::Session& session, const int32_t line) {
+    ::billet::proto::ApplicationOutput& _return,
+    const ::billet::proto::Session& session, const int32_t line) {
   AuthenticateOrThrow(session.session_key);
   if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
     ThrowOpFailure("You do not have an active application");
@@ -124,15 +124,25 @@ void BilletHandler::ClangFormat(std::string& _return,
   if (!File::WriteToFile(tmp_path, source)) {
     ThrowOpFailure("Failed to write to file");
   }
-  //std::string clang_format_path = Process::FindExecutable("clang-format-3.6");
-  //ProcessPtr process =
-      //Process::FromExecv(clang_format_path, {"-style=Google", tmp_path});
-  //if (!process->Execute(true, 1000)) {
-    //File::Remove(tmp_path);
-    //ThrowOpFailure("Failed to execute clang-format-3.6");
-  //}
-  //File::Remove(tmp_path);
-  //_return = process->ReadOutputAfterIndex(0).GetOrDie().;
+  std::string clang_format_path = Process::FindExecutable("clang-format-3.6");
+  ProcessPtr process =
+      Process::FromExecv(clang_format_path, {"-style=Google", tmp_path});
+  if (!process->Execute(true, 1000)) {
+    File::Remove(tmp_path);
+    ThrowOpFailure("Failed to execute clang-format-3.6");
+  }
+  File::Remove(tmp_path);
+  auto app_lines_value = process->ReadOutputAfterIndex(0);
+  if (!app_lines_value.IsValid()) {
+    ThrowOpFailure("Failed to execute clang-format-3.6");
+  }
+  auto app_lines = app_lines_value.GetOrDie();
+  std::string full_content;
+  for (const auto& line : app_lines) {
+    full_content.append(line.content);
+    full_content.append("\n");
+  }
+  _return = std::move(full_content);
 }
 
 void BilletHandler::ThrowOpFailure(const std::string& message) {
