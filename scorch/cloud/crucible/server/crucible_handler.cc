@@ -108,6 +108,11 @@ void CrucibleHandler::GetRepoHeadersByUser(
   AuthenticateOrThrow(user_stoken);
   std::vector<::crucible::proto::RepoHeader> users_repos =
       model.FindRepoHeadersByUserId(user_stoken.user_uuid);
+  if (user_stoken.permission_level >=
+      ::sentinel::proto::g_sentinel_constants.ADMIN_THRESHOLD) {
+    _return = std::move(users_repos);
+    return;
+  }
   std::unordered_map<std::string, const ::crucible::proto::RepoHeader&> lookup;
   for (const auto& user_repo : users_repos) {
     if (!String::Blank(user_repo.base_repo_uuid)) {
@@ -117,13 +122,9 @@ void CrucibleHandler::GetRepoHeadersByUser(
   std::vector<::crucible::proto::RepoHeader> all_base_repos =
       model.FindAllBaseRepos();
   for (const auto& base_repo : all_base_repos) {
-    LOG(INFO) << "Exiting base repo: " << base_repo.repo_name;
-  }
-  for (const auto& base_repo : all_base_repos) {
     auto iter = lookup.find(base_repo.repo_uuid);
     if (iter == lookup.end()) {
       // User doesn't have this base repo clones, clone it.
-      LOG(INFO) << "Cloning " << base_repo.repo_name;
       std::string repo_name =
           StrCat(base_repo.repo_name, "/", user_stoken.user_uuid);
       // Load up the full repo (We need it's change lists)

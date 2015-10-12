@@ -38,6 +38,7 @@ void BilletHandler::CreateSession(
     ::billet::proto::Session& _return,
     const ::sentinel::proto::Token& sentinel_token) {
   AuthenticateOrThrow(sentinel_token);
+  std::unique_lock<std::mutex> lock (mutex_);
   if (sessions_.find(sentinel_token.user_uuid) != sessions_.end()) {
     _return = sessions_[sentinel_token.user_uuid].billet_session_proto;
     return;
@@ -55,11 +56,15 @@ void BilletHandler::BuildCMakeRepo(
     const std::vector<::crucible::proto::ChangeList>& staged_change_lists,
     const std::vector<std::string>& application_args) {
   AuthenticateOrThrow(session.session_key);
-  if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
-    ThrowOpFailure("You do not have an active session");
+  BilletSession* user_session = nullptr;
+  {
+    std::unique_lock<std::mutex> lock (mutex_);
+    if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
+      ThrowOpFailure("You do not have an active session");
+    }
+    user_session = &sessions_[session.session_key.user_uuid];
   }
-  auto& user_session = sessions_[session.session_key.user_uuid];
-  ValueOf<void> execute_value = user_session.CompileCMakeRepo(
+  ValueOf<void> execute_value = user_session->CompileCMakeRepo(
       repo_header, staged_change_lists, application_args);
   if (!execute_value.IsValid()) {
     ThrowOpFailure(
@@ -69,11 +74,15 @@ void BilletHandler::BuildCMakeRepo(
 
 void BilletHandler::RunRepo(const ::billet::proto::Session& session) {
   AuthenticateOrThrow(session.session_key);
-  if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
-    ThrowOpFailure("You do not have an active session");
+  BilletSession* user_session = nullptr;
+  {
+    std::unique_lock<std::mutex> lock (mutex_);
+    if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
+      ThrowOpFailure("You do not have an active session");
+    }
+    user_session = &sessions_[session.session_key.user_uuid];
   }
-  auto& user_session = sessions_[session.session_key.user_uuid];
-  ValueOf<void> execute_value = user_session.ExecuteCMakeRepo();
+  ValueOf<void> execute_value = user_session->ExecuteCMakeRepo();
   if (!execute_value.IsValid()) {
     ThrowOpFailure(
         StrCat("Failed to execute CMake repo: ", execute_value.GetError()));
@@ -84,12 +93,16 @@ void BilletHandler::QueryCompilerOutputAfterLine(
     ::billet::proto::ApplicationOutput& _return,
     const ::billet::proto::Session& session, const int32_t line) {
   AuthenticateOrThrow(session.session_key);
-  if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
-    ThrowOpFailure("You do not have an active application");
+  BilletSession* user_session = nullptr;
+  {
+    std::unique_lock<std::mutex> lock (mutex_);
+    if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
+      ThrowOpFailure("You do not have an active session");
+    }
+    user_session = &sessions_[session.session_key.user_uuid];
   }
-  auto& user_session = sessions_[session.session_key.user_uuid];
   ValueOf<::billet::proto::ApplicationOutput> output_value =
-      user_session.GetCompilerOutputTillLine(line);
+      user_session->GetCompilerOutputTillLine(line);
   if (!output_value.IsValid()) {
     ThrowOpFailure(StrCat("Failed to get output: ", output_value.GetError()));
   }
@@ -100,12 +113,16 @@ void BilletHandler::QueryApplicationOutputAfterLine(
     ::billet::proto::ApplicationOutput& _return,
     const ::billet::proto::Session& session, const int32_t line) {
   AuthenticateOrThrow(session.session_key);
-  if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
-    ThrowOpFailure("You do not have an active application");
+  BilletSession* user_session = nullptr;
+  {
+    std::unique_lock<std::mutex> lock (mutex_);
+    if (sessions_.find(session.session_key.user_uuid) == sessions_.end()) {
+      ThrowOpFailure("You do not have an active session");
+    }
+    user_session = &sessions_[session.session_key.user_uuid];
   }
-  auto& user_session = sessions_[session.session_key.user_uuid];
   ValueOf<::billet::proto::ApplicationOutput> output_value =
-      user_session.GetApplicationOutputTillLine(line);
+      user_session->GetApplicationOutputTillLine(line);
   if (!output_value.IsValid()) {
     ThrowOpFailure(StrCat("Failed to get output: ", output_value.GetError()));
   }
@@ -140,7 +157,6 @@ void BilletHandler::ClangFormat(std::string& _return,
   std::string full_content;
   for (const auto& line : app_lines) {
     full_content.append(line.content);
-    full_content.append("\n");
   }
   _return = std::move(full_content);
 }

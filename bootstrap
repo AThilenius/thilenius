@@ -24,6 +24,7 @@ apt-get install -y \
   libnuma-dev \
   libevent-dev \
   nginx \
+  default-jre \
   git || EROR 'Failed to run apt-get'
 
 INFO 'Buidling Thrift in Release mode'

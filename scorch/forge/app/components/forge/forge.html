@@ -1,0 +1,96 @@
+<div class="v-flex-wrapper">
+  <div class="flex-header">
+    <nav class="navbar navbar-default">
+
+      <ul class="nav navbar-nav navbar-left">
+        <li class="dropdown">
+        <a class="dropdown-toggle noselect" data-toggle="dropdown"
+          role="button" aria-haspopup="true" aria-expanded="false">
+          File
+        </a>
+        <ul class="dropdown-menu">
+          <li><a class="noselect">Placeholder</a></li>
+          <li><a class="noselect">Another Placeholder</a></li>
+          <li><a class="noselect">And Another</a></li>
+        </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+        <a class="dropdown-toggle noselect" data-toggle="dropdown"
+          role="button" aria-haspopup="true" aria-expanded="false">
+          {{ sentinel.user.last_name.toPascalCase() }} <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a class="noselect">Placeholder</a></li>
+          <li><a class="noselect">Another Placeholder</a></li>
+          <li><a class="noselect">And Another</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a class="noselect" ng-click="sentinel.logout()">Logout</a></li>
+        </ul>
+        </li>
+      </ul>
+
+    </nav>
+  </div>
+
+  <div class="flex-body">
+
+    <!-- Primary Editor Window -->
+    <div class="h-flex-wrapper">
+
+      <div class="flex-header sidebar">
+
+        <div class="v-flex-wrapper">
+          <div class="flex-header sidebar-header">
+
+            <div class="sidebar-header-icon glyphicon glyphicon-folder-close"
+              ng-class="(activeSidebarTab == 'file') ? 'active' : ''"
+              ng-click="activeSidebarTab = 'file'; editOn();">
+            </div>
+            <div class="sidebar-header-icon glyphicon glyphicon-time"
+              ng-class="(activeSidebarTab == 'history') ? 'active' : ''"
+              ng-click="activeSidebarTab = 'history'; buildHistory();">
+            </div>
+            <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
+              ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
+              ng-click="activeSidebarTab = 'errors'">
+            </div>
+            <div class="sidebar-header-icon glyphicon glyphicon-cog"
+              ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
+              ng-click="activeSidebarTab = 'settings'">
+            </div>
+          </div>
+
+          <div class="flex-body">
+            <!-- File Explorer -->
+            <div ng-show="activeSidebarTab == 'file'" class="fill-flex-box">
+              <div control='fileExplorerControl' at-file-explorer></div>
+            </div>
+            <!-- History Explorer -->
+            <div ng-show="activeSidebarTab == 'history'"
+              class="fill-flex-box">
+              <div control='historyExplorerControl' at-history-explorer></div>
+            </div>
+            <!-- Settings Window -->
+            <div ng-show="activeSidebarTab == 'settings'">
+              <div control='settingsWindowControl' at-settings-window></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="v-flex-wrapper">
+        <div class="flex-body">
+          <div control="contentWindowControl" at-content-window></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex-footer editor-footer">
+    ScorchForge.com &copy; Alec Thilenius 2015 All rights reserved
+  </div>
+</div>

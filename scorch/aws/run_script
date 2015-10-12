@@ -6,19 +6,19 @@ echo 'Starting nginx'
 sudo nginx
 
 echo 'Starting mognoDB'
-sudo mongod --dbpath=/data/mongo &
+(while true; do sudo mongod --profile=1 --slowms=5 --smallfiles --dbpath=/data/mongo; sleep 1; done)  &
 
 echo 'Starting Sentinel'
 export LD_LIBRARY_PATH="/etc/scorch/packages/sentinel_package";
-/etc/scorch/packages/sentinel_package/server &
+(while true; do /etc/scorch/packages/sentinel_package/server; sleep 1; done)  &
 
 echo 'Starting Crucible'
 export LD_LIBRARY_PATH="/etc/scorch/packages/crucible_package";
-/etc/scorch/packages/crucible_package/server &
+(while true; do /etc/scorch/packages/crucible_package/server; sleep 1; done)  &
 
 echo 'Starting Billet'
 export LD_LIBRARY_PATH="/etc/scorch/packages/billet_package";
-/etc/scorch/packages/billet_package/server &
+(while true; do /etc/scorch/packages/billet_package/server; sleep 1; done)  &
 
 echo 'Sleeping. Forever... Sheee, go to sleep.'
 while true; do

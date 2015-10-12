@@ -1,0 +1,143 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+set -e
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+if docker --version 2>/dev/null; then
+  # On host machine
+  INFO 'Building Docker container'
+  docker build -t athilenius/scorch_forge:prod .
+  INFO 'Pushing container'
+  docker push athilenius/scorch_forge:prod
+  INFO 'Opening SSH session'
+ssh -i scorchforge.pem ec2-user@scorchforge.com << EOD
+  sudo docker pull athilenius/scorch_forge:prod
+  sudo docker stop forge
+  sudo docker rm forge
+  sudo docker run -d --name forge -p 80:80 -p 443:443 \
+      -v /data/mongo:/data/mongo athilenius/scorch_forge:prod
+EOD
+  INFO 'Done!'
+else
+  # In Docker container
+  rm -rf /root/thilenius/scorch/aws/packages
+
+  INFO 'Packaging Sentinel'
+  pushd /root/thilenius/cloud/sentinel/server
+  build --clean --release --package
+  popd
+  mkdir -p /root/thilenius/scorch/aws/packages/sentinel_package/
+  cp -r /root/thilenius_bin/cloud/sentinel/server/server_package/* \
+      /root/thilenius/scorch/aws/packages/sentinel_package/
+
+  INFO 'Packaging Crucible'
+  pushd /root/thilenius/scorch/cloud/crucible/server
+  build --clean --release --package
+  popd
+  mkdir -p /root/thilenius/scorch/aws/packages/crucible_package/
+  cp -r /root/thilenius_bin/scorch/cloud/crucible/server/server_package/* \
+      /root/thilenius/scorch/aws/packages/crucible_package/
+
+  INFO 'Packaging Billet'
+  pushd /root/thilenius/scorch/cloud/billet/server
+  build --clean --release --package
+  popd
+  mkdir -p /root/thilenius/scorch/aws/packages/billet_package/
+  cp -r /root/thilenius_bin/scorch/cloud/billet/server/server_package/* \
+      /root/thilenius/scorch/aws/packages/billet_package/
+
+  TIMESTAMP=$(date +%y%m%d.%H.%M%S)
+
+  # Make sure old shit is cleared out
+  rm -rf /root/thilenius/scorch/aws/forge-tmp-comp.css
+  rm -rf /root/thilenius/scorch/aws/forge-tmp-comp.js
+  rm -rf /root/thilenius/scorch/aws/www/data/*
+
+  function GlobJsToIndex {
+    pushd $1
+    INFO "Glibing JS in $(pwd)"
+    find -name '*.js' -type f | while read line; do
+      INFO "Adding: $line"
+      cat $line >> /root/thilenius/scorch/aws/forge-tmp-comp.js
+    done
+    popd
+  }
+
+  function GlobCssToIndex {
+    pushd $1
+    INFO "Glibing CSS in $(pwd)"
+    find -name '*.css' -type f | while read line; do
+      INFO "Adding: $line"
+      cat $line >> /root/thilenius/scorch/aws/forge-tmp-comp.css
+    done
+    popd
+  }
+
+  INFO 'Copying app'
+  cp -r /root/thilenius/scorch/forge/* /root/thilenius/scorch/aws/www/data
+  rm -rf /root/thilenius/scorch/aws/www/data/index.html
+
+  INFO "Createing a production forge-${TIMESTAMP}.css file"
+  GlobCssToIndex /root/thilenius/scorch/aws/www/data/libs
+  GlobCssToIndex /root/thilenius/scorch/aws/www/data/assets
+  GlobCssToIndex /root/thilenius/scorch/aws/www/data/gen-files
+  GlobCssToIndex /root/thilenius/scorch/aws/www/data/app
+
+  INFO 'Minifying CSS'
+  wget --post-data="input=`cat /root/thilenius/scorch/aws/forge-tmp-comp.css`" \
+    --output-document=/root/thilenius/scorch/aws/forge-${TIMESTAMP}.css \
+    http://cssminifier.com/raw
+  rm -rf /root/thilenius/scorch/aws/forge-tmp-comp.css
+
+  INFO "Createing a production forge-${TIMESTAMP}.js file"
+  GlobJsToIndex /root/thilenius/scorch/aws/www/data/libs
+  GlobJsToIndex /root/thilenius/scorch/aws/www/data/assets
+  GlobJsToIndex /root/thilenius/scorch/aws/www/data/gen-files
+  GlobJsToIndex /root/thilenius/scorch/aws/www/data/app
+
+  INFO 'Compiling JS'
+  java -jar compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS \
+      --warning_level QUIET \
+      --js /root/thilenius/scorch/aws/forge-tmp-comp.js \
+      --js_output_file /root/thilenius/scorch/aws/forge-${TIMESTAMP}.js
+  rm -rf /root/thilenius/scorch/aws/forge-tmp-comp.js
+
+  INFO 'Removing non-minified assets'
+  pushd /root/thilenius/scorch/aws/www/data
+  find -name "*.js" -type f -delete
+  find -name "*.css" -type f -delete
+  popd
+
+  INFO 'Moving compiled assets'
+  mv /root/thilenius/scorch/aws/forge-${TIMESTAMP}.* \
+      /root/thilenius/scorch/aws/www/data
+
+  INFO 'Building index.html'
+  pushd /root/thilenius/scorch/aws/www/data
+  echo '<!doctype html>' >> index.html
+  echo '<html><head><title>Forge</title>' >> index.html
+  echo '<link rel="shortcut icon" href="assets/flame-512.png" />' >> index.html
+cat << EOM >> index.html
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
+  <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ext-language_tools.js"></script>
+EOM
+
+  echo "<link rel=\"stylesheet\" href=\"forge-${TIMESTAMP}.css\" />" >> index.html
+  echo "<script src=\"forge-${TIMESTAMP}.js\"></script>" >> index.html
+
+  echo '</head>' >> index.html
+  echo '<body ng-app="forgeApp" ng-controller="loginController">' >> index.html
+  echo '<div ng-view></div>' >> index.html
+  echo '</body></html>' >> index.html
+  popd
+
+  INFO 'Done'
+fi

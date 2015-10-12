@@ -1,0 +1,78 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+mkdir --parent /root/thilenius/scorch/forge/gen-files
+
+INFO 'Compiling Sentinel service files'
+thrift -r --gen js:jquery -I /root/thilenius \
+    -out /root/thilenius/scorch/forge/gen-files \
+    /root/thilenius/cloud/sentinel/sentinel.thrift || \
+    EROR 'Failed to build Sentinel service files'
+
+INFO 'Compiling Crucible service files'
+thrift -r --gen js:jquery -I /root/thilenius \
+    -out /root/thilenius/scorch/forge/gen-files \
+    /root/thilenius/scorch/cloud/crucible/crucible.thrift || \
+    EROR 'Failed to build Crucible service files'
+
+INFO 'Compiling Billet service files'
+thrift -r --gen js:jquery -I /root/thilenius \
+    -out /root/thilenius/scorch/forge/gen-files \
+    /root/thilenius/scorch/cloud/billet/billet.thrift || \
+    EROR 'Failed to build Billet service files'
+
+function GlobJsToIndex {
+  find $1 -name *.js | while read line; do \
+    echo "<script src=\"$line\"></script>" >> index.html; \
+  done
+}
+
+function GlobCssToIndex {
+  find $1 -name *.css | while read line; do \
+    echo "<link rel=\"stylesheet\" href=\"$line\" />" >> index.html; \
+  done
+}
+
+INFO 'Createing a development index.html file'
+pushd /root/thilenius/scorch/forge
+rm -rf /root/thilenius/scorch/forge/index.html
+echo '<!doctype html>' >> index.html
+echo '<html><head><title>Forge</title>' >> index.html
+echo '<link rel="shortcut icon" href="assets/flame-512.png" />' >> index.html
+
+cat << EOM >> index.html
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+<script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
+<script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ext-language_tools.js"></script>
+EOM
+
+GlobCssToIndex libs
+GlobJsToIndex libs
+
+GlobCssToIndex assets
+GlobJsToIndex assets
+
+GlobCssToIndex gen-files
+GlobJsToIndex gen-files
+
+GlobCssToIndex app
+GlobJsToIndex app
+
+echo '</head>' >> index.html
+echo '<body ng-app="forgeApp" ng-controller="loginController">' >> index.html
+echo '<div ng-view></div>' >> index.html
+echo '</body></html>' >> index.html
+popd
+
+INFO 'Updating NGINX'
+rm -rf /etc/nginx/sites-available/*
+cp /root/thilenius/scorch/forge/nginx_dev /etc/nginx/sites-available/default
+nginx -s reload

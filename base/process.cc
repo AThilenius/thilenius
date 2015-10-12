@@ -140,14 +140,16 @@ bool Process::Execute(bool blocking, int timeout_ms) {
       // If we are blocking mode, then source cout/cerr directly
       exit_code = Wait(timeout_ms);
       while (true) {
-        auto cout_line_value = ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+        auto cout_line_value =
+            ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
         if (!cout_line_value.IsValid()) {
           break;
         }
         blocking_ostream_.Write(cout_line_value.GetOrDie());
       }
       while (true) {
-        auto cerr_line_value = ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
+        auto cerr_line_value =
+            ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
         if (!cerr_line_value.IsValid()) {
           break;
         }
@@ -214,17 +216,24 @@ ValueOf<Process::OStreamToken> Process::ReadLineFrom(
     char buf[1025];
     int n = read(fd, buf, 1024);
     if (n <= 0) {
-      return {OStreamToken(), "End of cout stream"};
+      // Return anything left in the read ahead buffer
+      if (read_ahead_buffer->length() > 0) {
+        OStreamToken ostream_token;
+        ostream_token.is_err_stream = (fd == pipes_[CERR][READ]);
+        ostream_token.content = *read_ahead_buffer;
+        read_ahead_buffer->clear();
+        return std::move(ostream_token);
+      } else {
+        return {OStreamToken(), "End of cout stream"};
+      }
     }
     buf[n] = 0;
     *read_ahead_buffer += buf;
   }
   // Split the buffer around '\n' found and return first part.
   OStreamToken ostream_token;
-  if (fd == pipes_[CERR][READ]) {
-    ostream_token.is_err_stream = true;
-  }
-  ostream_token.content = std::string(read_ahead_buffer->begin(), pos);
+  ostream_token.is_err_stream = (fd == pipes_[CERR][READ]);
+  ostream_token.content = std::string(read_ahead_buffer->begin(), pos) + "\n";
   *read_ahead_buffer = std::string(pos + 1, read_ahead_buffer->end());
   return std::move(ostream_token);
 }

@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "base/mutex.h"
 #include "cloud/sentinel/sentinel_types.h"
 #include "scorch/cloud/billet/Billet.h"
 #include "scorch/cloud/billet/billet_session.h"
@@ -49,7 +50,8 @@ class BilletHandler : virtual public ::billet::proto::BilletIf {
 
   void AuthenticateOrThrow(const ::sentinel::proto::Token& token);
 
-  std::unordered_map<std::string, BilletSession> sessions_;
+  std::mutex mutex_;
+  std::unordered_map<std::string, BilletSession> sessions_ GUARDED_BY(mutex_);
 };
 
 }  // namespace server
