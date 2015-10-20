@@ -1,10 +1,10 @@
 package com.thilenius.flame.tpad;
 
 import com.thilenius.flame.spark.ModelSparkSmall;
+import com.thilenius.flame.spark.TileEntityWoodenSpark;
 import com.thilenius.flame.utilities.AnimationHelpers;
 import com.thilenius.flame.utilities.MathUtils;
 import com.thilenius.flame.utilities.types.CountdownTimer;
-import com.thilenius.flame.utilities.types.Location3D;
 import com.thilenius.flame.utilities.types.LocationF3D;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
@@ -14,7 +14,7 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
-public class TeleportPadRenderer extends TileEntitySpecialRenderer {
+public class RendererTeleportPad extends TileEntitySpecialRenderer {
 
     private IModelCustom m_teleportModel
             = AdvancedModelLoader.loadModel(new ResourceLocation("flame:models/TeleportPad.obj"));
@@ -26,14 +26,14 @@ public class TeleportPadRenderer extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float deltaTime) {
         LocationF3D location = new LocationF3D((float)x, (float)y, (float)z);
-        TeleportPadTileEntity teleportPad = null;
-        if (te instanceof WoodenSparkTileEntity) {
-            WoodenSparkTileEntity spark = (WoodenSparkTileEntity) te;
+        TileEntityTeleportPad teleportPad = null;
+        if (te instanceof TileEntityWoodenSpark) {
+            TileEntityWoodenSpark spark = (TileEntityWoodenSpark) te;
             teleportPad = spark.getTeleportPad();
             // Render just the spark
             renderSpark(teleportPad, location);
-        } else if (te instanceof TeleportPadTileEntity) {
-            teleportPad = (TeleportPadTileEntity) te;
+        } else if (te instanceof TileEntityTeleportPad) {
+            teleportPad = (TileEntityTeleportPad) te;
             // Render both the pad, and the spark on top of it if they are on the same location
             if (teleportPad.getPadLocation().equals(teleportPad.getSparkLocation())) {
                 renderSpark(teleportPad, location);
@@ -42,7 +42,7 @@ public class TeleportPadRenderer extends TileEntitySpecialRenderer {
         }
     }
 
-    protected void renderTeleportPad(TeleportPadTileEntity teleportPad, LocationF3D location) {
+    protected void renderTeleportPad(TileEntityTeleportPad teleportPad, LocationF3D location) {
         if (teleportPad == null) {
             return;
         }
@@ -55,7 +55,7 @@ public class TeleportPadRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    protected void renderSpark(TeleportPadTileEntity teleportPad, LocationF3D location) {
+    protected void renderSpark(TileEntityTeleportPad teleportPad, LocationF3D location) {
         if (teleportPad == null) {
             return;
         }
@@ -98,11 +98,15 @@ public class TeleportPadRenderer extends TileEntitySpecialRenderer {
         }
         // Draw
         GL11.glPushMatrix();
+//        GL11.glTranslatef((float) location.X + 0.5f + offset.X,
+//                (float) location.Y + 0.35f + offset.Y,
+//                (float) location.Z + 0.6f + offset.Z);
         GL11.glTranslatef((float) location.X + 0.5f + offset.X,
-                (float) location.Y + 0.35f + offset.Y,
-                (float) location.Z + 0.6f + offset.Z);
+                (float) location.Y + 0.6f + offset.Y,
+                (float) location.Z + 0.45f + offset.Z);
         GL11.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
         GL11.glRotatef(rotation, 0.0f, 1.0f, 0.0f);
+        GL11.glScalef(0.6f, 0.6f, 0.6f);
         ResourceLocation textures = (new ResourceLocation("flame:textures/model/Spark.png"));
         bindTexture(textures);
         m_sparkModel.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);

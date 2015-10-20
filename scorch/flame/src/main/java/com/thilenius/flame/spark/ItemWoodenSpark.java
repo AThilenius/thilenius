@@ -1,4 +1,4 @@
-package com.thilenius.flame.tpad;
+package com.thilenius.flame.spark;
 
 import com.thilenius.flame.GlobalData;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -13,9 +13,9 @@ import net.minecraft.world.World;
 /**
  * Created by Alec on 10/17/15.
  */
-public class WoodenSparkItem extends Item {
+public class ItemWoodenSpark extends Item {
 
-    public WoodenSparkItem() {
+    public ItemWoodenSpark() {
         maxStackSize = 1;
         setCreativeTab(CreativeTabs.tabMisc);
         setUnlocalizedName("woodenSpark");

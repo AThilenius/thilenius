@@ -1,6 +1,6 @@
-package com.thilenius.flame.tpad;
+package com.thilenius.flame.spark;
 
-import com.thilenius.flame.test.TileEntityTiny;
+import com.thilenius.flame.tpad.TileEntityTeleportPad;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -10,11 +10,11 @@ import net.minecraft.item.ItemStack;
 /**
  * Created by Alec on 10/19/15.
  */
-public class WoodenSparkContainer extends Container {
+public class ContainerWoodenSpark extends Container {
 
-    protected TeleportPadTileEntity tileEntity;
+    protected TileEntityTeleportPad tileEntity;
 
-    public WoodenSparkContainer (InventoryPlayer inventoryPlayer, TeleportPadTileEntity te){
+    public ContainerWoodenSpark(InventoryPlayer inventoryPlayer, TileEntityTeleportPad te){
         tileEntity = te;
         //the Slot constructor takes the IInventory and the slot number in that it binds to
         //and the x-y coordinates it resides on-screen

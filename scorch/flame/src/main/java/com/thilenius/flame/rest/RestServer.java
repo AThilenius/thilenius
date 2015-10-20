@@ -9,6 +9,7 @@ import com.thilenius.blaze.proto.OperationFailure;
 import com.thilenius.flame.Flame;
 import com.thilenius.flame.entity.FlameActionTarget;
 import com.thilenius.flame.entity.FlameActionTargetResponse;
+import net.minecraftforge.common.DimensionManager;
 import org.apache.thrift.TException;
 import org.apache.thrift.async.AsyncMethodCallback;
 import org.apache.thrift.server.TNonblockingServer;
@@ -99,24 +100,29 @@ public class RestServer {
         for (BlazeCPRequest request : requests) {
             if (request.RequestWrapper.command_name.equals("action_target_invoke")) {
                 List<String> args = request.RequestWrapper.args_json;
-                if (args.size() < 2) {
-                    System.out.println("Malformed action_target_invoke request. Expected 2 args");
+                if (args.size() < 3) {
+                    System.out.println("Malformed action_target_invoke request. Expected 3 args");
                     request.AsyncCallback.onError(new OperationFailure(
-                            "Malformed action_target_invoke request. Expected 2 args"));
+                            "Malformed action_target_invoke request. Expected 3 args <dimension_id> <target> <json>"));
                     continue;
                 }
-                FlameActionTarget actionTarget = Flame.Globals.EntityRegistry.getTargetByUsername(
-                        request.RequestWrapper.minecraft_username, args.get(0));
-                if (actionTarget == null) {
-                    System.out.println("Failed to find target of invocation for FlameAction");
-                    request.AsyncCallback.onError(new OperationFailure(
-                            "Failed to find target of invocation for FlameAction"));
-                    continue;
-                }
+
                 try {
+                    int dimensionId = Integer.parseInt(args.get(0));
+                    String target = args.get(1);
+                    String json = args.get(2);
+                            FlameActionTarget
+                    actionTarget = Flame.Globals.EntityRegistry.getTargetByUsernameAndDimension(
+                            request.RequestWrapper.minecraft_username, dimensionId, target);
+                    if (actionTarget == null) {
+                        System.out.println("Failed to find target of invocation for FlameAction");
+                        request.AsyncCallback.onError(new OperationFailure(
+                                "Failed to find target of invocation for FlameAction"));
+                        continue;
+                    }
                     // Invoke Action Path
                     Object returnValue = actionTarget.TargetMethod.invoke(actionTarget.TileEntity,
-                            Flame.Globals.JsonObjectMapper.readTree(args.get(1)));
+                            DimensionManager.getWorld(dimensionId), Flame.Globals.JsonObjectMapper.readTree(json));
                     // Non-Void return types
                     if (returnValue instanceof FlameActionTargetResponse) {
                         if (returnValue == null) {
@@ -144,6 +150,10 @@ public class RestServer {
                         request.AsyncCallback.onError(new OperationFailure("Internal Server Error"));
                         continue;
                     }
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    request.AsyncCallback.onError(new OperationFailure("Malformed Dimension ID"));
+                    continue;
                 } catch (IllegalAccessException e) {
                     System.out.println("A fatal error was caught in Flame: " + e.getMessage() + ".");
                     e.printStackTrace();

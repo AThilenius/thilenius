@@ -1,18 +1,17 @@
-package com.thilenius.flame.tpad;
+package com.thilenius.flame.spark;
 
+import com.thilenius.flame.tpad.TileEntityTeleportPad;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
-import org.lwjgl.opengl.GL11;
 
-public class WoodenSparkGui extends GuiContainer {
+public class GuiWoodenSpark extends GuiContainer {
 
     private ResourceLocation m_inventoryBackground = new ResourceLocation("textures/gui/container/dispenser.png");
 
-    public WoodenSparkGui (InventoryPlayer inventoryPlayer,
-                           TeleportPadTileEntity tileEntity) {
-        super(new WoodenSparkContainer(inventoryPlayer, tileEntity));
+    public GuiWoodenSpark(InventoryPlayer inventoryPlayer,
+                          TileEntityTeleportPad tileEntity) {
+        super(new ContainerWoodenSpark(inventoryPlayer, tileEntity));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.thilenius.flame.tpad;
 
 import com.thilenius.flame.Flame;
+import com.thilenius.flame.spark.TileEntityWoodenSpark;
 import com.thilenius.flame.utilities.types.Location3D;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -10,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
-public class TeleportPadGui extends GuiScreen {
+public class GuiTeleportPad extends GuiScreen {
 
     // Sizes
     private static int WINDOW_WIDTH = 256;
@@ -25,14 +26,14 @@ public class TeleportPadGui extends GuiScreen {
     private GuiButton m_turnRightButton;
 
     private Location3D m_activeLocation;
-    private TeleportPadTileEntity m_activeEntity;
+    private TileEntityTeleportPad m_activeEntity;
 
-    public TeleportPadGui(TileEntity tileEntity) {
-        if (tileEntity instanceof WoodenSparkTileEntity) {
-            WoodenSparkTileEntity spark = (WoodenSparkTileEntity) tileEntity;
+    public GuiTeleportPad(TileEntity tileEntity) {
+        if (tileEntity instanceof TileEntityWoodenSpark) {
+            TileEntityWoodenSpark spark = (TileEntityWoodenSpark) tileEntity;
             m_activeEntity = spark.getTeleportPad();
-        } else if (tileEntity instanceof TeleportPadTileEntity) {
-            m_activeEntity = (TeleportPadTileEntity) tileEntity;
+        } else if (tileEntity instanceof TileEntityTeleportPad) {
+            m_activeEntity = (TileEntityTeleportPad) tileEntity;
         }
         m_activeLocation = new Location3D(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
     }
@@ -78,30 +79,30 @@ public class TeleportPadGui extends GuiScreen {
 
     @Override
     public void actionPerformed(GuiButton button) {
-        try {
-            switch (button.id) {
-                case 0:
-                    System.out.println("Forward");
-                        m_activeEntity.moveAction(
-                                Flame.Globals.JsonObjectMapper.readTree("{\"direction\":\"Forward\"}"));
-                    break;
-                case 1:
-                    System.out.println("Backward");
-                    m_activeEntity.moveAction(
-                            Flame.Globals.JsonObjectMapper.readTree("{\"direction\":\"Backward\"}"));
-                    break;
-                case 2:
-                    System.out.println("Turn Left");
-                    break;
-                case 3:
-                    System.out.println("Turn Right");
-                    break;
-                default:
-                    System.out.println("Failed to handle message for button with id " + button.id);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            switch (button.id) {
+//                case 0:
+//                    System.out.println("Forward");
+//                        m_activeEntity.moveAction(
+//                                Flame.Globals.JsonObjectMapper.readTree("{\"direction\":\"Forward\"}"));
+//                    break;
+//                case 1:
+//                    System.out.println("Backward");
+//                    m_activeEntity.moveAction(
+//                            Flame.Globals.JsonObjectMapper.readTree("{\"direction\":\"Backward\"}"));
+//                    break;
+//                case 2:
+//                    System.out.println("Turn Left");
+//                    break;
+//                case 3:
+//                    System.out.println("Turn Right");
+//                    break;
+//                default:
+//                    System.out.println("Failed to handle message for button with id " + button.id);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

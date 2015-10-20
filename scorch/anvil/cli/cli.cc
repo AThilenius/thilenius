@@ -31,6 +31,7 @@ int Process(const std::string root_path, const std::vector<std::string>& args) {
   blaze_request.command_name = "action_target_invoke";
   blaze_request.args_json.emplace_back(args[0]);
   blaze_request.args_json.emplace_back(args[1]);
+  blaze_request.args_json.emplace_back(args[2]);
   ::blaze::proto::BlazeResponseWrapper response =
       anvil_client.Process(blaze_request).GetOrDie();
   LOG(INFO) << "Got back JSON: " << response.json;

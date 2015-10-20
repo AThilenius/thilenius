@@ -2,11 +2,14 @@ package com.thilenius.flame;
 
 import com.thilenius.flame.commands.BlazeCommandHandler;
 import com.thilenius.flame.commands.HomeCommandHandler;
-import com.thilenius.flame.entity.FlameTileEntity;
 import com.thilenius.flame.rest.RestServer;
+import com.thilenius.flame.spark.BlockWoodenSpark;
+import com.thilenius.flame.spark.ItemWoodenSpark;
+import com.thilenius.flame.spark.TileEntityWoodenSpark;
 import com.thilenius.flame.test.BlockTiny;
 import com.thilenius.flame.test.TileEntityTiny;
 import com.thilenius.flame.tpad.*;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -71,15 +74,20 @@ public class Flame {
         // DEBUG
         GlobalData.SingularityCoreItem = new SingularityCoreItem();
         GameRegistry.registerItem(GlobalData.SingularityCoreItem, "singularityCore");
-        GlobalData.TeleportPadItem = new TeleportPadItem();
-        GameRegistry.registerItem(GlobalData.TeleportPadItem, "teleportPad");
-        GlobalData.WoodenSparkItem = new WoodenSparkItem();
-        GameRegistry.registerItem(GlobalData.WoodenSparkItem, "woodenSpark");
-        GlobalData.TeleportPadBlock = new TeleportPadBlock();
 
-        GlobalData.WoodenSparkBlock = new WoodenSparkBlock();
+        GlobalData.TeleportPadItem = new ItemTeleportPad();
+        GameRegistry.registerItem(GlobalData.TeleportPadItem, "teleportPad");
+
+        GlobalData.WoodenSparkItem = new ItemWoodenSpark();
+        GameRegistry.registerItem(GlobalData.WoodenSparkItem, "woodenSpark");
+
+        GlobalData.TeleportPadBlock = new BlockTeleportPad();
+        GameRegistry.registerBlock(GlobalData.TeleportPadBlock, "teleportPadBlock");
+        GameRegistry.registerTileEntity(TileEntityTeleportPad.class, "teleportPadTileEntity");
+
+        GlobalData.WoodenSparkBlock = new BlockWoodenSpark();
         GameRegistry.registerBlock(GlobalData.WoodenSparkBlock, ItemBlock.class, "woodenSparkBlock");
-        GameRegistry.registerTileEntity(WoodenSparkTileEntity.class, "woodenSparkTileEntity");
+        GameRegistry.registerTileEntity(TileEntityWoodenSpark.class, "woodenSparkTileEntity");
 
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 

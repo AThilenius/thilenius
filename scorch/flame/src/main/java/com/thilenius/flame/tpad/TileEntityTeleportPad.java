@@ -6,6 +6,7 @@ import com.thilenius.flame.GlobalData;
 import com.thilenius.flame.entity.FlameActionPath;
 import com.thilenius.flame.entity.FlameActionTargetResponse;
 import com.thilenius.flame.entity.FlameTileEntity;
+import com.thilenius.flame.spark.TileEntityWoodenSpark;
 import com.thilenius.flame.utilities.AnimationHelpers;
 import com.thilenius.flame.utilities.types.CountdownTimer;
 import com.thilenius.flame.utilities.types.Location3D;
@@ -20,7 +21,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyReceiver, IInventory {
+public class TileEntityTeleportPad extends FlameTileEntity implements IEnergyReceiver, IInventory {
 
     protected float ANIMATION_TIME = 0.5f;
 
@@ -30,6 +31,10 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
     private Location3D m_sparkLocation = null;
     private ItemStack[] m_inventory = new ItemStack[9];
 
+    static {
+        addMapping(TileEntityTeleportPad.class, "teleportPad");
+    }
+
     // ======   Network / Disk IO Handling / TileEntity Overrides   ====================================================
     @Override
     public void writeToNBT(NBTTagCompound nbt)
@@ -38,6 +43,7 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
         nbt.setString("sparkFaceDir", m_sparkFaceDir.name());
         nbt.setString("sparkAnimation", m_sparkAnimation.name());
         nbt.setString("sparkLocation", getSparkLocation().toString());
+        nbt.setFloat("sparkAnimationTime", m_animationTimer == null ? 0.0f : m_animationTimer.getRemainingTime());
     }
 
     @Override
@@ -47,7 +53,7 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
         m_sparkFaceDir = AnimationHelpers.FaceDirections.valueOf(nbt.getString("sparkFaceDir"));
         m_sparkAnimation = AnimationHelpers.AnimationTypes.valueOf(nbt.getString("sparkAnimation"));
         m_sparkLocation = Location3D.fromString(nbt.getString("sparkLocation"));
-        m_animationTimer = new CountdownTimer(ANIMATION_TIME);
+        m_animationTimer = new CountdownTimer(nbt.getFloat("sparkAnimationTime"));
     }
 
     @Override
@@ -60,7 +66,7 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         super.onDataPacket(net, pkt);
-        this.readFromNBT(pkt.func_148857_g());
+        readFromNBT(pkt.func_148857_g());
     }
 
     @Override
@@ -70,8 +76,7 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
 
     // ======   Action Path Handlers   =================================================================================
     @FlameActionPath("move")
-    public FlameActionTargetResponse moveAction(JsonNode message) {
-        World world = MinecraftServer.getServer().worldServers[0];
+    public FlameActionTargetResponse moveAction(World world, JsonNode message) {
         if (m_animationTimer != null && !m_animationTimer.hasElapsed()) {
             return FlameActionTargetResponse.fromOnCoolDown();
         }
@@ -89,14 +94,18 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
         // Check if we can move to the new spot
         if (world.isAirBlock(newLocation.X, newLocation.Y, newLocation.Z)) {
             world.setBlock(newLocation.X, newLocation.Y, newLocation.Z, GlobalData.WoodenSparkBlock);
-            WoodenSparkTileEntity sparkTileEntity = (WoodenSparkTileEntity) world.getTileEntity(
+            TileEntityWoodenSpark sparkTileEntity = (TileEntityWoodenSpark) world.getTileEntity(
                     newLocation.X, newLocation.Y, newLocation.Z);
             sparkTileEntity.setTeleportPadLocation(getPadLocation());
             if (!getSparkLocation().equals(getPadLocation())) {
+                TileEntityWoodenSpark tileEntityWoodenSpark =(TileEntityWoodenSpark) world.getTileEntity(
+                        getSparkLocation().X, getSparkLocation().Y, getSparkLocation().Z);
+                // Suppress the custom block breaking effect
+                tileEntityWoodenSpark.suppressDrop();
                 world.setBlockToAir(getSparkLocation().X, getSparkLocation().Y, getSparkLocation().Z);
             }
             m_sparkLocation = newLocation;
-            animateServerAndSendToClients(animationType);
+            animateServerAndSendToClients(world, animationType);
             return FlameActionTargetResponse.fromJson("{\"did_pass\":true}");
         } else {
             return FlameActionTargetResponse.fromJson("{\"did_pass\":false}");
@@ -133,12 +142,12 @@ public class TeleportPadTileEntity extends FlameTileEntity implements IEnergyRec
     }
 
     // ======   Helpers   ==============================================================================================
-    private void animateServerAndSendToClients(AnimationHelpers.AnimationTypes animationType) {
+    private void animateServerAndSendToClients(World world, AnimationHelpers.AnimationTypes animationType) {
         m_sparkAnimation = animationType;
         m_sparkFaceDir = AnimationHelpers.getNewFaceDirByAnimation(m_sparkFaceDir, animationType);
         m_animationTimer = new CountdownTimer(ANIMATION_TIME);
-        this.worldObj.markBlockForUpdate(getPadLocation().X, getPadLocation().Y, getPadLocation().Z);
-        this.worldObj.markBlockForUpdate(getSparkLocation().X, getSparkLocation().Y, getSparkLocation().Z);
+        world.markBlockForUpdate(xCoord, yCoord, zCoord);
+        world.markBlockForUpdate(getSparkLocation().X, getSparkLocation().Y, getSparkLocation().Z);
     }
 
     // =================================================================================================================

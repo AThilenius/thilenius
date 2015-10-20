@@ -1,5 +1,8 @@
 package com.thilenius.flame;
 
+import com.thilenius.flame.spark.ContainerWoodenSpark;
+import com.thilenius.flame.spark.GuiWoodenSpark;
+import com.thilenius.flame.spark.TileEntityWoodenSpark;
 import com.thilenius.flame.tpad.*;
 import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,11 +43,11 @@ public class GuiHandler implements IGuiHandler {
     public Object getServerGuiElement(int id, EntityPlayer player, World world,
                                       int x, int y, int z) {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if(tileEntity instanceof WoodenSparkTileEntity) {
-            WoodenSparkTileEntity woodenSparkTileEntity = (WoodenSparkTileEntity) tileEntity;
-            TeleportPadTileEntity teleportPadTileEntity = woodenSparkTileEntity.getTeleportPad();
-            return new WoodenSparkContainer(player.inventory, teleportPadTileEntity);
-        } else if (tileEntity instanceof TeleportPadTileEntity) {
+        if(tileEntity instanceof TileEntityWoodenSpark) {
+            TileEntityWoodenSpark tileEntityWoodenSpark = (TileEntityWoodenSpark) tileEntity;
+            TileEntityTeleportPad tileEntityTeleportPad = tileEntityWoodenSpark.getTeleportPad();
+            return new ContainerWoodenSpark(player.inventory, tileEntityTeleportPad);
+        } else if (tileEntity instanceof TileEntityTeleportPad) {
             // NA
         }
         return null;
@@ -55,12 +58,12 @@ public class GuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int id, EntityPlayer player, World world,
                                       int x, int y, int z) {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if(tileEntity instanceof WoodenSparkTileEntity) {
-            WoodenSparkTileEntity woodenSparkTileEntity = (WoodenSparkTileEntity) tileEntity;
-            TeleportPadTileEntity teleportPadTileEntity = woodenSparkTileEntity.getTeleportPad();
-            return new WoodenSparkGui(player.inventory, teleportPadTileEntity);
-        } else if (tileEntity instanceof TeleportPadTileEntity) {
-            return new TeleportPadGui((TeleportPadTileEntity)tileEntity);
+        if(tileEntity instanceof TileEntityWoodenSpark) {
+            TileEntityWoodenSpark tileEntityWoodenSpark = (TileEntityWoodenSpark) tileEntity;
+            TileEntityTeleportPad tileEntityTeleportPad = tileEntityWoodenSpark.getTeleportPad();
+            return new GuiWoodenSpark(player.inventory, tileEntityTeleportPad);
+        } else if (tileEntity instanceof TileEntityTeleportPad) {
+            return new GuiTeleportPad((TileEntityTeleportPad)tileEntity);
         }
         return null;
 
