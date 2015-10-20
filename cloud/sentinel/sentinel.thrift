@@ -2,6 +2,7 @@
 //==  SENTINEL  ================================================================
 //==============================================================================
 namespace cpp sentinel.proto
+namespace java com.thilenius.sentinel.proto
 
 const i32 SECONDARY_THRESHOLD = 0;
 const i32 USER_THRESHOLD = 20;

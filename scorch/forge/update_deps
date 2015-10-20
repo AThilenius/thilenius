@@ -24,6 +24,14 @@ thrift -r --gen js:jquery -I /root/thilenius \
     /root/thilenius/scorch/cloud/billet/billet.thrift || \
     EROR 'Failed to build Billet service files'
 
+INFO 'Compiling Blaze service files'
+thrift -r --gen js:jquery -I /root/thilenius \
+    -out /root/thilenius/scorch/forge/gen-files \
+    /root/thilenius/scorch/cloud/blaze/blaze.thrift || \
+    EROR 'Failed to build Blaze service files'
+
+TIMESTAMP=$(date +%y%m%d.%H.%M%S)
+
 function GlobJsToIndex {
   find $1 -name *.js | while read line; do \
     echo "<script src=\"$line\"></script>" >> index.html; \
@@ -41,6 +49,7 @@ pushd /root/thilenius/scorch/forge
 rm -rf /root/thilenius/scorch/forge/index.html
 echo '<!doctype html>' >> index.html
 echo '<html><head><title>Forge</title>' >> index.html
+echo "<script>var FORGE_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
 echo '<link rel="shortcut icon" href="assets/flame-512.png" />' >> index.html
 
 cat << EOM >> index.html

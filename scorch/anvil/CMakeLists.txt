@@ -16,36 +16,29 @@ add_subdirectory (/root/thilenius/third_party/thrift
 file(MAKE_DIRECTORY /root/thilenius_gen/scorch/anvil)
 add_custom_command(
   OUTPUT
-    /root/thilenius_gen/scorch/anvil/anvil_constants.cpp
-    /root/thilenius_gen/scorch/anvil/anvil_types.cpp
+    /root/thilenius_gen/scorch/anvil/Blaze.cpp
+    /root/thilenius_gen/scorch/anvil/BlazeCommandProcessor.cpp
+    /root/thilenius_gen/scorch/anvil/blaze_constants.cpp
+    /root/thilenius_gen/scorch/anvil/blaze_types.cpp
   COMMAND
     thrift -r --gen cpp -I /root/thilenius -out /root/thilenius_gen/scorch/anvil
-    /root/thilenius/scorch/anvil/anvil.thrift
+    /root/thilenius/scorch/cloud/blaze/blaze.thrift
   DEPENDS
     libthrift
-    /root/thilenius/scorch/anvil/anvil.thrift
+    /root/thilenius/scorch/cloud/blaze/blaze.thrift
 )
 
 add_library (
   anvil STATIC
-  /root/thilenius/scorch/anvil/anvil.cc
-  /root/thilenius/scorch/anvil/test_harness.cc
-  /root/thilenius_gen/scorch/anvil/anvil_constants.cpp
-  /root/thilenius_gen/scorch/anvil/anvil_types.cpp
+  /root/thilenius/scorch/anvil/anvil_client.cc
+  /root/thilenius_gen/scorch/anvil/Blaze.cpp
+  /root/thilenius_gen/scorch/anvil/BlazeCommandProcessor.cpp
+  /root/thilenius_gen/scorch/anvil/blaze_constants.cpp
+  /root/thilenius_gen/scorch/anvil/blaze_types.cpp
 )
 
 target_link_libraries (
   anvil
   base
   libthrift
-)
-
-add_library (
-  anvil_main STATIC
-  /root/thilenius/scorch/anvil/anvil_main.cc
-)
-
-target_link_libraries (
-  anvil_main
-  anvil
 )

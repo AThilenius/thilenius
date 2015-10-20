@@ -37,3 +37,11 @@
   color: white;
   background-color: rgba(92, 92, 92, 1);
 }
+
+.locked-file-warning {
+  color: red;
+  float: left;
+  padding-left: 10px;
+  padding-top: 2px;
+  padding-right: 10px;
+}

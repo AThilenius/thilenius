@@ -202,6 +202,7 @@ void CrucibleHandler::CommitAndDownstream(
           "Your repo is behind head. You must sync before committing.");
     } else {
       // TODO(athilenius) Need to downstream as well
+      // TODO(need to filter the files by is_locked)
       ::crucible::proto::ChangeList new_change_list = change_list;
       new_change_list.change_list_uuid = Guid::NewGuid();
       new_change_list.timestamp = std::to_string(Time::EpochMilliseconds());

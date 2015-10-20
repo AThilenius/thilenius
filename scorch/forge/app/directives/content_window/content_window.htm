@@ -9,13 +9,17 @@
         <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>
         Run
       </div>
-      <div ng-click="autoFormat()" ng-disabled='!canRun' class="btn dark-button">
+      <div ng-click="autoFormat()" ng-disabled='!canRun' ng-show='!isLockedFile'
+           class="btn dark-button">
         <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
         Auto Format
       </div>
       <div ng-click="downloadRepoSnapshot()" class="btn dark-button">
         <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
         Download Project Snapshot
+      </div>
+      <div ng-show='isLockedFile' class="locked-file-warning">
+        File is locked for edit
       </div>
     </div>
   </div>

@@ -1,5 +1,4 @@
-#!/bin/bash
-. $HOME/thilenius/core/shell/base
+#!/bin/bash . $HOME/thilenius/core/shell/base
 
 # Install Deps
 INFO 'Installing needed apt-get packages'
@@ -24,7 +23,7 @@ apt-get install -y \
   libnuma-dev \
   libevent-dev \
   nginx \
-  default-jre \
+  default-jdk \
   git || EROR 'Failed to run apt-get'
 
 INFO 'Buidling Thrift in Release mode'

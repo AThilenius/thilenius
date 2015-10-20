@@ -7,6 +7,13 @@ forgeApp.controller('forgeController', [
   'crucible',
   'billet',
   function($rootScope, $scope, sentinel, crucible, billet) {
+    // Forward the version on
+    if (typeof FORGE_VERSION !== 'undefined') {
+      $scope.forgeVersion = FORGE_VERSION;
+    } else {
+      $scope.forgeVersion = 'unknown';
+    }
+
     // Sentinel / Crucible
     $scope.sentinel = sentinel;
     $scope.crucible = crucible;

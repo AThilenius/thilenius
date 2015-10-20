@@ -46,12 +46,15 @@
 }
 
 .editor-footer {
-  border: 1px solid black;
   background-color: rgba(32, 32, 32, 1);
+  border: 1px solid black;
   box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
-  vertical-align: center;
-  padding-left: 5px;
   color: grey;
+  font-size: 12px;
+  height: 24px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 4px;
 }
 
 .sidebar-header-icon {

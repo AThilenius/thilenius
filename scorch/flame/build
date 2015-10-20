@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#thrift -I /root/thilenius -r --gen java -o /root/thilenius/scorch/flame \
+  #/root/thilenius/scorch/flame/flame.thrift
+thrift -I /root/thilenius -r --gen java -o /root/thilenius/scorch/flame \
+  /root/thilenius/scorch/cloud/blaze/blaze.thrift
