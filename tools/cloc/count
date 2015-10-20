@@ -1,0 +1,4 @@
+#!/bin/bash
+
+apt-get install -y cloc
+cloc --exclude-list-file=ignore_list.txt --counted=counted.txt /root/thilenius

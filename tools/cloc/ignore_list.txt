@@ -1,0 +1,13 @@
+*.ycm_extra_conf.py
+*.ycm_extra_conf.pyc
+
+/root/thilenius/base/gmock
+/root/thilenius/base/gtest
+/root/thilenius/base/zlib
+/root/thilenius/core/shell/shflags
+/root/thilenius/scorch/aws/www
+/root/thilenius/scorch/forge/libs
+/root/thilenius/scorch/forge/gen-files
+/root/thilenius/third_party
+/root/thilenius/tools/thrift
+/root/thilenius/utils/differencer/diff_match_patch.h
