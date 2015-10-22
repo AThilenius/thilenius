@@ -43,10 +43,18 @@ class BlockingStream {
     }).detach();
   }
 
-  // Writes items to the stream
+  // Writes item to the stream
   void Write(const T& item) {
     std::unique_lock<std::mutex> lock(mutex_);
     data_.push_back(item);
+    cond_var_.notify_all();
+  }
+
+  // Writes items to the stream
+  void Write(const std::vector<T>& items) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    data_.reserve(items.size());
+    data_.insert(data_.end(), items.begin(), items.end());
     cond_var_.notify_all();
   }
 

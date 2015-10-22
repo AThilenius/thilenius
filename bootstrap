@@ -1,4 +1,5 @@
-#!/bin/bash . $HOME/thilenius/core/shell/base
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
 
 # Install Deps
 INFO 'Installing needed apt-get packages'
