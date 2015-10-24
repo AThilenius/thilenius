@@ -36,6 +36,9 @@ service Blaze {
                               3: list<string> args_json)
       throws (1: OperationFailure operation_failure);
 
+  MinecraftAccount GetMinecraftAccount (1: sentinel.Token token)
+      throws (1: OperationFailure operation_failure);
+
   void SetMinecraftAccount (1: sentinel.Token token,
                             2: MinecraftAccount minecraft_account)
       throws (1: OperationFailure operation_failure);

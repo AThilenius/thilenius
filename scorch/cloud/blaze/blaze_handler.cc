@@ -8,20 +8,19 @@
 #include "base/log.h"
 #include "base/value_of.hh"
 #include "cloud/sentinel/sentinel_client.h"
-#include "cloud/utils/thrift_http_client.hh"
+#include "cloud/utils/thrift_standard_client.hh"
 #include "scorch/cloud/blaze/BlazeCommandProcessor.h"
 #include "scorch/cloud/blaze/blaze_model.h"
 
 DEFINE_string(sentinel_ip, "localhost", "The Sentinel instance ip address.");
 DEFINE_int32(sentinel_port, 2100, "The Sentinel instance port number.");
 DEFINE_string(sentinel_route, "/", "The Sentinel instance route.");
-DEFINE_string(flame_ip, "localhost", "The Flame instance ip address.");
+DEFINE_string(flame_ip, "192.168.59.3", "The Flame instance ip address.");
 DEFINE_int32(flame_port, 2500, "The Flame instance port number.");
-DEFINE_string(flame_route, "/", "The Flame instance route.");
 
 using ::thilenius::base::ValueOf;
 using ::thilenius::cloud::sentinel::SentinelClient;
-using ::thilenius::cloud::utils::ThriftHttpClient;
+using ::thilenius::cloud::utils::ThriftStandardClient;
 
 namespace thilenius {
 namespace scorch {
@@ -44,8 +43,8 @@ void BlazeHandler::ProcessBlazeRequest(
   ::blaze::proto::MinecraftAccount minecraft_account =
       mc_account_value.GetOrDie();
   // Connect to Blaze Command Processor (aka Flame)
-  ThriftHttpClient<::blaze::proto::BlazeCommandProcessorClient> http_client(
-      FLAGS_flame_ip, FLAGS_flame_port, FLAGS_flame_route);
+  ThriftStandardClient<::blaze::proto::BlazeCommandProcessorClient> http_client(
+      FLAGS_flame_ip, FLAGS_flame_port);
   auto connection = http_client.Connect();
   if (!connection.IsValid()) {
     LOG(ERROR) << "Failed to connect to Flame: " << connection.GetError();
@@ -69,7 +68,6 @@ void BlazeHandler::ProcessBlazeRequest(
 void BlazeHandler::SetMinecraftAccount(
     const ::sentinel::proto::Token& token,
     const ::blaze::proto::MinecraftAccount& minecraft_account) {
-  LOG(INFO) << "Got SetMinecraftAccount request: " << minecraft_account;
   AuthenticateOrThrow(token);
   BlazeModel blaze_model;
   ::blaze::proto::MinecraftAccount new_account;
@@ -78,6 +76,19 @@ void BlazeHandler::SetMinecraftAccount(
   if (!blaze_model.SaveMinecraftAccount(new_account)) {
     ThrowOpFailure("Failed to save account");
   }
+}
+
+void BlazeHandler::GetMinecraftAccount(
+    ::blaze::proto::MinecraftAccount& _return,
+    const ::sentinel::proto::Token& token) {
+  AuthenticateOrThrow(token);
+  BlazeModel blaze_model;
+  ValueOf<::blaze::proto::MinecraftAccount> account_value =
+      blaze_model.FindMinecraftAccountByUserUuid(token.user_uuid);
+  if (!account_value.IsValid()) {
+    ThrowOpFailure("No account on file");
+  }
+  _return = account_value.GetOrDie();
 }
 
 void BlazeHandler::ThrowOpFailure(const std::string& message) {

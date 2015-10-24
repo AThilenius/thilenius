@@ -24,6 +24,9 @@ class BlazeHandler : virtual public ::blaze::proto::BlazeIf {
                            const std::string& command_name,
                            const std::vector<std::string>& args_json);
 
+  void GetMinecraftAccount(::blaze::proto::MinecraftAccount& _return,
+                           const ::sentinel::proto::Token& token);
+
   void SetMinecraftAccount(
       const ::sentinel::proto::Token& token,
       const ::blaze::proto::MinecraftAccount& minecraft_account);
