@@ -1,0 +1,5 @@
+#!/bin/bash
+. $HOME/thilenius/core/shell/base
+
+docker build -t athilenius/billet_client:prod .
+docker puch athilenius/billet_client:prod
