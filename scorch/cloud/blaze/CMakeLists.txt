@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-project (blaze)
+include (/root/thilenius/tools/cmake/cmake_macros.txt)
+project_guarded (blaze)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -30,6 +31,7 @@ add_custom_command(
 
 add_executable (
   blaze
+  /root/thilenius/scorch/cloud/blaze/blaze_client.cc
   /root/thilenius/scorch/cloud/blaze/blaze_handler.cc
   /root/thilenius/scorch/cloud/blaze/blaze_mapper.cc
   /root/thilenius/scorch/cloud/blaze/blaze_model.cc

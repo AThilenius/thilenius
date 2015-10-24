@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-project (crucible_server)
+include (/root/thilenius/tools/cmake/cmake_macros.txt)
+project_guarded (crucible_server)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)

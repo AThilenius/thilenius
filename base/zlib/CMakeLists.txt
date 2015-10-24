@@ -1,4 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
+include (/root/thilenius/tools/cmake/cmake_macros.txt)
+project_guarded (base_zlib)
 
 # Enable ExternalProject CMake module
 include(ExternalProject)

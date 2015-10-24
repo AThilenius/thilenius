@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-project (differencer)
+include (/root/thilenius/tools/cmake/cmake_macros.txt)
+project_guarded (differencer)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -23,7 +24,7 @@ add_custom_command(
     -out /root/thilenius_gen/utils/differencer
     /root/thilenius/utils/differencer/differencer.thrift
   DEPENDS
-    libthrift
+    thrift
     /root/thilenius/utils/differencer/differencer.thrift
 )
 
@@ -38,7 +39,7 @@ add_library (
 target_link_libraries (
   differencer
   base
-  libthrift
+  thrift
 )
 
 #===  TESTS ====================================================================
@@ -53,5 +54,5 @@ target_link_libraries (
   base
   differencer
   libgtest_main
-  libthrift
+  thrift
 )

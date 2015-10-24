@@ -1,4 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
+include (/root/thilenius/tools/cmake/cmake_macros.txt)
+project_guarded (mongo)
 
 find_package (Boost
   REQUIRED
@@ -38,14 +40,14 @@ ExternalProject_Add(
   # bitches about duplicates
 )
 
-add_library(libmongoclient IMPORTED STATIC GLOBAL)
+add_library(mongo IMPORTED STATIC GLOBAL)
 add_dependencies(
-  libmongoclient
+  mongo
   mongo_cxx_driver
 )
 
 ExternalProject_Get_Property(mongo_cxx_driver source_dir binary_dir)
-set_target_properties(libmongoclient PROPERTIES
+set_target_properties(mongo PROPERTIES
     "IMPORTED_LOCATION" "/usr/lib/libmongoclient.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
 )

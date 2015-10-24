@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-project (crucible)
+include (/root/thilenius/tools/cmake/cmake_macros.txt)
+project_guarded (crucible)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -9,12 +10,21 @@ include_directories (
   "/root/thilenius_gen/"
 )
 
-# Added in Sentinel because CMake is fucking retarded
-# TODO(athilenius): Fix the retarded dependency clashes in CMake
+#add_subdirectory (/root/thilenius/base
+                  #/root/thilenius_bin/base)
+#add_subdirectory (/root/thilenius/third_party/thrift
+                  #/root/thilenius_bin/third_party/thrift)
+#add_subdirectory (/root/thilenius/third_party/mongo
+                  #/root/thilenius_bin/third_party/mongo)
+#add_subdirectory (/root/thilenius/cloud/sentinel
+                  #/root/thilenius_bin/cloud/sentinel)
+
+# Must be included in sentinel. God CMake makes me want to fucking cry I
+# fucking hate this build system
 #add_subdirectory (/root/thilenius/utils/differencer
                   #/root/thilenius_bin/utils/differencer)
-add_subdirectory (/root/thilenius/cloud/sentinel
-                  /root/thilenius_bin/cloud/sentinel)
+add_subdirectory (/root/thilenius/cloud/fiber
+                  /root/thilenius_bin/cloud/fiber)
 
 file(MAKE_DIRECTORY /root/thilenius_gen/scorch/cloud/crucible)
 add_custom_command(
@@ -27,7 +37,7 @@ add_custom_command(
     -out /root/thilenius_gen/scorch/cloud/crucible
     /root/thilenius/scorch/cloud/crucible/crucible.thrift
   DEPENDS
-    libthrift
+    thrift
     /root/thilenius/scorch/cloud/crucible/crucible.thrift
     /root/thilenius/utils/differencer/differencer.thrift
 )
@@ -45,6 +55,11 @@ add_library (
 
 target_link_libraries (
   crucible
+  #base
   #differencer
-  sentinel
+  fiber
+  #gflags
+  #mongo
+  #sentinel
+  #thrift
 )
