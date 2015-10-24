@@ -22,6 +22,7 @@ namespace sentinel {
 
 SentinelModel::SentinelModel() {
   try {
+    ::mongo::client::initialize();
     connection_.connect(StrCat(FLAGS_mongo_ip, ":", FLAGS_mongo_port));
   } catch (const mongo::DBException& e) {
     LOG(FATAL) << "MongoDB Driver failed to connect to " << FLAGS_mongo_ip
