@@ -22,10 +22,9 @@ public class BlockTeleportPad extends BlockContainer {
     public BlockTeleportPad() {
         super(Material.rock);
         setBlockName("blockTeleportPad");
-        setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.3f, 1.0f);
-        setHardness(10.0f);
-        setResistance(20.0f);
-        setHarvestLevel("pickaxe", 2);
+        setHardness(20.0f);
+        setResistance(10000000000.0f);
+        setHarvestLevel("pickaxe", 0);
     }
 
     @Override
@@ -57,17 +56,20 @@ public class BlockTeleportPad extends BlockContainer {
         if (tileEntity instanceof TileEntityTeleportPad) {
             TileEntityTeleportPad tileEntityTeleportPad = (TileEntityTeleportPad) tileEntity;
             tileEntityTeleportPad.unregisterActionPaths();
-            TileEntityWoodenSpark tileEntityWoodenSpark = (TileEntityWoodenSpark) world.getTileEntity(
-                    tileEntityTeleportPad.getSparkLocation().X,
-                    tileEntityTeleportPad.getSparkLocation().Y,
-                    tileEntityTeleportPad.getSparkLocation().Z);
             if (!world.isRemote) {
                 world.spawnEntityInWorld(new EntityItem(world, x, y, z, new ItemStack(GlobalData.TeleportPadItem, 1)));
             }
             // Also break the spark
-            world.setBlockToAir(tileEntityWoodenSpark.xCoord,
-                    tileEntityWoodenSpark.yCoord,
-                    tileEntityWoodenSpark.zCoord);
+            TileEntity tileEntity2 = world.getTileEntity(
+                    tileEntityTeleportPad.getSparkLocation().X,
+                    tileEntityTeleportPad.getSparkLocation().Y,
+                    tileEntityTeleportPad.getSparkLocation().Z);
+            if (tileEntity2 != null && tileEntity2 instanceof TileEntityWoodenSpark) {
+                TileEntityWoodenSpark tileEntityWoodenSpark = (TileEntityWoodenSpark) tileEntity2;
+                world.setBlockToAir(tileEntityWoodenSpark.xCoord,
+                        tileEntityWoodenSpark.yCoord,
+                        tileEntityWoodenSpark.zCoord);
+            }
         }
     }
 

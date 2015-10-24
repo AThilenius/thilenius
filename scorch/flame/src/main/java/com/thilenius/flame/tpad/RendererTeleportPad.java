@@ -4,6 +4,7 @@ import com.thilenius.flame.spark.ModelSparkSmall;
 import com.thilenius.flame.spark.TileEntityWoodenSpark;
 import com.thilenius.flame.utilities.AnimationHelpers;
 import com.thilenius.flame.utilities.MathUtils;
+import com.thilenius.flame.utilities.types.AnimationCycle;
 import com.thilenius.flame.utilities.types.CountdownTimer;
 import com.thilenius.flame.utilities.types.LocationF3D;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -18,9 +19,14 @@ public class RendererTeleportPad extends TileEntitySpecialRenderer {
 
     private IModelCustom m_teleportModel
             = AdvancedModelLoader.loadModel(new ResourceLocation("flame:models/TeleportPad.obj"));
+    private IModelCustom m_sparkModel
+            = AdvancedModelLoader.loadModel(new ResourceLocation("flame:models/Spark.obj"));
+    private IModelCustom m_sparkRotorModel
+            = AdvancedModelLoader.loadModel(new ResourceLocation("flame:models/SparkRotor.obj"));
     private ResourceLocation m_magicaColorsTexture
             = new ResourceLocation("flame:textures/blocks/MagicaVoxelColors.png");
-    private ModelSparkSmall m_sparkModel = new ModelSparkSmall();
+    private AnimationCycle m_sparkAnimationCycle = new AnimationCycle(8.0f, 0.2f);
+    private AnimationCycle m_rotorAnimationCycle = new AnimationCycle(15.0f, 360.0f);
 
     // Can render both a TeleportPadTileEntity and a WoodenSparkTileEntity
     @Override
@@ -96,20 +102,20 @@ public class RendererTeleportPad extends TileEntitySpecialRenderer {
                 offset = new LocationF3D(0.0f, up, 0.0f).scale(fractionTime);
             }
         }
-        // Draw
+        // Draw Spark
         GL11.glPushMatrix();
-//        GL11.glTranslatef((float) location.X + 0.5f + offset.X,
-//                (float) location.Y + 0.35f + offset.Y,
-//                (float) location.Z + 0.6f + offset.Z);
         GL11.glTranslatef((float) location.X + 0.5f + offset.X,
-                (float) location.Y + 0.6f + offset.Y,
+                (float) location.Y + 0.15f + offset.Y +
+                        m_sparkAnimationCycle.getZeroToScaleCycle(teleportPad.TIME_OFFSET_CONST),
                 (float) location.Z + 0.45f + offset.Z);
-        GL11.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
         GL11.glRotatef(rotation, 0.0f, 1.0f, 0.0f);
-        GL11.glScalef(0.6f, 0.6f, 0.6f);
-        ResourceLocation textures = (new ResourceLocation("flame:textures/model/Spark.png"));
-        bindTexture(textures);
-        m_sparkModel.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+        GL11.glScalef(0.75f, 0.75f, 0.75f);
+        bindTexture(m_magicaColorsTexture);
+        m_sparkModel.renderAll();
+        // Draw rotor relative to Spark
+        GL11.glTranslatef(0.0f, 0.8f, 0.0f);
+        GL11.glRotatef(m_rotorAnimationCycle.getZeroToScaleCycle(teleportPad.TIME_OFFSET_CONST), 0.0f, 1.0f, 0.0f);
+        m_sparkRotorModel.renderAll();
         GL11.glPopMatrix();
     }
 

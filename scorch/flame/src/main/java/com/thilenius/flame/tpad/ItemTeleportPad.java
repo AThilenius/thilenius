@@ -20,12 +20,6 @@ public class ItemTeleportPad extends Item {
         maxStackSize = 1;
         setCreativeTab(CreativeTabs.tabMisc);
         setUnlocalizedName("teleportPad");
-//        GameRegistry.addRecipe(new ItemStack(this), new Object[]{
-//                "ABA",
-//                "ACA",
-//                "ADA",
-//                'A', Blocks.planks, 'B', Blocks.redstone_lamp, 'C', GlobalData.SingularityCoreItem, 'D', Blocks.chest
-//        });
         GameRegistry.addRecipe(new ItemStack(this), new Object[]{
                 "AAA",
                 "ABA",

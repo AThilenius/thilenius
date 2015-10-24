@@ -24,9 +24,9 @@ public class BlockWoodenSpark extends BlockContainer {
     public BlockWoodenSpark() {
         super(Material.rock);
         setBlockName("blockWoodenSpark");
-        setHardness(10.0f);
-        setResistance(20.0f);
-        setHarvestLevel("pickaxe", 2);
+        setHardness(20.0f);
+        setResistance(10000000000.0f);
+        setHarvestLevel("pickaxe", 0);
     }
 
     @Override
