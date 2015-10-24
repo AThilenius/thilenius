@@ -23,7 +23,10 @@ struct Grain {
   2: string data;
 }
 
-exception EndOfCord { }
+exception EndOfCord {
+  // Used mainly so JS can figure out what exception type it is
+  1: bool end_of_cord = true;
+}
 
 exception OperationFailure {
   1: string user_message;

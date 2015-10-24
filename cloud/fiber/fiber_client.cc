@@ -13,10 +13,7 @@ FiberClient::FiberClient()
     : http_client_ptr_(ProtoFiberClientPtr(nullptr)), connected_(false) {}
 
 ValueOf<void> FiberClient::Connect(const std::string& fiber_ip, int fiber_port,
-                                   const std::string& fiber_route,
-                                   const std::string& sentinel_ip,
-                                   int sentinel_port,
-                                   const std::string& sentinel_route) {
+                                   const std::string& fiber_route) {
   if (connected_) {
     return {"Already connected"};
   }
@@ -29,26 +26,12 @@ ValueOf<void> FiberClient::Connect(const std::string& fiber_ip, int fiber_port,
   if (!connection.IsValid()) {
     return {connection.GetError()};
   }
-  // Connect sentinel
-  LOG(INFO) << "Connection to Sentinel";
-  auto sentinel_connection =
-      sentinel_client_.Connect(sentinel_ip, sentinel_port, sentinel_route);
-  if (!sentinel_connection.IsValid()) {
-    return {sentinel_connection.GetError()};
-  }
   connected_ = true;
   return {};
 }
 
 ValueOf<::fiber::proto::Cord> FiberClient::CreateCord(
-    const std::string& project_path, const std::string& name) {
-  ValueOf<::sentinel::proto::Token> token_value =
-      sentinel_client_.LoadProjectTokenOrLoginFromCin(project_path);
-  if (!token_value.IsValid()) {
-    return {::fiber::proto::Cord(), token_value.GetError()};
-  }
-  ::sentinel::proto::Token token = token_value.GetOrDie();
-
+    const ::sentinel::proto::Token& token, const std::string& name) {
   auto client = http_client_ptr_->ConnectOrDie();
   ::fiber::proto::Cord cord;
   try {

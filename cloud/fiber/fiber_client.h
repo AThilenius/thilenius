@@ -11,12 +11,11 @@
 #include "cloud/fiber/fiber_constants.h"
 #include "cloud/fiber/fiber_mapper.h"
 #include "cloud/fiber/fiber_types.h"
-#include "cloud/sentinel/sentinel_client.h"
+#include "cloud/sentinel/sentinel_types.h"
 #include "cloud/utils/thrift_http_client.hh"
 
 using ::thilenius::base::ValueOf;
 using ::thilenius::cloud::fiber::FiberMapper;
-using ::thilenius::cloud::sentinel::SentinelClient;
 using ::thilenius::cloud::utils::ThriftHttpClient;
 
 namespace thilenius {
@@ -28,13 +27,10 @@ class FiberClient {
   FiberClient();
 
   ValueOf<void> Connect(const std::string& fiber_ip, int fiber_port,
-                        const std::string& fiber_route,
-                        const std::string& sentinel_ip, int sentinel_port,
-                        const std::string& sentinel_route);
+                        const std::string& fiber_route);
 
-  // Creates a new Cord using the project token or asks CIN
-  ValueOf<::fiber::proto::Cord> CreateCord(const std::string& project_path,
-                                           const std::string& name);
+  ValueOf<::fiber::proto::Cord> CreateCord(
+      const ::sentinel::proto::Token& token, const std::string& name);
 
   ValueOf<::fiber::proto::Cord> GetCord(const std::string& cord_uuid);
 
@@ -52,7 +48,6 @@ class FiberClient {
 
   FiberMapper fiber_mapper_;
   ProtoFiberClientPtr http_client_ptr_;
-  SentinelClient sentinel_client_;
   bool connected_;
 };
 
