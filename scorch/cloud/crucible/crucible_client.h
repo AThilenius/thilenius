@@ -39,8 +39,7 @@ class CrucibleClient {
   // Clones and existing repo (base or forked) into the given directory, using
   // the given authored token
   ValueOf<CrucibleRepo> CloneRepoInDirectory(
-      const std::string& path, const std::string& repo_uuid,
-      const ::sentinel::proto::Token* optional_token);
+      const std::string& path, const std::string& repo_uuid);
 
   ValueOf<CrucibleRepo> CloneBaseRepoInDirectory(
       const std::string& path, const std::string& base_repo_name);

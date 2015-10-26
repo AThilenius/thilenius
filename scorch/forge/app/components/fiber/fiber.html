@@ -1,0 +1,14 @@
+<div class="container">
+  <h1>Streaming Fiber</h1>
+  <h3>Cord: {{cordUuid}}</h3>
+  <a href="{{cordUrl}}">{{cordUrl}}</a>
+  <div>Name: {{cord.name}}</div>
+  <div>User UUID: {{cord.user_uuid}}</div>
+  <div>Timestamp: {{timestamp}}</div>
+  <div>Pulled {{content.length}} grains</div>
+  <div>Stream state: {{streamState}}</div>
+  <hr>
+  <div ng-repeat="line in content track by $index">
+    <div class="fiber-output-line" ng-bind-html="line"></div>
+  </div>
+</div>

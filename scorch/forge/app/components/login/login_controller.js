@@ -6,14 +6,23 @@ forgeApp.controller('loginController', [
   '$scope',
   'sentinel',
   function($location, $rootScope, $scope, sentinel) {
+    $rootScope.htmlClass = 'forge-body';
+    $rootScope.bodyClass = 'forge-body';
+
     $scope.sentinel = sentinel;
 
     $rootScope.$on('sentinel.login', function(event, token, user) {
-      $scope.$apply(function() { $location.path("/forge"); });
+      if ($location.path() === '/login') {
+        if ($scope.sentinel.lastUrl) {
+          $scope.$apply(function() {
+            $location.path($scope.sentinel.lastUrl);
+            $scope.sentinel.lastUrl = null;
+          });
+        } else {
+          $scope.$apply(function() { $location.path('/'); });
+        }
+      }
     });
-
-    $rootScope.$on(
-        'sentinel.logout', function(event) { $location.path('/login'); });
 
     $rootScope.$on('sentinel.error', function(event, message) {
       $scope.error = message;

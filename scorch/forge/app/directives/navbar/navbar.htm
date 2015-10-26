@@ -1,0 +1,31 @@
+<nav class="navbar navbar-default">
+  <ul class="nav navbar-nav navbar-left">
+    <li class="dropdown">
+    <a class="dropdown-toggle noselect" data-toggle="dropdown"
+      role="button" aria-haspopup="true" aria-expanded="false">
+      File
+    </a>
+    <ul class="dropdown-menu">
+      <li><a class="noselect">Placeholder</a></li>
+      <li><a class="noselect">Another Placeholder</a></li>
+      <li><a class="noselect">And Another</a></li>
+    </ul>
+    </li>
+  </ul>
+
+  <ul class="nav navbar-nav navbar-right">
+    <li class="dropdown">
+    <a class="dropdown-toggle noselect" data-toggle="dropdown"
+      role="button" aria-haspopup="true" aria-expanded="false">
+      {{ sentinel.user.last_name.toPascalCase() }} <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li><a class="noselect">Placeholder</a></li>
+      <li><a class="noselect">Another Placeholder</a></li>
+      <li><a class="noselect">And Another</a></li>
+      <li role="separator" class="divider"></li>
+      <li><a class="noselect" ng-click="sentinel.logout()">Logout</a></li>
+    </ul>
+    </li>
+  </ul>
+</nav>

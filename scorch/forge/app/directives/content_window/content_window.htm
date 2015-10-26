@@ -5,9 +5,17 @@
       No file selected
     </div>
     <div ng-show="activeRepo">
-      <div ng-click="run()" ng-disabled='!canRun' class="btn dark-button">
-        <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>
+      <div ng-click="run()" ng-show='canRun' class="btn dark-button">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         Run
+      </div>
+      <div ng-click="stop()" ng-show='!canRun' class="btn dark-button">
+        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+        Stop
+      </div>
+      <div ng-click="clean()" ng-disabled='!canRun' class="btn dark-button">
+        <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+        Clean Build Cache
       </div>
       <div ng-click="autoFormat()" ng-disabled='!canRun' ng-show='!isLockedFile'
            class="btn dark-button">

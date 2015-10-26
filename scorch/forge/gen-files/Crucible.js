@@ -434,12 +434,8 @@ Crucible_GetRepoHeadersByUser_result.prototype.write = function(output) {
 };
 
 Crucible_GetRepoById_args = function(args) {
-  this.user_stoken = null;
   this.repo_uuid = null;
   if (args) {
-    if (args.user_stoken !== undefined) {
-      this.user_stoken = args.user_stoken;
-    }
     if (args.repo_uuid !== undefined) {
       this.repo_uuid = args.repo_uuid;
     }
@@ -460,20 +456,15 @@ Crucible_GetRepoById_args.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.user_stoken = new Token();
-        this.user_stoken.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
       if (ftype == Thrift.Type.STRING) {
         this.repo_uuid = input.readString().value;
       } else {
         input.skip(ftype);
       }
       break;
+      case 0:
+        input.skip(ftype);
+        break;
       default:
         input.skip(ftype);
     }
@@ -485,13 +476,8 @@ Crucible_GetRepoById_args.prototype.read = function(input) {
 
 Crucible_GetRepoById_args.prototype.write = function(output) {
   output.writeStructBegin('Crucible_GetRepoById_args');
-  if (this.user_stoken !== null && this.user_stoken !== undefined) {
-    output.writeFieldBegin('user_stoken', Thrift.Type.STRUCT, 1);
-    this.user_stoken.write(output);
-    output.writeFieldEnd();
-  }
   if (this.repo_uuid !== null && this.repo_uuid !== undefined) {
-    output.writeFieldBegin('repo_uuid', Thrift.Type.STRING, 2);
+    output.writeFieldBegin('repo_uuid', Thrift.Type.STRING, 1);
     output.writeString(this.repo_uuid);
     output.writeFieldEnd();
   }
@@ -1005,21 +991,20 @@ CrucibleClient.prototype.recv_GetRepoHeadersByUser = function() {
   }
   throw 'GetRepoHeadersByUser failed: unknown result';
 };
-CrucibleClient.prototype.GetRepoById = function(user_stoken, repo_uuid, callback) {
+CrucibleClient.prototype.GetRepoById = function(repo_uuid, callback) {
   if (callback === undefined) {
-    this.send_GetRepoById(user_stoken, repo_uuid);
+    this.send_GetRepoById(repo_uuid);
     return this.recv_GetRepoById();
   } else {
-    var postData = this.send_GetRepoById(user_stoken, repo_uuid, true);
+    var postData = this.send_GetRepoById(repo_uuid, true);
     return this.output.getTransport()
       .jqRequest(this, postData, arguments, this.recv_GetRepoById);
   }
 };
 
-CrucibleClient.prototype.send_GetRepoById = function(user_stoken, repo_uuid, callback) {
+CrucibleClient.prototype.send_GetRepoById = function(repo_uuid, callback) {
   this.output.writeMessageBegin('GetRepoById', Thrift.MessageType.CALL, this.seqid);
   var args = new Crucible_GetRepoById_args();
-  args.user_stoken = user_stoken;
   args.repo_uuid = repo_uuid;
   args.write(this.output);
   this.output.writeMessageEnd();

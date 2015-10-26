@@ -81,7 +81,7 @@ service Crucible {
   list<RepoHeader> GetRepoHeadersByUser (1:sentinel.Token user_stoken)
       throws (1: OperationFailure operation_failure);
 
-  Repo GetRepoById (1:sentinel.Token user_stoken, 2:string repo_uuid)
+  Repo GetRepoById (1:string repo_uuid)
       throws (1: OperationFailure operation_failure);
 
   RepoHeader GetRepoHeaderById (1:sentinel.Token user_stoken,

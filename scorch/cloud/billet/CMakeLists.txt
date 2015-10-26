@@ -36,7 +36,7 @@ add_custom_command(
 
 add_library (
   billet
-  /root/thilenius/scorch/cloud/billet/docker_run_harness.cc
+  /root/thilenius/scorch/cloud/billet/billet_session.cc
   /root/thilenius_gen/scorch/cloud/billet/Billet.cpp
   /root/thilenius_gen/scorch/cloud/billet/billet_constants.cpp
   /root/thilenius_gen/scorch/cloud/billet/billet_types.cpp

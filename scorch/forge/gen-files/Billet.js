@@ -7,154 +7,24 @@
 
 //HELPER FUNCTIONS AND STRUCTURES
 
-Billet_CreateSession_args = function(args) {
-  this.sentinel_token = null;
-  if (args) {
-    if (args.sentinel_token !== undefined) {
-      this.sentinel_token = args.sentinel_token;
-    }
-  }
-};
-Billet_CreateSession_args.prototype = {};
-Billet_CreateSession_args.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.sentinel_token = new Token();
-        this.sentinel_token.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Billet_CreateSession_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_CreateSession_args');
-  if (this.sentinel_token !== null && this.sentinel_token !== undefined) {
-    output.writeFieldBegin('sentinel_token', Thrift.Type.STRUCT, 1);
-    this.sentinel_token.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Billet_CreateSession_result = function(args) {
-  this.success = null;
-  this.operation_failure = null;
-  if (args instanceof OperationFailure) {
-    this.operation_failure = args;
-    return;
-  }
-  if (args) {
-    if (args.success !== undefined) {
-      this.success = args.success;
-    }
-    if (args.operation_failure !== undefined) {
-      this.operation_failure = args.operation_failure;
-    }
-  }
-};
-Billet_CreateSession_result.prototype = {};
-Billet_CreateSession_result.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.success = new Session();
-        this.success.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.operation_failure = new OperationFailure();
-        this.operation_failure.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Billet_CreateSession_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_CreateSession_result');
-  if (this.success !== null && this.success !== undefined) {
-    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
-    this.success.write(output);
-    output.writeFieldEnd();
-  }
-  if (this.operation_failure !== null && this.operation_failure !== undefined) {
-    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
-    this.operation_failure.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Billet_BuildCMakeRepo_args = function(args) {
-  this.session = null;
+Billet_SyncAndExec_args = function(args) {
+  this.token = null;
   this.repo_header = null;
-  this.staged_change_lists = null;
-  this.application_args = null;
+  this.shell_command = null;
   if (args) {
-    if (args.session !== undefined) {
-      this.session = args.session;
+    if (args.token !== undefined) {
+      this.token = args.token;
     }
     if (args.repo_header !== undefined) {
       this.repo_header = args.repo_header;
     }
-    if (args.staged_change_lists !== undefined) {
-      this.staged_change_lists = args.staged_change_lists;
-    }
-    if (args.application_args !== undefined) {
-      this.application_args = args.application_args;
+    if (args.shell_command !== undefined) {
+      this.shell_command = args.shell_command;
     }
   }
 };
-Billet_BuildCMakeRepo_args.prototype = {};
-Billet_BuildCMakeRepo_args.prototype.read = function(input) {
+Billet_SyncAndExec_args.prototype = {};
+Billet_SyncAndExec_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -169,8 +39,8 @@ Billet_BuildCMakeRepo_args.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
-        this.session = new Session();
-        this.session.read(input);
+        this.token = new Token();
+        this.token.read(input);
       } else {
         input.skip(ftype);
       }
@@ -184,42 +54,8 @@ Billet_BuildCMakeRepo_args.prototype.read = function(input) {
       }
       break;
       case 3:
-      if (ftype == Thrift.Type.LIST) {
-        var _size8 = 0;
-        var _rtmp312;
-        this.staged_change_lists = [];
-        var _etype11 = 0;
-        _rtmp312 = input.readListBegin();
-        _etype11 = _rtmp312.etype;
-        _size8 = _rtmp312.size;
-        for (var _i13 = 0; _i13 < _size8; ++_i13)
-        {
-          var elem14 = null;
-          elem14 = new ChangeList();
-          elem14.read(input);
-          this.staged_change_lists.push(elem14);
-        }
-        input.readListEnd();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.LIST) {
-        var _size15 = 0;
-        var _rtmp319;
-        this.application_args = [];
-        var _etype18 = 0;
-        _rtmp319 = input.readListBegin();
-        _etype18 = _rtmp319.etype;
-        _size15 = _rtmp319.size;
-        for (var _i20 = 0; _i20 < _size15; ++_i20)
-        {
-          var elem21 = null;
-          elem21 = input.readString().value;
-          this.application_args.push(elem21);
-        }
-        input.readListEnd();
+      if (ftype == Thrift.Type.STRING) {
+        this.shell_command = input.readString().value;
       } else {
         input.skip(ftype);
       }
@@ -233,11 +69,11 @@ Billet_BuildCMakeRepo_args.prototype.read = function(input) {
   return;
 };
 
-Billet_BuildCMakeRepo_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_BuildCMakeRepo_args');
-  if (this.session !== null && this.session !== undefined) {
-    output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
-    this.session.write(output);
+Billet_SyncAndExec_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_SyncAndExec_args');
+  if (this.token !== null && this.token !== undefined) {
+    output.writeFieldBegin('token', Thrift.Type.STRUCT, 1);
+    this.token.write(output);
     output.writeFieldEnd();
   }
   if (this.repo_header !== null && this.repo_header !== undefined) {
@@ -245,32 +81,9 @@ Billet_BuildCMakeRepo_args.prototype.write = function(output) {
     this.repo_header.write(output);
     output.writeFieldEnd();
   }
-  if (this.staged_change_lists !== null && this.staged_change_lists !== undefined) {
-    output.writeFieldBegin('staged_change_lists', Thrift.Type.LIST, 3);
-    output.writeListBegin(Thrift.Type.STRUCT, this.staged_change_lists.length);
-    for (var iter22 in this.staged_change_lists)
-    {
-      if (this.staged_change_lists.hasOwnProperty(iter22))
-      {
-        iter22 = this.staged_change_lists[iter22];
-        iter22.write(output);
-      }
-    }
-    output.writeListEnd();
-    output.writeFieldEnd();
-  }
-  if (this.application_args !== null && this.application_args !== undefined) {
-    output.writeFieldBegin('application_args', Thrift.Type.LIST, 4);
-    output.writeListBegin(Thrift.Type.STRING, this.application_args.length);
-    for (var iter23 in this.application_args)
-    {
-      if (this.application_args.hasOwnProperty(iter23))
-      {
-        iter23 = this.application_args[iter23];
-        output.writeString(iter23);
-      }
-    }
-    output.writeListEnd();
+  if (this.shell_command !== null && this.shell_command !== undefined) {
+    output.writeFieldBegin('shell_command', Thrift.Type.STRING, 3);
+    output.writeString(this.shell_command);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -278,244 +91,7 @@ Billet_BuildCMakeRepo_args.prototype.write = function(output) {
   return;
 };
 
-Billet_BuildCMakeRepo_result = function(args) {
-  this.operation_failure = null;
-  if (args instanceof OperationFailure) {
-    this.operation_failure = args;
-    return;
-  }
-  if (args) {
-    if (args.operation_failure !== undefined) {
-      this.operation_failure = args.operation_failure;
-    }
-  }
-};
-Billet_BuildCMakeRepo_result.prototype = {};
-Billet_BuildCMakeRepo_result.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.operation_failure = new OperationFailure();
-        this.operation_failure.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Billet_BuildCMakeRepo_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_BuildCMakeRepo_result');
-  if (this.operation_failure !== null && this.operation_failure !== undefined) {
-    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
-    this.operation_failure.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Billet_RunRepo_args = function(args) {
-  this.session = null;
-  if (args) {
-    if (args.session !== undefined) {
-      this.session = args.session;
-    }
-  }
-};
-Billet_RunRepo_args.prototype = {};
-Billet_RunRepo_args.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.session = new Session();
-        this.session.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Billet_RunRepo_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_RunRepo_args');
-  if (this.session !== null && this.session !== undefined) {
-    output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
-    this.session.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Billet_RunRepo_result = function(args) {
-  this.operation_failure = null;
-  if (args instanceof OperationFailure) {
-    this.operation_failure = args;
-    return;
-  }
-  if (args) {
-    if (args.operation_failure !== undefined) {
-      this.operation_failure = args.operation_failure;
-    }
-  }
-};
-Billet_RunRepo_result.prototype = {};
-Billet_RunRepo_result.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.operation_failure = new OperationFailure();
-        this.operation_failure.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Billet_RunRepo_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_RunRepo_result');
-  if (this.operation_failure !== null && this.operation_failure !== undefined) {
-    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
-    this.operation_failure.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Billet_QueryCompilerOutputAfterLine_args = function(args) {
-  this.session = null;
-  this.line = null;
-  if (args) {
-    if (args.session !== undefined) {
-      this.session = args.session;
-    }
-    if (args.line !== undefined) {
-      this.line = args.line;
-    }
-  }
-};
-Billet_QueryCompilerOutputAfterLine_args.prototype = {};
-Billet_QueryCompilerOutputAfterLine_args.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.session = new Session();
-        this.session.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.I32) {
-        this.line = input.readI32().value;
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Billet_QueryCompilerOutputAfterLine_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_QueryCompilerOutputAfterLine_args');
-  if (this.session !== null && this.session !== undefined) {
-    output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
-    this.session.write(output);
-    output.writeFieldEnd();
-  }
-  if (this.line !== null && this.line !== undefined) {
-    output.writeFieldBegin('line', Thrift.Type.I32, 2);
-    output.writeI32(this.line);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-Billet_QueryCompilerOutputAfterLine_result = function(args) {
+Billet_SyncAndExec_result = function(args) {
   this.success = null;
   this.operation_failure = null;
   if (args instanceof OperationFailure) {
@@ -531,8 +107,8 @@ Billet_QueryCompilerOutputAfterLine_result = function(args) {
     }
   }
 };
-Billet_QueryCompilerOutputAfterLine_result.prototype = {};
-Billet_QueryCompilerOutputAfterLine_result.prototype.read = function(input) {
+Billet_SyncAndExec_result.prototype = {};
+Billet_SyncAndExec_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -547,7 +123,7 @@ Billet_QueryCompilerOutputAfterLine_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.STRUCT) {
-        this.success = new ApplicationOutput();
+        this.success = new Cord();
         this.success.read(input);
       } else {
         input.skip(ftype);
@@ -570,8 +146,8 @@ Billet_QueryCompilerOutputAfterLine_result.prototype.read = function(input) {
   return;
 };
 
-Billet_QueryCompilerOutputAfterLine_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_QueryCompilerOutputAfterLine_result');
+Billet_SyncAndExec_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_SyncAndExec_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
@@ -587,20 +163,16 @@ Billet_QueryCompilerOutputAfterLine_result.prototype.write = function(output) {
   return;
 };
 
-Billet_QueryApplicationOutputAfterLine_args = function(args) {
-  this.session = null;
-  this.line = null;
+Billet_TerminateSession_args = function(args) {
+  this.token = null;
   if (args) {
-    if (args.session !== undefined) {
-      this.session = args.session;
-    }
-    if (args.line !== undefined) {
-      this.line = args.line;
+    if (args.token !== undefined) {
+      this.token = args.token;
     }
   }
 };
-Billet_QueryApplicationOutputAfterLine_args.prototype = {};
-Billet_QueryApplicationOutputAfterLine_args.prototype.read = function(input) {
+Billet_TerminateSession_args.prototype = {};
+Billet_TerminateSession_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -615,19 +187,15 @@ Billet_QueryApplicationOutputAfterLine_args.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
-        this.session = new Session();
-        this.session.read(input);
+        this.token = new Token();
+        this.token.read(input);
       } else {
         input.skip(ftype);
       }
       break;
-      case 2:
-      if (ftype == Thrift.Type.I32) {
-        this.line = input.readI32().value;
-      } else {
+      case 0:
         input.skip(ftype);
-      }
-      break;
+        break;
       default:
         input.skip(ftype);
     }
@@ -637,16 +205,11 @@ Billet_QueryApplicationOutputAfterLine_args.prototype.read = function(input) {
   return;
 };
 
-Billet_QueryApplicationOutputAfterLine_args.prototype.write = function(output) {
-  output.writeStructBegin('Billet_QueryApplicationOutputAfterLine_args');
-  if (this.session !== null && this.session !== undefined) {
-    output.writeFieldBegin('session', Thrift.Type.STRUCT, 1);
-    this.session.write(output);
-    output.writeFieldEnd();
-  }
-  if (this.line !== null && this.line !== undefined) {
-    output.writeFieldBegin('line', Thrift.Type.I32, 2);
-    output.writeI32(this.line);
+Billet_TerminateSession_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_TerminateSession_args');
+  if (this.token !== null && this.token !== undefined) {
+    output.writeFieldBegin('token', Thrift.Type.STRUCT, 1);
+    this.token.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -654,7 +217,119 @@ Billet_QueryApplicationOutputAfterLine_args.prototype.write = function(output) {
   return;
 };
 
-Billet_QueryApplicationOutputAfterLine_result = function(args) {
+Billet_TerminateSession_result = function(args) {
+  this.operation_failure = null;
+  if (args instanceof OperationFailure) {
+    this.operation_failure = args;
+    return;
+  }
+  if (args) {
+    if (args.operation_failure !== undefined) {
+      this.operation_failure = args.operation_failure;
+    }
+  }
+};
+Billet_TerminateSession_result.prototype = {};
+Billet_TerminateSession_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.operation_failure = new OperationFailure();
+        this.operation_failure.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_TerminateSession_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_TerminateSession_result');
+  if (this.operation_failure !== null && this.operation_failure !== undefined) {
+    output.writeFieldBegin('operation_failure', Thrift.Type.STRUCT, 1);
+    this.operation_failure.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_GetSessionStatus_args = function(args) {
+  this.token = null;
+  if (args) {
+    if (args.token !== undefined) {
+      this.token = args.token;
+    }
+  }
+};
+Billet_GetSessionStatus_args.prototype = {};
+Billet_GetSessionStatus_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.token = new Token();
+        this.token.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Billet_GetSessionStatus_args.prototype.write = function(output) {
+  output.writeStructBegin('Billet_GetSessionStatus_args');
+  if (this.token !== null && this.token !== undefined) {
+    output.writeFieldBegin('token', Thrift.Type.STRUCT, 1);
+    this.token.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Billet_GetSessionStatus_result = function(args) {
   this.success = null;
   this.operation_failure = null;
   if (args instanceof OperationFailure) {
@@ -670,8 +345,8 @@ Billet_QueryApplicationOutputAfterLine_result = function(args) {
     }
   }
 };
-Billet_QueryApplicationOutputAfterLine_result.prototype = {};
-Billet_QueryApplicationOutputAfterLine_result.prototype.read = function(input) {
+Billet_GetSessionStatus_result.prototype = {};
+Billet_GetSessionStatus_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -686,7 +361,7 @@ Billet_QueryApplicationOutputAfterLine_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.STRUCT) {
-        this.success = new ApplicationOutput();
+        this.success = new SessionStatus();
         this.success.read(input);
       } else {
         input.skip(ftype);
@@ -709,8 +384,8 @@ Billet_QueryApplicationOutputAfterLine_result.prototype.read = function(input) {
   return;
 };
 
-Billet_QueryApplicationOutputAfterLine_result.prototype.write = function(output) {
-  output.writeStructBegin('Billet_QueryApplicationOutputAfterLine_result');
+Billet_GetSessionStatus_result.prototype.write = function(output) {
+  output.writeStructBegin('Billet_GetSessionStatus_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
@@ -856,73 +531,29 @@ BilletClient = function(input, output) {
     this.seqid = 0;
 };
 BilletClient.prototype = {};
-BilletClient.prototype.CreateSession = function(sentinel_token, callback) {
+BilletClient.prototype.SyncAndExec = function(token, repo_header, shell_command, callback) {
   if (callback === undefined) {
-    this.send_CreateSession(sentinel_token);
-    return this.recv_CreateSession();
+    this.send_SyncAndExec(token, repo_header, shell_command);
+    return this.recv_SyncAndExec();
   } else {
-    var postData = this.send_CreateSession(sentinel_token, true);
+    var postData = this.send_SyncAndExec(token, repo_header, shell_command, true);
     return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_CreateSession);
+      .jqRequest(this, postData, arguments, this.recv_SyncAndExec);
   }
 };
 
-BilletClient.prototype.send_CreateSession = function(sentinel_token, callback) {
-  this.output.writeMessageBegin('CreateSession', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_CreateSession_args();
-  args.sentinel_token = sentinel_token;
-  args.write(this.output);
-  this.output.writeMessageEnd();
-  return this.output.getTransport().flush(callback);
-};
-
-BilletClient.prototype.recv_CreateSession = function() {
-  var ret = this.input.readMessageBegin();
-  var fname = ret.fname;
-  var mtype = ret.mtype;
-  var rseqid = ret.rseqid;
-  if (mtype == Thrift.MessageType.EXCEPTION) {
-    var x = new Thrift.TApplicationException();
-    x.read(this.input);
-    this.input.readMessageEnd();
-    throw x;
-  }
-  var result = new Billet_CreateSession_result();
-  result.read(this.input);
-  this.input.readMessageEnd();
-
-  if (null !== result.operation_failure) {
-    throw result.operation_failure;
-  }
-  if (null !== result.success) {
-    return result.success;
-  }
-  throw 'CreateSession failed: unknown result';
-};
-BilletClient.prototype.BuildCMakeRepo = function(session, repo_header, staged_change_lists, application_args, callback) {
-  if (callback === undefined) {
-    this.send_BuildCMakeRepo(session, repo_header, staged_change_lists, application_args);
-    this.recv_BuildCMakeRepo();
-  } else {
-    var postData = this.send_BuildCMakeRepo(session, repo_header, staged_change_lists, application_args, true);
-    return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_BuildCMakeRepo);
-  }
-};
-
-BilletClient.prototype.send_BuildCMakeRepo = function(session, repo_header, staged_change_lists, application_args, callback) {
-  this.output.writeMessageBegin('BuildCMakeRepo', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_BuildCMakeRepo_args();
-  args.session = session;
+BilletClient.prototype.send_SyncAndExec = function(token, repo_header, shell_command, callback) {
+  this.output.writeMessageBegin('SyncAndExec', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_SyncAndExec_args();
+  args.token = token;
   args.repo_header = repo_header;
-  args.staged_change_lists = staged_change_lists;
-  args.application_args = application_args;
+  args.shell_command = shell_command;
   args.write(this.output);
   this.output.writeMessageEnd();
   return this.output.getTransport().flush(callback);
 };
 
-BilletClient.prototype.recv_BuildCMakeRepo = function() {
+BilletClient.prototype.recv_SyncAndExec = function() {
   var ret = this.input.readMessageBegin();
   var fname = ret.fname;
   var mtype = ret.mtype;
@@ -933,88 +564,7 @@ BilletClient.prototype.recv_BuildCMakeRepo = function() {
     this.input.readMessageEnd();
     throw x;
   }
-  var result = new Billet_BuildCMakeRepo_result();
-  result.read(this.input);
-  this.input.readMessageEnd();
-
-  if (null !== result.operation_failure) {
-    throw result.operation_failure;
-  }
-  return;
-};
-BilletClient.prototype.RunRepo = function(session, callback) {
-  if (callback === undefined) {
-    this.send_RunRepo(session);
-    this.recv_RunRepo();
-  } else {
-    var postData = this.send_RunRepo(session, true);
-    return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_RunRepo);
-  }
-};
-
-BilletClient.prototype.send_RunRepo = function(session, callback) {
-  this.output.writeMessageBegin('RunRepo', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_RunRepo_args();
-  args.session = session;
-  args.write(this.output);
-  this.output.writeMessageEnd();
-  return this.output.getTransport().flush(callback);
-};
-
-BilletClient.prototype.recv_RunRepo = function() {
-  var ret = this.input.readMessageBegin();
-  var fname = ret.fname;
-  var mtype = ret.mtype;
-  var rseqid = ret.rseqid;
-  if (mtype == Thrift.MessageType.EXCEPTION) {
-    var x = new Thrift.TApplicationException();
-    x.read(this.input);
-    this.input.readMessageEnd();
-    throw x;
-  }
-  var result = new Billet_RunRepo_result();
-  result.read(this.input);
-  this.input.readMessageEnd();
-
-  if (null !== result.operation_failure) {
-    throw result.operation_failure;
-  }
-  return;
-};
-BilletClient.prototype.QueryCompilerOutputAfterLine = function(session, line, callback) {
-  if (callback === undefined) {
-    this.send_QueryCompilerOutputAfterLine(session, line);
-    return this.recv_QueryCompilerOutputAfterLine();
-  } else {
-    var postData = this.send_QueryCompilerOutputAfterLine(session, line, true);
-    return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_QueryCompilerOutputAfterLine);
-  }
-};
-
-BilletClient.prototype.send_QueryCompilerOutputAfterLine = function(session, line, callback) {
-  this.output.writeMessageBegin('QueryCompilerOutputAfterLine', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_QueryCompilerOutputAfterLine_args();
-  args.session = session;
-  args.line = line;
-  args.write(this.output);
-  this.output.writeMessageEnd();
-  return this.output.getTransport().flush(callback);
-};
-
-BilletClient.prototype.recv_QueryCompilerOutputAfterLine = function() {
-  var ret = this.input.readMessageBegin();
-  var fname = ret.fname;
-  var mtype = ret.mtype;
-  var rseqid = ret.rseqid;
-  if (mtype == Thrift.MessageType.EXCEPTION) {
-    var x = new Thrift.TApplicationException();
-    x.read(this.input);
-    this.input.readMessageEnd();
-    throw x;
-  }
-  var result = new Billet_QueryCompilerOutputAfterLine_result();
+  var result = new Billet_SyncAndExec_result();
   result.read(this.input);
   this.input.readMessageEnd();
 
@@ -1024,30 +574,29 @@ BilletClient.prototype.recv_QueryCompilerOutputAfterLine = function() {
   if (null !== result.success) {
     return result.success;
   }
-  throw 'QueryCompilerOutputAfterLine failed: unknown result';
+  throw 'SyncAndExec failed: unknown result';
 };
-BilletClient.prototype.QueryApplicationOutputAfterLine = function(session, line, callback) {
+BilletClient.prototype.TerminateSession = function(token, callback) {
   if (callback === undefined) {
-    this.send_QueryApplicationOutputAfterLine(session, line);
-    return this.recv_QueryApplicationOutputAfterLine();
+    this.send_TerminateSession(token);
+    this.recv_TerminateSession();
   } else {
-    var postData = this.send_QueryApplicationOutputAfterLine(session, line, true);
+    var postData = this.send_TerminateSession(token, true);
     return this.output.getTransport()
-      .jqRequest(this, postData, arguments, this.recv_QueryApplicationOutputAfterLine);
+      .jqRequest(this, postData, arguments, this.recv_TerminateSession);
   }
 };
 
-BilletClient.prototype.send_QueryApplicationOutputAfterLine = function(session, line, callback) {
-  this.output.writeMessageBegin('QueryApplicationOutputAfterLine', Thrift.MessageType.CALL, this.seqid);
-  var args = new Billet_QueryApplicationOutputAfterLine_args();
-  args.session = session;
-  args.line = line;
+BilletClient.prototype.send_TerminateSession = function(token, callback) {
+  this.output.writeMessageBegin('TerminateSession', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_TerminateSession_args();
+  args.token = token;
   args.write(this.output);
   this.output.writeMessageEnd();
   return this.output.getTransport().flush(callback);
 };
 
-BilletClient.prototype.recv_QueryApplicationOutputAfterLine = function() {
+BilletClient.prototype.recv_TerminateSession = function() {
   var ret = this.input.readMessageBegin();
   var fname = ret.fname;
   var mtype = ret.mtype;
@@ -1058,7 +607,47 @@ BilletClient.prototype.recv_QueryApplicationOutputAfterLine = function() {
     this.input.readMessageEnd();
     throw x;
   }
-  var result = new Billet_QueryApplicationOutputAfterLine_result();
+  var result = new Billet_TerminateSession_result();
+  result.read(this.input);
+  this.input.readMessageEnd();
+
+  if (null !== result.operation_failure) {
+    throw result.operation_failure;
+  }
+  return;
+};
+BilletClient.prototype.GetSessionStatus = function(token, callback) {
+  if (callback === undefined) {
+    this.send_GetSessionStatus(token);
+    return this.recv_GetSessionStatus();
+  } else {
+    var postData = this.send_GetSessionStatus(token, true);
+    return this.output.getTransport()
+      .jqRequest(this, postData, arguments, this.recv_GetSessionStatus);
+  }
+};
+
+BilletClient.prototype.send_GetSessionStatus = function(token, callback) {
+  this.output.writeMessageBegin('GetSessionStatus', Thrift.MessageType.CALL, this.seqid);
+  var args = new Billet_GetSessionStatus_args();
+  args.token = token;
+  args.write(this.output);
+  this.output.writeMessageEnd();
+  return this.output.getTransport().flush(callback);
+};
+
+BilletClient.prototype.recv_GetSessionStatus = function() {
+  var ret = this.input.readMessageBegin();
+  var fname = ret.fname;
+  var mtype = ret.mtype;
+  var rseqid = ret.rseqid;
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(this.input);
+    this.input.readMessageEnd();
+    throw x;
+  }
+  var result = new Billet_GetSessionStatus_result();
   result.read(this.input);
   this.input.readMessageEnd();
 
@@ -1068,7 +657,7 @@ BilletClient.prototype.recv_QueryApplicationOutputAfterLine = function() {
   if (null !== result.success) {
     return result.success;
   }
-  throw 'QueryApplicationOutputAfterLine failed: unknown result';
+  throw 'GetSessionStatus failed: unknown result';
 };
 BilletClient.prototype.ClangFormat = function(source, callback) {
   if (callback === undefined) {

@@ -59,6 +59,17 @@ CrucibleService.prototype.enqueueCommit = function(
   }
 };
 
+CrucibleService.prototype.loadRepoFromId = function(repoUuid) {
+  var that = this;
+  this.client.GetRepoById(repoUuid, null)
+      .fail(that.firejqXhrErrorFactory())
+      .done(function(result) {
+        var crucibleRepo = new CrucibleRepo(that, result);
+        that.repos.push(crucibleRepo);
+        that.$rootScope.$broadcast('crucible.repoAdded', crucibleRepo);
+      });
+};
+
 // private
 CrucibleService.prototype.loadAllRepos = function() {
   if (!this.sentinel.token) {
@@ -72,7 +83,7 @@ CrucibleService.prototype.loadAllRepos = function() {
       .done(function(result) {
         var errorHandler = function(error) { that.error = error; };
         for (var i = 0; i < result.length; i++) {
-          that.loadRepo(result[i]);
+          that.loadRepoFromId(result[i].repo_uuid);
         }
       });
 };
@@ -83,18 +94,6 @@ CrucibleService.prototype.unloadAllRepos = function() {
     this.$rootScope.$broadcast('repoRemoved', this.repos[i]);
   }
   repos = [];
-};
-
-// private
-CrucibleService.prototype.loadRepo = function(repoProtoHeader) {
-  var that = this;
-  this.client.GetRepoById(this.sentinel.token, repoProtoHeader.repo_uuid, null)
-      .fail(that.firejqXhrErrorFactory())
-      .done(function(result) {
-        var crucibleRepo = new CrucibleRepo(that, result);
-        that.repos.push(crucibleRepo);
-        that.$rootScope.$broadcast('crucible.repoAdded', crucibleRepo);
-      });
 };
 
 // private

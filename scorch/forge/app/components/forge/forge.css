@@ -1,3 +1,11 @@
+.forge-body {
+  background-color: rgba(41, 41, 41, 1);
+  height: 100%;
+  margin: 0px;
+  overflow: hidden;
+  width: 100%;
+}
+
 .error-overlay {
   clear: both;
   float: left;
@@ -39,10 +47,15 @@
 }
 
 .sidebar-header {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid darkgrey;
   box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
   text-align: center;
   margin-bottom: 10px;
+}
+
+.greyscale {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 
 .editor-footer {
@@ -68,65 +81,4 @@
 
 .sidebar-header-icon.active {
   color: white;
-}
-
-.navbar {
-  min-height: 10px;
-  margin-bottom: 0px;
-}
-
-.navbar-default {
-  font-size: 12px;
-  background-color: rgba(32, 32, 32, 1);
-  border-radius: 0px;
-  border: 1px solid black;
-  box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
-}
-
-.navbar-default .navbar-nav>li>a {
-  color: rgba(200, 200, 200, 1);
-  background-color: rgba(32, 32, 32, 1);
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-.navbar-default .navbar-nav>li>a:hover,
-.navbar-default .navbar-nav>li>a:focus {
-  color: rgba(255, 255, 255, 1);
-  background-color: rgba(92, 92, 92, 1);
-}
-
-.navbar-default .navbar-nav>.active>a,
-.navbar-default .navbar-nav>.active>a:hover,
-.navbar-default .navbar-nav>.active>a:focus {
-  color: rgba(85, 85, 85, 1);
-  background-color: rgba(231, 231, 231, 1);
-}
-
-.navbar-default .navbar-toggle {
-  border-color: #ddd;
-}
-
-.navbar-default .navbar-toggle:hover,
-.navbar-default .navbar-toggle:focus {
-  background-color: #ddd;
-}
-
-.navbar-default .navbar-toggle .icon-bar {
-  background-color: #888;
-}
-
-.navbar-default .navbar-toggle:hover .icon-bar,
-.navbar-default .navbar-toggle:focus .icon-bar {
-  background-color: #292929;
-}
-
-.dropdown-menu {
-  background-color: rgba(32, 32, 32, 1);
-  font-size: 12px;
-}
-
-.dropdown-menu>li>a {
-  color: rgba(200, 200, 200, 1);
-  padding: 0px 10px;
 }

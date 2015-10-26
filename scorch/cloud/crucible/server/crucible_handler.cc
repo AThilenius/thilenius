@@ -153,10 +153,8 @@ void CrucibleHandler::GetRepoHeadersByUser(
 }
 
 void CrucibleHandler::GetRepoById(::crucible::proto::Repo& _return,
-                                  const ::sentinel::proto::Token& user_stoken,
                                   const std::string& repo_uuid) {
   CrucibleModel model;
-  AuthenticateOrThrow(user_stoken);
   ::crucible::proto::Repo repo;
   if (!model.FindRepoById(&repo, repo_uuid)) {
     ThrowOpFailure(StrCat("Failed to find repo with ID: ", repo_uuid));

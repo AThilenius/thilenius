@@ -5,28 +5,57 @@ angular.module('thilenius.console_window', [])
     .directive('atConsoleWindow', [
       '$sce',
       '$rootScope',
-      function($sce, $rootScope) {
+      '$timeout',
+      'billet',
+      function($sce, $rootScope, $timeout, billet) {
         return {
-          restrict : 'AE',
-          scope : {control : '=', show : '='},
-          templateUrl : 'app/directives/console_window/console_window.htm',
-          link : function(scope, iElement, iAttrs) {
+          restrict: 'AE',
+          scope: {control: '=', show: '='},
+          templateUrl: 'app/directives/console_window/console_window.htm',
+          link: function(scope, iElement, iAttrs) {
+            scope.content = [];
+            scope.show = false;
+            scope.internalControl = scope.control || {};
 
-            scope.compilerContent = [];
-            scope.applicationContent = [];
-            scope.activeTab = 'compilerOutput';
+            // private
             scope.escapeCodes = {
-              "[0m" : "<span class='console-text' style='color: white;'>",
-              "[31m" : "<span class='console-text' style='color: #FF0000;'>",
-              "[32m" : "<span class='console-text' style='color: #00FF00;'>",
-              "[33m" : "<span class='console-text' style='color: yellow;'>",
-              "[36m" : "<span class='console-text' style='color: #00D8FF;'>"
+              "[0m": "<span class='console-text' style='color: white;'>",
+              "[31m": "<span class='console-text' style='color: #FF0000;'>",
+              "[32m": "<span class='console-text' style='color: #00FF00;'>",
+              "[33m": "<span class='console-text' style='color: yellow;'>",
+              "[36m": "<span class='console-text' style='color: #00D8FF;'>"
             };
-            scope.compilerScroller = $('#compilerScroller');
-            scope.consoleScroller = $('#consoleScroller');
 
-            // Helper for writing content to a log
-            scope.writeLine = function(contentString, contentArray) {
+            // private
+            scope.scrollBottom = function() {
+              $('#consoleScroller')
+                  .animate({scrollTop: $('#consoleScroller')[0].scrollHeight},
+                           50);
+            };
+
+            // private
+            scope.readCordStream = function(cordStream) {
+              scope.content = [];
+              scope.writeLine('Streaming Fiber Cord: <a href="' +
+                              cordStream.fiberUrl + '" target="_blank">' +
+                              cordStream.fiberUrl + '</a>');
+              scope.writeLine(' ');
+              cordStream.onGrain(
+                  function(grains) {
+                    for (var i = 0; i < grains.length; i++) {
+                      scope.writeLine(grains[i].data);
+                    }
+                    scope.$apply();
+                    scope.scrollBottom();
+                  },
+                  function() {
+                    // End of cord
+                  });
+            };
+
+            // private
+            // TODO(athilenius): Do somethig with the channel
+            scope.writeLine = function(contentString) {
               var lines = contentString.split('\n');
               // Strip trailing \n
               if (lines.length > 0 && lines[lines.length - 1] === '') {
@@ -40,103 +69,33 @@ angular.module('thilenius.console_window', [])
                 // </pre></span><span blue><pre>world
                 // </pre></span>
                 // TODO(athilenius): sanatize oritinal text
-                var line = lines[i];
-                if (line === '') {
-                  line = ' ';
-                }
+                var line = lines[i] === '' ? ' ' : lines[i];
                 for (var escapeCode in scope.escapeCodes) {
                   var htmlCode = scope.escapeCodes[escapeCode];
                   line = line.split(escapeCode).join("</span>" + htmlCode);
                 }
                 line = "<span class='console-text'>" + line + "</span>";
-                contentArray.push($sce.trustAsHtml(line));
+                scope.content.push($sce.trustAsHtml(line));
               }
             };
 
-            // Expose a control object and show
-            scope.internalControl = scope.control || {};
-
-            $rootScope.$on('billet.compileBegin', function(eventArgs) {
-              scope.$apply(function() {
-                scope.activeTab = 'compilerOutput';
-                scope.compilerContent = [];
-                scope.applicationContent = [];
-                scope.show = true;
-              });
+            $rootScope.$on('billet.oldCord', function(eventArgs, cordStream) {
+              // Stream old cord, but don't pop open the console
+              $timeout(function() { scope.readCordStream(cordStream); });
             });
 
-            $rootScope.$on('billet.compileOutput', function(eventArgs,
-                                                            app_output) {
-              scope.$apply(function() {
-                for (var i = 0; i < app_output.output_tokens.length; i++) {
-                  var output_token = app_output.output_tokens[i];
-                  scope.writeLine(output_token.content, scope.compilerContent);
-                }
-              });
-              $('#compilerScroller')
-                  .animate(
-                      {scrollTop : $('#compilerScroller')[0].scrollHeight}, 50);
-            });
+            $rootScope.$on(
+                'billet.activeCord', function(eventArgs, cordStream) {
+                  // Stream cord, and open output
+                  scope.show = true;
+                  $timeout(function() { scope.readCordStream(cordStream); });
+                });
 
-            $rootScope.$on('billet.compileEnd', function(eventArgs,
-                                                         app_output) {
-              scope.$apply(function() {
-                if (app_output.termination_code !== 0) {
-                  scope.writeLine("[31mCompilation Failed!", scope.compilerContent);
-                } else {
-                  scope.writeLine("[32mCompilation Succeeded!",
-                              scope.compilerContent);
-                }
-                scope.writeLine("Ended with exit code: " +
-                                app_output.termination_code,
-                            scope.compilerContent);
-                scope.show = true;
-              });
-              $('#compilerScroller')
-                  .animate(
-                      {scrollTop : $('#compilerScroller')[0].scrollHeight}, 50);
-            });
+            // Also check Billet directly for old/active cords
+            if (billet.currentCord) {
+              scope.readCordStream(billet.currentCord);
+            }
 
-            $rootScope.$on('billet.runBegin', function(eventArgs) {
-              scope.$apply(function() {
-                scope.activeTab = 'consoleOutput';
-                scope.show = true;
-              });
-            });
-
-            $rootScope.$on('billet.runOutput', function(eventArgs, app_output) {
-              scope.$apply(function() {
-                for (var i = 0; i < app_output.output_tokens.length; i++) {
-                  var output_token = app_output.output_tokens[i];
-                  scope.writeLine(output_token.content, scope.applicationContent);
-                }
-              });
-              $('#consoleScroller')
-                  .animate({scrollTop : $('#consoleScroller')[0].scrollHeight},
-                           50);
-            });
-
-            $rootScope.$on('billet.runEnd', function(eventArgs, app_output) {
-              scope.$apply(function() {
-                scope.writeLine("Ended with exit code: " +
-                                app_output.termination_code,
-                            scope.applicationContent);
-                scope.show = true;
-              });
-              $('#consoleScroller')
-                  .animate({scrollTop : $('#consoleScroller')[0].scrollHeight},
-                           50);
-            });
-
-            // scope.$watch(function() { return $('.console').children().length;
-            // },
-            // function() {
-            //// Wait for templates to render
-            // scope.$evalAsync(function() {
-            // var elem = $('.console');
-            // elem.scroll(0, elem.offsetHeight);
-            //});
-            //});
 
           }
         };

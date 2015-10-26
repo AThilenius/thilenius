@@ -30,7 +30,6 @@ class CrucibleHandler : virtual public ::crucible::proto::CrucibleIf {
                             const ::sentinel::proto::Token& user_stoken);
 
   void GetRepoById(::crucible::proto::Repo& _return,
-                   const ::sentinel::proto::Token& user_stoken,
                    const std::string& repo_uuid);
 
   void GetRepoHeaderById(::crucible::proto::RepoHeader& _return,

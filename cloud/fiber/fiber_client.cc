@@ -18,7 +18,6 @@ ValueOf<void> FiberClient::Connect(const std::string& fiber_ip, int fiber_port,
     return {"Already connected"};
   }
   // Connect fiber
-  LOG(INFO) << "Connection to Fiber";
   http_client_ptr_ =
       ProtoFiberClientPtr(new ThriftHttpClient<::fiber::proto::FiberClient>(
           fiber_ip, fiber_port, fiber_route));

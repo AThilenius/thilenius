@@ -1,0 +1,22 @@
+.file-contents {
+  color: black;
+  font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+}
+
+.file-header {
+  background-color: rgba(41, 41, 41, 1);
+  border-bottom: 1px solid rgba(30, 30, 30, 1);
+  color: darkgrey;
+  height: 30px;
+  margin-bottom: 1px;
+  padding-left: 10px;
+  padding-top: 5px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

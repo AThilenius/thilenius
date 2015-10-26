@@ -1,0 +1,60 @@
+.navbar {
+  min-height: 10px;
+  margin-bottom: 0px;
+}
+
+.navbar-default {
+  font-size: 12px;
+  background-color: rgba(32, 32, 32, 1);
+  border-radius: 0px;
+  border: 1px solid black;
+  box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
+}
+
+.navbar-default .navbar-nav>li>a {
+  color: rgba(200, 200, 200, 1);
+  background-color: rgba(32, 32, 32, 1);
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-default .navbar-nav>li>a:focus {
+  color: rgba(255, 255, 255, 1);
+  background-color: rgba(92, 92, 92, 1);
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>.active>a:focus {
+  color: rgba(85, 85, 85, 1);
+  background-color: rgba(231, 231, 231, 1);
+}
+
+.navbar-default .navbar-toggle {
+  border-color: #ddd;
+}
+
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+  background-color: #ddd;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #888;
+}
+
+.navbar-default .navbar-toggle:hover .icon-bar,
+.navbar-default .navbar-toggle:focus .icon-bar {
+  background-color: #292929;
+}
+
+.dropdown-menu {
+  background-color: rgba(32, 32, 32, 1);
+  font-size: 12px;
+}
+
+.dropdown-menu>li>a {
+  color: rgba(200, 200, 200, 1);
+  padding: 0px 10px;
+}

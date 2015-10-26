@@ -4,45 +4,21 @@
 namespace cpp billet.proto
 
 include "cloud/sentinel/sentinel.thrift"
+include "cloud/fiber/fiber.thrift"
 include "scorch/cloud/crucible/crucible.thrift"
 
-struct Session {
-  1: string uuid;
-  2: sentinel.Token session_key;
+struct SessionStatus {
+  // Set true if there is currently an active executable
+  1: bool is_running;
+
+  // Set to the current Fiber Cord if running, or the last cord if not running,
+  // or null if nothing has been run
+  2: fiber.Cord current_or_last_cord;
 }
 
-// Compiler message reporting
-const i32 COMPILER_MESSAGE_TYPE_UNKNOWN = 0;
-const i32 COMPILER_MESSAGE_TYPE_ERROR = 1;
-const i32 COMPILER_MESSAGE_TYPE_WARNING = 2;
-const i32 COMPILER_MESSAGE_TYPE_NOTE = 3;
-
-struct Fixit {
-  1: i32 from_line;
-  2: i32 from_column;
-  3: i32 to_line;
-  4: i32 to_column;
-  5: i32 text;
-}
-
-struct CompilerMessage {
-  1: string relative_path;
-  2: i32 compiler_message_type;
-  3: i32 line;
-  4: i32 column;
-  5: string message;
-  6: string full_message;
-}
-
-struct OutputToken {
-  1: bool is_cerr;
-  2: string content;
-}
-
-struct ApplicationOutput {
-  1: bool did_terminate;
-  2: i32 termination_code;
-  3: list<OutputToken> output_tokens;
+exception SessionBusy {
+  // Used so JS can pick out exception type
+  1: bool session_busy = true;
 }
 
 exception OperationFailure {
@@ -51,24 +27,16 @@ exception OperationFailure {
 
 service Billet {
 
-  Session CreateSession(1: sentinel.Token sentinel_token)
+  // Temporary
+  fiber.Cord SyncAndExec(1: sentinel.Token token,
+                         2: crucible.RepoHeader repo_header,
+                         3: string shell_command)
       throws (1: OperationFailure operation_failure);
 
-  void BuildCMakeRepo(1: Session session,
-                      2: crucible.RepoHeader repo_header,
-                      3: list<crucible.ChangeList> staged_change_lists,
-                      4: list<string> application_args)
+  void TerminateSession(1: sentinel.Token token)
       throws (1: OperationFailure operation_failure);
 
-  void RunRepo (1: Session session)
-      throws (1: OperationFailure operation_failure);
-
-  ApplicationOutput QueryCompilerOutputAfterLine(1: Session session,
-                                                 2: i32 line)
-      throws (1: OperationFailure operation_failure);
-
-  ApplicationOutput QueryApplicationOutputAfterLine(1: Session session,
-                                                    2: i32 line)
+  SessionStatus GetSessionStatus(1: sentinel.Token token)
       throws (1: OperationFailure operation_failure);
 
   string ClangFormat(1: string source)

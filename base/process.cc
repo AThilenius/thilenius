@@ -172,6 +172,13 @@ bool Process::Execute(bool blocking, int timeout_ms) {
   }
 }
 
+void Process::Kill(bool blocking) {
+  kill(pid_, SIGKILL);
+  if (blocking) {
+    waitpid(pid_, 0, 0);
+  }
+}
+
 bool Process::WriteCin(const std::string& value) {
   return write(pipes_[CIN][WRITE], value.c_str(), value.length()) ==
          value.length();

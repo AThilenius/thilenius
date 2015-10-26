@@ -54,6 +54,8 @@ class Process {
 
   bool Execute(bool blocking, int timeout_ms);
 
+  void Kill(bool blocking);
+
   // Don't use with Execute(4)
   bool WriteCin(const std::string& value);
 

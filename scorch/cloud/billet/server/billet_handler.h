@@ -12,8 +12,6 @@
 #include "scorch/cloud/billet/billet_session.h"
 #include "scorch/cloud/billet/billet_types.h"
 
-using ::thilenius::scorch::cloud::billet::BilletSession;
-
 namespace thilenius {
 namespace scorch {
 namespace cloud {
@@ -24,34 +22,21 @@ class BilletHandler : virtual public ::billet::proto::BilletIf {
  public:
   BilletHandler();
 
-  void CreateSession(::billet::proto::Session& _return,
-                     const ::sentinel::proto::Token& sentinel_token);
+  void SyncAndExec(::fiber::proto::Cord& _return,
+                   const ::sentinel::proto::Token& token,
+                   const ::crucible::proto::RepoHeader& repo_header,
+                   const std::string& shell_command);
 
-  void BuildCMakeRepo(
-      const ::billet::proto::Session& session,
-      const ::crucible::proto::RepoHeader& repo_header,
-      const std::vector< ::crucible::proto::ChangeList>& staged_change_lists,
-      const std::vector<std::string>& application_args);
+  void TerminateSession(const ::sentinel::proto::Token& token);
 
-  void RunRepo (const ::billet::proto::Session& session);
-
-  void QueryCompilerOutputAfterLine(::billet::proto::ApplicationOutput& _return,
-                                    const ::billet::proto::Session& session,
-                                    const int32_t line);
-
-  void QueryApplicationOutputAfterLine(
-      ::billet::proto::ApplicationOutput& _return,
-      const ::billet::proto::Session& session, const int32_t line);
+  void GetSessionStatus(::billet::proto::SessionStatus& _return,
+                        const ::sentinel::proto::Token& token);
 
   void ClangFormat(std::string& _return, const std::string& source);
 
  private:
-  void ThrowOpFailure(const std::string& message);
-
-  void AuthenticateOrThrow(const ::sentinel::proto::Token& token);
-
   std::mutex mutex_;
-  std::unordered_map<std::string, BilletSession> sessions_ GUARDED_BY(mutex_);
+  std::unordered_map<std::string, BilletSessionPtr> sessions_;
 };
 
 }  // namespace server

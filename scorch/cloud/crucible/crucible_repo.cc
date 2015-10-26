@@ -105,11 +105,8 @@ ValueOf<void> CrucibleRepo::SyncToChangeListForced(
     // Pull down from Crucible again
     ::crucible::proto::Repo new_repo;
     try {
-      if (http_client_ptr_ == nullptr) {
-        LOG(ERROR) << "HTTP Client pointer is null WHY!!!!";
-      }
       http_client_ptr_->ConnectOrDie()->GetRepoById(
-          new_repo, token_, repo_.repo_header.repo_uuid);
+          new_repo, repo_.repo_header.repo_uuid);
     } catch (::crucible::proto::OperationFailure op_failure) {
       return {StrCat("Crucible remote exception: ", op_failure.user_message)};
     } catch (...) {

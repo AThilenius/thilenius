@@ -7,28 +7,11 @@
           ng-class="'glyphicon-chevron-' + (!show ? 'up' : 'down')">
         </span>
       </div>
-    <div class="btn-group btn-group-xs" role="group">
-      <div ng-class="activeTab == 'compilerOutput' ? 'active' : ''"
-        ng-click="activeTab = 'compilerOutput'; show=true;"
-        style="border-bottom-left-radius: 0px;"
-        class="btn dark-tab">Compiler Output</div>
-      <div ng-class="activeTab == 'consoleOutput' ? 'active' : ''"
-        ng-click="activeTab = 'consoleOutput'; show=true;"
-        style="border-bottom-right-radius: 0px;"
-        class="btn dark-tab">Console Output</div>
-    </div>
   </div>
   <div class="console flex-body">
     <div class="console fill-flex-box">
-      <div id="compilerScroller" class="scroll-vertical"
-        ng-show="activeTab == 'compilerOutput'">
-        <div ng-repeat="line in compilerContent track by $index">
-          <div class="console-line" ng-bind-html="line"></div>
-        </div>
-      </div>
-      <div id="consoleScroller" class="scroll-vertical"
-        ng-show="activeTab == 'consoleOutput'">
-        <div ng-repeat="line in applicationContent track by $index">
+      <div id="consoleScroller" class="scroll-vertical" ng-show="show">
+        <div ng-repeat="line in content track by $index">
           <div class="console-line" ng-bind-html="line"></div>
         </div>
       </div>

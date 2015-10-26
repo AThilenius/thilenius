@@ -47,9 +47,12 @@ CrucibleRepo.prototype.getPendingChangeList = function(relativePath,
 };
 
 // Commits any changes to the file relativePath, no matter how small.
-CrucibleRepo.prototype.commit = function(relativePath, newSource) {
+CrucibleRepo.prototype.commit = function(relativePath, newSource, callback) {
   var changeList = this.getPendingChangeList(relativePath, newSource);
   if (!changeList) {
+    if (callback) {
+      callback();
+    }
     return;
   }
   // We create a mock CL, and 'commit' it to the local repo, then update the
@@ -69,6 +72,9 @@ CrucibleRepo.prototype.commit = function(relativePath, newSource) {
         changeList.change_list_uuid = commitedCl.change_list_uuid;
         changeList.user_uuid = commitedCl.user_uuid;
         changeList.timestamp = commitedCl.timestamp;
+        if (callback) {
+          callback();
+        }
       });
 };
 

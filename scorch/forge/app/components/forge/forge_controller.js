@@ -3,16 +3,20 @@ var forgeApp = angular.module('forgeApp');
 forgeApp.controller('forgeController', [
   '$rootScope',
   '$scope',
+  '$location',
   'sentinel',
   'crucible',
   'billet',
-  function($rootScope, $scope, sentinel, crucible, billet) {
+  function($rootScope, $scope, $location, sentinel, crucible, billet) {
     // Forward the version on
     if (typeof FORGE_VERSION !== 'undefined') {
       $scope.forgeVersion = FORGE_VERSION;
     } else {
       $scope.forgeVersion = 'unknown';
     }
+
+    // Will redirect to login is failed
+    sentinel.tryLoadingFromCookie();
 
     // Sentinel / Crucible
     $scope.sentinel = sentinel;
@@ -25,6 +29,7 @@ forgeApp.controller('forgeController', [
     $scope.fileExplorerControl = {};
     $scope.contentWindowControl = {};
     $scope.historyExplorerControl = {};
+    $scope.anvilWindowControl = {};
     $scope.settingsWindowControl = {};
 
     $scope.error = null;
@@ -63,14 +68,14 @@ forgeApp.controller('forgeController', [
           };
         });
 
-    $rootScope.$on('historyExplorer.snapshotSelected', function(event, repo,
-                                                                relativePath,
-                                                                changeList) {
-      if ($scope.activeSidebarTab === 'history') {
-        $scope.contentWindowControl.bindRepoFileForView(repo, relativePath,
-                                                        changeList);
-      }
-    });
+    $rootScope.$on(
+        'historyExplorer.snapshotSelected', function(event, repo, relativePath,
+                                                     changeList) {
+          if ($scope.activeSidebarTab === 'history') {
+            $scope.contentWindowControl.bindRepoFileForView(repo, relativePath,
+                                                            changeList);
+          }
+        });
 
     $rootScope.$on(
         'sentinel.logout', function(event) { crucible.unloadAllRepos(); });
@@ -78,7 +83,7 @@ forgeApp.controller('forgeController', [
     // Load up Crucible and Billet (Should be logged in by the time we get here)
     if (sentinel.token) {
       crucible.loadAllRepos();
-      billet.createSession(sentinel.token);
+      billet.init(sentinel.token);
     }
   }
 ]);

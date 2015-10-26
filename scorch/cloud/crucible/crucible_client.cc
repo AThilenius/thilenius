@@ -108,18 +108,7 @@ ValueOf<CrucibleRepo> CrucibleClient::CreateNewBaseRepoInDirectory(
 }
 
 ValueOf<CrucibleRepo> CrucibleClient::CloneRepoInDirectory(
-    const std::string& path, const std::string& repo_uuid,
-    const ::sentinel::proto::Token* optional_token) {
-  ::sentinel::proto::Token token;
-  if (optional_token == nullptr) {
-    ValueOf<::sentinel::proto::Token> token_value = LoginAndAuthroSecondary(path);
-    if (!token_value.IsValid()) {
-      return {CrucibleRepo(), token_value.GetError()};
-    }
-    token = token_value.GetOrDie();
-  } else {
-    token = *optional_token;
-  }
+    const std::string& path, const std::string& repo_uuid) {
   // Set up a crucible project
   std::string crucible_dir_path = Path::Combine(path, FLAGS_crucible_dir_name);
   std::string crucible_repo_json_path =
@@ -131,7 +120,7 @@ ValueOf<CrucibleRepo> CrucibleClient::CloneRepoInDirectory(
   Directory::Create(crucible_dir_path);
   ::crucible::proto::Repo repo_proto;
   try {
-    http_client_ptr_->ConnectOrDie()->GetRepoById(repo_proto, token, repo_uuid);
+    http_client_ptr_->ConnectOrDie()->GetRepoById(repo_proto, repo_uuid);
   } catch (::crucible::proto::OperationFailure op_failure) {
     return {CrucibleRepo(),
             StrCat("Crucible remote exception: ", op_failure.user_message)};

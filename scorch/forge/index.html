@@ -1,6 +1,7 @@
 <!doctype html>
-<html><head><title>Forge</title>
-<script>var FORGE_VERSION="151015.18.4137";</script>
+<html ng-app="forgeApp" ng-controller="loginController"
+      class="{{$root.htmlClass ? $root.htmlClass : 'forge-body'}}">
+<head><title ng-bind="$root.title || 'Forge'"></title>
 <link rel="shortcut icon" href="assets/flame-512.png" />
 <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -10,6 +11,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
 <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ace.js"></script>
 <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ext-language_tools.js"></script>
+<script>var FORGE_VERSION="151025.23.5900";</script>
 <script src="libs/diff_match_patch.js"></script>
 <script src="libs/file-saver.min.js"></script>
 <script src="libs/jszip.min.js"></script>
@@ -24,33 +26,45 @@
 <script src="gen-files/Crucible.js"></script>
 <script src="gen-files/crucible_types.js"></script>
 <script src="gen-files/differencer_types.js"></script>
+<script src="gen-files/Fiber.js"></script>
+<script src="gen-files/fiber_types.js"></script>
 <script src="gen-files/Sentinel.js"></script>
 <script src="gen-files/sentinel_types.js"></script>
 <script src="gen-files/SentinelInternal.js"></script>
+<link rel="stylesheet" href="app/components/crucible/crucible.css" />
+<link rel="stylesheet" href="app/components/fiber/fiber.css" />
 <link rel="stylesheet" href="app/components/forge/forge.css" />
 <link rel="stylesheet" href="app/components/login/login.css" />
+<link rel="stylesheet" href="app/directives/anvil_window/anvil_window.css" />
 <link rel="stylesheet" href="app/directives/console_window/console_window.css" />
 <link rel="stylesheet" href="app/directives/content_window/content_window.css" />
 <link rel="stylesheet" href="app/directives/file_explorer/file_explorer.css" />
 <link rel="stylesheet" href="app/directives/history_explorer/history_explorer.css" />
+<link rel="stylesheet" href="app/directives/navbar/navbar.css" />
 <link rel="stylesheet" href="app/directives/settings_window/settings_window.css" />
 <link rel="stylesheet" href="app/directives/tree_view/tree_view.css" />
 <script src="app/app.module.js"></script>
 <script src="app/app.route.js"></script>
+<script src="app/components/crucible/crucible_controller.js"></script>
+<script src="app/components/fiber/fiber_controller.js"></script>
 <script src="app/components/forge/forge_controller.js"></script>
 <script src="app/components/login/login_controller.js"></script>
+<script src="app/directives/anvil_window/anvil_window.js"></script>
 <script src="app/directives/console_window/console_window.js"></script>
 <script src="app/directives/content_window/content_window.js"></script>
 <script src="app/directives/file_explorer/file_explorer.js"></script>
 <script src="app/directives/history_explorer/history_explorer.js"></script>
+<script src="app/directives/navbar/navbar.js"></script>
 <script src="app/directives/settings_window/settings_window.js"></script>
 <script src="app/directives/tree_view/tree_view.js"></script>
 <script src="app/services/billet_service.js"></script>
+<script src="app/services/blaze_service.js"></script>
+<script src="app/services/cord_stream.js"></script>
 <script src="app/services/crucible_repo.js"></script>
 <script src="app/services/crucible_service.js"></script>
+<script src="app/services/fiber_service.js"></script>
 <script src="app/services/sentinel_service.js"></script>
 <script src="app/shared/js/string.js"></script>
 </head>
-<body ng-app="forgeApp" ng-controller="loginController">
-<div ng-view></div>
+<body ng-view class="{{$root.bodyClass ? $root.bodyClass : 'forge-body'}}">
 </body></html>

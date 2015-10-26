@@ -22,16 +22,13 @@ angular.module('thilenius.content_window', ['thilenius.console_window'])
               enableSnippets: true,
               enableLiveAutocompletion: true
             });
-
             scope.editorVisible = false;
             scope.activeRepo = null;
             scope.relativePath = null;
             scope.showConsole = false;
             scope.canRun = true;
             scope.fileSessions = {};
-
             scope.consoleWindowControl = {};
-
             scope.internalControl = scope.control || {};
 
             $rootScope.$watchCollection(
@@ -64,14 +61,15 @@ angular.module('thilenius.content_window', ['thilenius.console_window'])
                                            settings.showPrintMargin);
                     scope.editor.setOption("fadeFoldWidgets",
                                            settings.fadeFoldWidgets);
-                  }
-                }, true);
+              }
+            }, true);
 
-            scope.internalControl.commitPending = function() {
+            scope.internalControl.commitPending = function(callback) {
               if (scope.activeRepo && !scope.editor.getReadOnly()) {
                 // Commit any pending code
                 scope.activeRepo.commit(scope.relativePath,
-                                        scope.editor.getValue());
+                                        scope.editor.getValue(),
+                                        callback);
               }
             };
 
@@ -88,14 +86,23 @@ angular.module('thilenius.content_window', ['thilenius.console_window'])
             });
 
             // Watch for billet begin-done for run flag
-            $rootScope.$on(
-                'billet.begin', function(event) { scope.canRun = false; });
-
-            $rootScope.$on('billet.done', function(event) {
-              if (!scope.$$phase) {
-                scope.$apply(function() { scope.canRun = true; });
-              }
+            $rootScope.$on('billet.activeCord', function(event, cordStream) {
+              scope.canRun = false;
+              scope.$apply();
+              cordStream.addHandler('close', function() {
+                scope.canRun = true;
+                scope.$apply();
+              });
             });
+
+            // Also check Billet directly for old/active cords
+            if (billet.currentCord && billet.isOldCordRunning) {
+              scope.canRun = false;
+              billet.currentCord.addHandler('close', function() {
+                scope.canRun = true;
+                scope.$apply();
+              });
+            }
 
             // Binds a file from a Repo for edit. Also stashes and commits
             // changes. If the file is locked, it cannot be changed
@@ -147,17 +154,24 @@ angular.module('thilenius.content_window', ['thilenius.console_window'])
             // private
             scope.run = function() {
               if (scope.activeRepo) {
-                var stashedCl = scope.activeRepo.getPendingChangeList(
-                    scope.relativePath, scope.editor.getValue());
-                if (stashedCl) {
-                  billet.runCMakeRepo(scope.activeRepo.repoProto.repo_header,
-                                      [stashedCl]);
-                } else {
-                  billet.runCMakeRepo(scope.activeRepo.repoProto.repo_header,
-                                      []);
-                }
+                scope.internalControl.commitPending(function() {
+                  billet.runCMakeRepo(scope.activeRepo.repoProto.repo_header);
+                });
               }
             };
+
+            // private
+            scope.stop = function() {
+              if (scope.activeRepo) {
+                billet.terminateSession();
+              }
+            };
+
+            scope.clean = function() {
+              if (scope.activeRepo) {
+                billet.clean(scope.activeRepo.repoProto.repo_header);
+              }
+            }
 
             // private
             scope.autoFormat = function() {

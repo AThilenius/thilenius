@@ -4,23 +4,21 @@
 var forgeApp = angular.module('forgeApp');
 
 // Fires the events:
-// billet.sessionCreated (::billet::proto::Session)
-// billet.begin          ()
-// billet.done           ()
-// billet.compileBegin   ()
-// billet.compileEnd     (::billet::proto::ApplicationOutput)
-// billet.compileOutput  (::billet::proto::ApplicationOutput)
-// billet.runBegin       ()
-// billet.runEnd         (::billet::proto::ApplicationOutput)
-// billet.runOutput      (::billet::proto::ApplicationOutput)
+// billet.oldCord        (::fiber::proto::Cord)
+// billet.activeCord     (::fiber::proto::Cord)
 // billet.error          (String)
 // error                 (String)
-var billetService = function($rootScope) {
+var BilletService = function($rootScope, fiber) {
   this.$rootScope = $rootScope;
+  this.fiber = fiber;
   var transport = new Thrift.Transport("/api/billet/");
   var protocol = new Thrift.Protocol(transport);
   this.client = new BilletClient(protocol);
-  this.billetSessionProto = null;
+  this.isOldCordRunning = false;
+  this.currentCord = null;
+
+  // DO NOT COMMIT
+  document.billet = this;
 
   // Error redirect
   $rootScope.$on('billet.error', function(event, message) {
@@ -28,99 +26,97 @@ var billetService = function($rootScope) {
   });
 };
 
-billetService.prototype.createSession = function(sentinelToken) {
-  if (!this.billetSessionProto) {
-    var that = this;
-    this.client.CreateSession(sentinelToken, null)
-        .fail(this.firejqXhrErrorFactory())
-        .done(function(result) {
-          that.billetSessionProto = result;
-          that.$rootScope.$broadcast('billet.sessionCreated', result);
-        });
-  }
+BilletService.prototype.init = function(token) {
+  this.token = token;
+  var that = this;
+  this.client.GetSessionStatus(token, null)
+      .fail(function(jqXhr, stat, err) {
+        // Ignore errors because this isn't mission critical
+        console.log("Billet error: " + JSON.stringify(err));
+      })
+      .done(function(result) {
+        that.isOldCordRunning = result.is_running;
+        if (result.current_or_last_cord &&
+            result.current_or_last_cord.uuid !== '') {
+          console.log("Streaming old Fiber Cord: " +
+                      result.current_or_last_cord.uuid);
+          var cordStream = that.fiber.fromCord(result.current_or_last_cord);
+          that.currentCord = cordStream;
+          that.$rootScope.$broadcast(
+              result.is_running ? 'billet.activeCord' : 'billet.oldCord',
+              cordStream);
+          // TODO(athilenius): Watch Fiber and wait for exit
+        }
+      });
 };
 
-billetService.prototype.runCMakeRepo = function(repoHeaderProto,
-                                                stagedChangeListProtos) {
-  if (!this.billetSessionProto) {
-    this.$rootScope.$broadcast('billet.error', "No active sessions");
+BilletService.prototype.runCMakeRepo = function(repoHeaderProto) {
+  var url = window.location.origin + "#/crucible/" + repoHeaderProto.repo_uuid +
+            "/" + repoHeaderProto.latest_change_list_uuid;
+  // Wow, that's fuck ugly
+  var echo_repo_command = 'echo \"Synced to Crucible CL: <a href=\'' + url +
+                          '\' target=\'_blank\'>' + url + '</a>\"';
+  var command = echo_repo_command +
+      '&& mkdir --parents build && cd build && cmake .. && make && ./runnable';
+  if (!this.token) {
+    this.$rootScope.$broadcast('billet.error', "No active token");
     return;
   }
-  this.compileCMakeRepo(repoHeaderProto, stagedChangeListProtos);
+  var that = this;
+  this.client.SyncAndExec(this.token, repoHeaderProto, command, null)
+      .fail(function(jqXhr, stat, err) {
+        console.log("Billet error: " + JSON.stringify(err));
+      })
+      .done(function(result) {
+        console.log("Billet result: " + JSON.stringify(result));
+        var cordStream = that.fiber.fromCord(result);
+        that.currentCord = cordStream;
+        that.$rootScope.$broadcast('billet.activeCord', cordStream);
+      });
 };
 
-billetService.prototype.clangFormat = function(source, callback, error) {
+BilletService.prototype.terminateSession = function() {
+  var that = this;
+  this.client.TerminateSession(this.token, null)
+      .fail(function(jqXhr, stat, err) {
+        // Ignore termination errors
+        console.log("Billet TerminateSession error: " + JSON.stringify(err));
+      })
+      .done(function() {
+        // Nothing to do. We just wait for the Fiber Cord to close
+      });
+};
+
+BilletService.prototype.clean = function(repoHeaderProto) {
+  var command = 'rm -rf build/';
+  if (!this.token) {
+    this.$rootScope.$broadcast('billet.error', "No active token");
+    return;
+  }
+  var that = this;
+  this.client.SyncAndExec(this.token, repoHeaderProto, command, null)
+      .fail(function(jqXhr, stat, err) {
+        console.log("Billet error: " + JSON.stringify(err));
+      })
+      .done(function(result) {
+        console.log("Billet result: " + JSON.stringify(result));
+        var cordStream = that.fiber.fromCord(result);
+        that.currentCord = cordStream;
+        that.$rootScope.$broadcast('billet.activeCord', cordStream);
+      });
+};
+
+BilletService.prototype.clangFormat = function(source, callback, error) {
+  // TODO(athilenius): Super race condtion here, bro.
   var that = this;
   that.$rootScope.$broadcast('billet.begin');
   this.client.ClangFormat(source, null)
       .fail(function(jqXhr, stat, err) { error(err); })
-      .done(function(result) {
-        that.$rootScope.$broadcast('billet.done');
-        callback(result);
-      });
+      .done(function(result) { callback(result); });
 };
 
 // private
-billetService.prototype.compileCMakeRepo = function(repoHeaderProto,
-                                                    stagedChangeListProtos) {
-  var that = this;
-  this.client.BuildCMakeRepo(this.billetSessionProto, repoHeaderProto,
-                             stagedChangeListProtos, [/* App Args*/], null)
-      .fail(this.firejqXhrErrorFactory())
-      .done(function() {
-        that.$rootScope.$broadcast('billet.begin');
-        that.$rootScope.$broadcast('billet.compileBegin');
-        var queryOutput = function(after_line) {
-          that.client.QueryCompilerOutputAfterLine(that.billetSessionProto,
-                                                   after_line, null)
-              .fail(that.firejqXhrErrorFactory())
-              .done(function(result) {
-                if (result.did_terminate) {
-                  // If compilation finished, then kick off running the app
-                  that.$rootScope.$broadcast('billet.compileEnd', result);
-                  // If compiling didn't fail
-                  if (result.termination_code === 0) {
-                    that.runExecutable();
-                  } else {
-                    that.$rootScope.$broadcast('billet.done', result);
-                  }
-                } else {
-                  that.$rootScope.$broadcast('billet.compileOutput', result);
-                  queryOutput(after_line + result.output_tokens.length);
-                }
-              });
-        };
-        queryOutput(0);
-      });
-};
-
-// private
-billetService.prototype.runExecutable = function() {
-  var that = this;
-  this.client.RunRepo(this.billetSessionProto, null)
-      .fail(this.firejqXhrErrorFactory())
-      .done(function() {
-        that.$rootScope.$broadcast('billet.runBegin');
-        var queryOutput = function(after_line) {
-          that.client.QueryApplicationOutputAfterLine(that.billetSessionProto,
-                                                      after_line, null)
-              .fail(that.firejqXhrErrorFactory())
-              .done(function(result) {
-                if (result.did_terminate) {
-                  that.$rootScope.$broadcast('billet.runEnd', result);
-                  that.$rootScope.$broadcast('billet.done', result);
-                } else {
-                  that.$rootScope.$broadcast('billet.runOutput', result);
-                  queryOutput(after_line + result.output_tokens.length);
-                }
-              });
-        };
-        queryOutput(0);
-      });
-};
-
-// private
-billetService.prototype.firejqXhrErrorFactory = function() {
+BilletService.prototype.firejqXhrErrorFactory = function() {
   var that = this;
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
@@ -138,5 +134,6 @@ billetService.prototype.firejqXhrErrorFactory = function() {
 
 forgeApp.factory('billet', [
   '$rootScope',
-  function($rootScope) { return new billetService($rootScope); }
+  'fiber',
+  function($rootScope, fiber) { return new BilletService($rootScope, fiber); }
 ]);
