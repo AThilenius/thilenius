@@ -32,7 +32,7 @@ forgeApp.controller('forgeController', [
     $scope.anvilWindowControl = {};
     $scope.settingsWindowControl = {};
 
-    $scope.error = null;
+    $scope.displayError = null;
 
     $scope.buildHistory = function() {
       $scope.contentWindowControl.commitPending();
@@ -45,14 +45,14 @@ forgeApp.controller('forgeController', [
 
     $scope.editOn = function() {
       if ($scope.fileExplorerControl.selected) {
-        $scope.contentWindowControl.bindRepoFileForEdit(
+        $scope.contentWindowControl.bindFile(
             $scope.fileExplorerControl.selected.repo,
-            $scope.fileExplorerControl.selected.relativePath);
+            $scope.fileExplorerControl.selected.relativePath, null, false);
       }
     };
 
     $rootScope.$on('error', function(event, message) {
-      $scope.$apply(function() { $scope.error = message; });
+      $scope.$apply(function() { $scope.displayError = message; });
     });
 
     $rootScope.$on('crucible.repoAdded', function(event, repo) {
@@ -61,7 +61,7 @@ forgeApp.controller('forgeController', [
 
     $rootScope.$on(
         'fileExplorer.fileSelected', function(event, repo, relativePath) {
-          $scope.contentWindowControl.bindRepoFileForEdit(repo, relativePath);
+          $scope.contentWindowControl.bindFile(repo, relativePath, null, false);
           $scope.contentWindowControl.billet = billet;
           $scope.autoFormat = function() {
             $scope.contentWindowControl.formatCode();
@@ -72,8 +72,8 @@ forgeApp.controller('forgeController', [
         'historyExplorer.snapshotSelected', function(event, repo, relativePath,
                                                      changeList) {
           if ($scope.activeSidebarTab === 'history') {
-            $scope.contentWindowControl.bindRepoFileForView(repo, relativePath,
-                                                            changeList);
+            $scope.contentWindowControl.bindFile(
+                repo, relativePath, changeList.change_list_uuid, true);
           }
         });
 

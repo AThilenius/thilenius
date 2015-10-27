@@ -109,14 +109,13 @@ SentinelService.prototype.firejqXhrErrorFactory = function() {
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
       that.$rootScope.$broadcast('sentinel.error',
-                                 'Status 0 | cannot connect to Sentinel');
+                                 'Cannot connect to Sentinel');
     } else if (error && error.user_message && error.user_message.length > 0) {
       that.$rootScope.$broadcast('sentinel.error',
-                                 'Status ' + stat + ' | ' + error.user_message);
+                                 error.user_message);
     } else {
       that.$rootScope.$broadcast(
-          'sentinel.error',
-          'Status ' + stat + ' | Something isnt right here...');
+          'sentinel.error', 'Something isnt right here...');
     }
   };
 };

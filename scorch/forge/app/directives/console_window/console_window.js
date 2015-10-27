@@ -39,7 +39,6 @@ angular.module('thilenius.console_window', [])
               scope.writeLine('Streaming Fiber Cord: <a href="' +
                               cordStream.fiberUrl + '" target="_blank">' +
                               cordStream.fiberUrl + '</a>');
-              scope.writeLine(' ');
               cordStream.onGrain(
                   function(grains) {
                     for (var i = 0; i < grains.length; i++) {

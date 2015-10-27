@@ -87,7 +87,7 @@ int Clone(const std::string root_path, const std::vector<std::string>& args) {
                           FLAGS_crucible_route, FLAGS_sentinel_ip,
                           FLAGS_sentinel_port, FLAGS_sentinel_route);
   CrucibleRepo crucible_repo =
-      crucible_client.CloneRepoInDirectory(root_path, args[0], nullptr).GetOrDie();
+      crucible_client.CloneRepoInDirectory(root_path, args[0]).GetOrDie();
   LOG(INFO) << "Cloned repo: " << args[0];
   return 0;
 }

@@ -56,23 +56,21 @@ BilletService.prototype.runCMakeRepo = function(repoHeaderProto) {
   // Wow, that's fuck ugly
   var echo_repo_command = 'echo \"Synced to Crucible CL: <a href=\'' + url +
                           '\' target=\'_blank\'>' + url + '</a>\"';
-  var command = echo_repo_command +
+  var command =
+      echo_repo_command +
       '&& mkdir --parents build && cd build && cmake .. && make && ./runnable';
-  if (!this.token) {
-    this.$rootScope.$broadcast('billet.error', "No active token");
-    return;
-  }
-  var that = this;
-  this.client.SyncAndExec(this.token, repoHeaderProto, command, null)
-      .fail(function(jqXhr, stat, err) {
-        console.log("Billet error: " + JSON.stringify(err));
-      })
-      .done(function(result) {
-        console.log("Billet result: " + JSON.stringify(result));
-        var cordStream = that.fiber.fromCord(result);
-        that.currentCord = cordStream;
-        that.$rootScope.$broadcast('billet.activeCord', cordStream);
-      });
+  this.syncAndExec(repoHeaderProto, command);
+};
+
+BilletService.prototype.runPythonFile = function(repoHeaderProto,
+                                                 relativePath) {
+  var url = window.location.origin + "#/crucible/" + repoHeaderProto.repo_uuid +
+            "/" + repoHeaderProto.latest_change_list_uuid;
+  // Wow, that's fuck ugly
+  var echo_repo_command = 'echo \"Synced to Crucible CL: <a href=\'' + url +
+                          '\' target=\'_blank\'>' + url + '</a>\"';
+  var command = echo_repo_command + '&& python ' + relativePath;
+  this.syncAndExec(repoHeaderProto, command);
 };
 
 BilletService.prototype.terminateSession = function() {
@@ -113,6 +111,24 @@ BilletService.prototype.clangFormat = function(source, callback, error) {
   this.client.ClangFormat(source, null)
       .fail(function(jqXhr, stat, err) { error(err); })
       .done(function(result) { callback(result); });
+};
+
+// private
+BilletService.prototype.syncAndExec = function(repoHeaderProto, command) {
+  if (!this.token) {
+    this.$rootScope.$broadcast('billet.error', "No active token");
+    return;
+  }
+  var that = this;
+  this.client.SyncAndExec(this.token, repoHeaderProto, command, null)
+      .fail(function(jqXhr, stat, err) {
+        console.log("Billet error: " + JSON.stringify(err));
+      })
+      .done(function(result) {
+        var cordStream = that.fiber.fromCord(result);
+        that.currentCord = cordStream;
+        that.$rootScope.$broadcast('billet.activeCord', cordStream);
+      });
 };
 
 // private

@@ -41,8 +41,7 @@ CrucibleService.prototype.enqueueCommit = function(
         .fail(that.firejqXhrErrorFactory())
         .done(function(result) {
           doneCallback(result);
-          console.log("CL commited: " + result.change_list_uuid + ". At: " +
-                      repoProtoHeader.latest_change_list_uuid +
+          console.log("CL committed: " + result.change_list_uuid +
                       ". Pipline at " + that.executionPipline.length +
                       " items.");
           that.$rootScope.$broadcast('crucibe.postCommit', result);
@@ -102,14 +101,12 @@ CrucibleService.prototype.firejqXhrErrorFactory = function() {
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
       that.$rootScope.$broadcast('crucible.error',
-                                 'Status 0 | cannot connect to Crucible');
+                                 'Cannot connect to Crucible');
     } else if (error && error.user_message && error.user_message.length > 0) {
-      that.$rootScope.$broadcast('crucible.error',
-                                 'Status ' + stat + ' | ' + error.user_message);
+      that.$rootScope.$broadcast('crucible.error', error.user_message);
     } else {
       that.$rootScope.$broadcast('crucible.error',
-                                 'Status ' + stat +
-                                     ' | Something isnt right here...');
+                                 'Something isnt right here...');
     }
   };
 };

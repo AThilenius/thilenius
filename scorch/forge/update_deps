@@ -70,6 +70,9 @@ cat << EOM >> index.html
 EOM
 echo "<script>var FORGE_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
 
+GlobCssToIndex libs_precomp
+GlobJsToIndex libs_precomp
+
 GlobCssToIndex libs
 GlobJsToIndex libs
 

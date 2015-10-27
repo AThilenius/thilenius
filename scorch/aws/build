@@ -116,6 +116,11 @@ else
       --js_output_file /root/thilenius/scorch/aws/forge-${TIMESTAMP}.js
   rm -rf /root/thilenius/scorch/aws/forge-tmp-comp.js
 
+  INFO "Adding Precompiled Libs to forge-plibs-${TIMESTAMP}.js file"
+  GlobJsToIndex /root/thilenius/scorch/aws/www/data/libs_precomp
+  mv /root/thilenius/scorch/aws/forge-tmp-comp.js \
+    /root/thilenius/scorch/aws/forge-plibs-${TIMESTAMP}.js
+
   INFO 'Removing non-minified assets'
   pushd /root/thilenius/scorch/aws/www/data
   find -name "*.js" -type f -delete
@@ -124,6 +129,8 @@ else
 
   INFO 'Moving compiled assets'
   mv /root/thilenius/scorch/aws/forge-${TIMESTAMP}.* \
+      /root/thilenius/scorch/aws/www/data
+  mv /root/thilenius/scorch/aws/forge-plibs-${TIMESTAMP}.* \
       /root/thilenius/scorch/aws/www/data
 
   INFO 'Building index.html'
@@ -144,8 +151,8 @@ cat << EOM >> index.html
 <script src="https://cdn.jsdelivr.net/ace/1.2.0/min/ext-language_tools.js"></script>
 EOM
   echo "<script>var FORGE_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
-
   echo "<link rel=\"stylesheet\" href=\"forge-${TIMESTAMP}.css\" />" >> index.html
+  echo "<script src=\"forge-plibs-${TIMESTAMP}.js\"></script>" >> index.html
   echo "<script src=\"forge-${TIMESTAMP}.js\"></script>" >> index.html
 
 cat << EOM >> index.html

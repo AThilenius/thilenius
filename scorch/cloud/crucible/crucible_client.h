@@ -36,8 +36,7 @@ class CrucibleClient {
   ValueOf<CrucibleRepo> CreateNewBaseRepoInDirectory(
       const std::string& path, const std::string& repo_name);
 
-  // Clones and existing repo (base or forked) into the given directory, using
-  // the given authored token
+  // Clones and existing repo (base or forked) into the given directory
   ValueOf<CrucibleRepo> CloneRepoInDirectory(
       const std::string& path, const std::string& repo_uuid);
 

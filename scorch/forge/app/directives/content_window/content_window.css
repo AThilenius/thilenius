@@ -45,3 +45,12 @@
   padding-top: 2px;
   padding-right: 10px;
 }
+
+/* Blockly Overrides */
+.blocklyFlyoutBackground {
+  background-color: rgba(32, 32, 32, 1);
+}
+
+.blocklySvg {
+  background-color: transparent;
+}
