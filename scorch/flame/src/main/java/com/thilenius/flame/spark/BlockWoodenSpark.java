@@ -27,6 +27,7 @@ public class BlockWoodenSpark extends BlockContainer {
         setHardness(20.0f);
         setResistance(10000000000.0f);
         setHarvestLevel("pickaxe", 0);
+        setBlockTextureName("flame:WoodenSpark");
     }
 
     @Override

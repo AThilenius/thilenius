@@ -46,7 +46,7 @@ forgeApp.controller('fiberController', [
     // Copied from console_window.js
     // private
     $scope.escapeCodes = {
-      "[0m": "<span class='fiber-text' style='color: white;'>",
+      "[0m": "<span class='fiber-text' style='color: black;'>",
       "[31m": "<span class='fiber-text' style='color: #AF0000;'>",
       "[32m": "<span class='fiber-text' style='color: #009800;'>",
       "[33m": "<span class='fiber-text' style='color: #FFC000;'>",

@@ -5,12 +5,15 @@ set -e
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
 
-if docker --version 2>/dev/null; then
+if [ "${USER}" = "Alec"  ]; then
   # On host machine
-  INFO 'Building Docker container'
+  INFO 'Building scorchforge'
   docker build -t athilenius/scorch_forge:prod .
-  INFO 'Pushing container'
+  INFO 'Done'
+  INFO 'Pushing scorchforge'
   docker push athilenius/scorch_forge:prod
+  INFO 'Pushing bilet_client'
+  docker push athilenius/billet_client:prod
   INFO 'Done!'
 else
   # In Docker container
@@ -47,6 +50,14 @@ else
   mkdir -p /root/thilenius/scorch/aws/packages/fiber_package/
   cp -r /root/thilenius_bin/cloud/fiber/server/server_package/* \
       /root/thilenius/scorch/aws/packages/fiber_package/
+
+  INFO 'Packaging Blaze'
+  pushd /root/thilenius/scorch/cloud/blaze
+  build --clean --release --package
+  popd
+  mkdir -p /root/thilenius/scorch/aws/packages/blaze_package/
+  cp -r /root/thilenius_bin/scorch/cloud/blaze/blaze_package/* \
+      /root/thilenius/scorch/aws/packages/blaze_package/
 
   TIMESTAMP=$(date +%y%m%d.%H.%M%S)
 
@@ -161,6 +172,4 @@ cat << EOM >> index.html
 </body></html>
 EOM
   popd
-
-  INFO 'Done'
 fi

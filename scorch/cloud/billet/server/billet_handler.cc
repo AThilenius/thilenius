@@ -29,8 +29,6 @@ DEFINE_string(crucible_ip, "localhost",
               "The ip enpoint of the Crucible server");
 DEFINE_int32(crucible_port, 2200, "The port for the Crucible server");
 DEFINE_string(crucible_route, "/", "The route of the Crucible server");
-DEFINE_string(session_files_root_path, "/billet",
-              "The path of the root folder for local Billet sessions");
 
 using ::thilenius::base::Directory;
 using ::thilenius::base::File;
@@ -158,13 +156,15 @@ void BilletHandler::SyncAndExec(
     // Release the lock again, bceause syncing a CL can take a while
   }
   std::string repo_path = Path::Combine(
-      Path::Combine(FLAGS_session_files_root_path, token.user_uuid),
-      repo_header.repo_uuid);
+      Path::Combine("/billet", token.user_uuid), repo_header.repo_uuid);
   ValueOf<void> repo_sync_value = BringRepoToCL(repo_path, repo_header);
   if (!repo_sync_value.IsValid()) {
     ThrowOpFailure(StrCat("Failed to sync repo ", repo_header.repo_uuid, ": ",
                           repo_sync_value.GetError()));
   }
+  // Save the token to file incase it's needed by the executable
+  SentinelClient sentinel_client;
+  sentinel_client.SaveProjectToken(token, repo_path);
   {
     std::unique_lock<std::mutex> lock(mutex_);
     auto iter = sessions_.find(token.user_uuid);
@@ -189,7 +189,7 @@ void BilletHandler::TerminateSession(const ::sentinel::proto::Token& token) {
   std::unique_lock<std::mutex> lock(mutex_);
   auto iter = sessions_.find(token.user_uuid);
   if (iter != sessions_.end()) {
-    iter->second->TerminateSession();
+    iter->second->TerminateSession(token);
   }
 }
 

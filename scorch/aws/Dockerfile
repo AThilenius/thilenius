@@ -4,7 +4,7 @@
 FROM ubuntu:14.04
 
 #===  UPDATE apt-get  ==========================================================
-RUN apt-get update -q
+RUN apt-get update -y
 
 #===  CLANG  ===================================================================
 RUN apt-get install -y libc++-dev libc++abi-dev clang-3.6 lldb-3.6

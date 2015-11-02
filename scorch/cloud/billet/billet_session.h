@@ -10,14 +10,14 @@
 #include <vector>
 
 #include "base/mutex.h"
-#include "base/process.h"
+#include "base/async_process.h"
 #include "base/value_of.hh"
 #include "cloud/sentinel/sentinel_types.h"
 #include "scorch/cloud/billet/billet_types.h"
 #include "scorch/cloud/crucible/crucible_types.h"
 #include "utils/differencer/differencer.h"
 
-using ::thilenius::base::ProcessPtr;
+using ::thilenius::base::AsyncProcessPtr;
 using ::thilenius::base::ValueOf;
 using ::thilenius::utils::differencer::Differencer;
 
@@ -42,7 +42,7 @@ class BilletSession {
       const sentinel::proto::Token& token, const std::string& mount_point,
       const std::string& shell_command);
 
-  void TerminateSession();
+  void TerminateSession(const sentinel::proto::Token& token);
 
   ::billet::proto::SessionStatus GetSessionStatus();
 
@@ -55,7 +55,8 @@ class BilletSession {
 
   std::mutex mutex_;
   std::condition_variable cond_var_ GUARDED_BY(mutex_);
-  ProcessPtr process_ GUARDED_BY(mutex_);
+  AsyncProcessPtr process_ GUARDED_BY(mutex_);
+  AsyncProcessPtr terminate_process_ GUARDED_BY(mutex_);
   // A copy of the last or active Fiber Cord
   ::fiber::proto::Cord cord_ GUARDED_BY(mutex_);
   std::string fiber_ip_;

@@ -5,7 +5,10 @@
 
 #include <gflags/gflags.h>
 
+#include "base/http.h"
+#include "base/json.h"
 #include "base/log.h"
+#include "base/string.h"
 #include "base/value_of.hh"
 #include "cloud/sentinel/sentinel_client.h"
 #include "cloud/utils/thrift_standard_client.hh"
@@ -18,9 +21,9 @@ DEFINE_string(sentinel_route, "/", "The Sentinel instance route.");
 DEFINE_string(flame_ip, "192.168.59.3", "The Flame instance ip address.");
 DEFINE_int32(flame_port, 2500, "The Flame instance port number.");
 
+using ::thilenius::base::Http;
 using ::thilenius::base::ValueOf;
 using ::thilenius::cloud::sentinel::SentinelClient;
-using ::thilenius::cloud::utils::ThriftStandardClient;
 
 namespace thilenius {
 namespace scorch {
@@ -42,27 +45,48 @@ void BlazeHandler::ProcessBlazeRequest(
   }
   ::blaze::proto::MinecraftAccount minecraft_account =
       mc_account_value.GetOrDie();
-  // Connect to Blaze Command Processor (aka Flame)
-  ThriftStandardClient<::blaze::proto::BlazeCommandProcessorClient> http_client(
-      FLAGS_flame_ip, FLAGS_flame_port);
-  auto connection = http_client.Connect();
-  if (!connection.IsValid()) {
-    LOG(ERROR) << "Failed to connect to Flame: " << connection.GetError();
-    ThrowOpFailure("Internal server failure");
+  // Args: world_id, command, message
+  if (command_name != "action_target_invoke") {
+    ThrowOpFailure("Invalid command type");
   }
-  auto flame_connection = connection.GetOrDie();
-  // Override the user uuid and minecraft username
-  ::blaze::proto::BlazeRequestWrapper request;
-  request.user_uuid = token.user_uuid;
-  request.minecraft_username = minecraft_account.minecraft_username;
-  request.command_name = command_name;
-  request.args_json = args_json;
-  ::blaze::proto::BlazeResponseWrapper response;
-  flame_connection->Process(response, request);
-  if (response.is_exception) {
-    ThrowOpFailure(response.json);
+  if (args_json.size() < 3) {
+    ThrowOpFailure("Expected 3 args in args_json");
   }
-  _return = std::move(response.json);
+  int world = -1;
+  std::string command;
+  ::nlohmann::json message;
+  try {
+    world = std::stoi(args_json[0]);
+    command = args_json[1];
+    message = ::nlohmann::json::parse(args_json[2]);
+  } catch (...) {
+    ThrowOpFailure("Malformed JSON");
+  }
+  ::nlohmann::json json = {
+      {"user_uuid", token.user_uuid},
+      {"minecraft_username", minecraft_account.minecraft_username},
+      {"dimension", world},
+      {"target", command},
+      {"json", message}};
+  ValueOf<std::string> flame_response_value = Http::PostContent(
+      StrCat(FLAGS_flame_ip, ":", std::to_string(FLAGS_flame_port)),
+      json.dump());
+  if (!flame_response_value.IsValid()) {
+    LOG(ERROR) << "Failed to execute Flame command: "
+               << flame_response_value.GetError();
+    ThrowOpFailure("Internal server error");
+  }
+  try {
+    ::nlohmann::json response =
+        ::nlohmann::json::parse(flame_response_value.GetOrDie());
+    if (response["is_exception"].get<bool>()) {
+      ThrowOpFailure(response["user_message"].get<std::string>());
+    }
+    _return = response["json"].dump();
+  } catch (...) {
+    LOG(ERROR) << "Failed to Flame response JSON!";
+    ThrowOpFailure("Internal server error");
+  }
 }
 
 void BlazeHandler::SetMinecraftAccount(

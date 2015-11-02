@@ -102,6 +102,7 @@ include_directories("/root/thilenius")
 add_library (
   base STATIC
   /root/thilenius/base/arguments.cc
+  /root/thilenius/base/async_process.cc
   /root/thilenius/base/auto_update.cc
   /root/thilenius/base/crypto.cc
   /root/thilenius/base/dependency.cc

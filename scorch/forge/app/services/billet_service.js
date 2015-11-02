@@ -69,7 +69,7 @@ BilletService.prototype.runPythonFile = function(repoHeaderProto,
   // Wow, that's fuck ugly
   var echo_repo_command = 'echo \"Synced to Crucible CL: <a href=\'' + url +
                           '\' target=\'_blank\'>' + url + '</a>\"';
-  var command = echo_repo_command + '&& python ' + relativePath;
+  var command = echo_repo_command + '&& python -u ' + relativePath;
   this.syncAndExec(repoHeaderProto, command);
 };
 
@@ -121,9 +121,7 @@ BilletService.prototype.syncAndExec = function(repoHeaderProto, command) {
   }
   var that = this;
   this.client.SyncAndExec(this.token, repoHeaderProto, command, null)
-      .fail(function(jqXhr, stat, err) {
-        console.log("Billet error: " + JSON.stringify(err));
-      })
+      .fail(that.firejqXhrErrorFactory())
       .done(function(result) {
         var cordStream = that.fiber.fromCord(result);
         that.currentCord = cordStream;
@@ -137,13 +135,13 @@ BilletService.prototype.firejqXhrErrorFactory = function() {
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
       that.$rootScope.$broadcast('billet.error',
-                                 'Status 0 | cannot connect to billet');
+                                 'Cannot connect to billet');
     } else if (error && error.user_message && error.user_message.length > 0) {
       that.$rootScope.$broadcast('billet.error',
-                                 'Status ' + stat + ' | ' + error.user_message);
+                                 error.user_message);
     } else {
       that.$rootScope.$broadcast(
-          'billet.error', 'Status ' + stat + ' | Something isnt right here...');
+          'billet.error', 'Billet: Something isnt right here...');
     }
   };
 };

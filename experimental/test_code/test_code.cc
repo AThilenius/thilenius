@@ -7,33 +7,18 @@
 #include <thread>
 #include <stdio.h>
 
-#include "base/file.h"
+#include "base/http.h"
+#include "base/json.h"
 #include "base/log.h"
-#include "base/path.h"
-#include "base/process.h"
 #include "base/string.h"
 
-using ::thilenius::base::File;
-using ::thilenius::base::Path;
-using ::thilenius::base::Process;
-using ::thilenius::base::ProcessPtr;
+using ::thilenius::base::Http;
 using ::thilenius::base::String;
 
 int main(int argc, char** argv) {
-  std::string bash_command = "while true; do echo \"hello\"; sleep 1; done;";
-  ProcessPtr process = Process::FromExecv("/bin/bash", {"-c", bash_command});
-  process->Execute(false, 10000);
-
-  int last_index = 0;
-  while (true) {
-    auto output = process->ReadOutputAfterIndex(last_index).GetOrDie();
-    std::cout << "Got:";
-    for (const auto& item : output) {
-      std::cout << (item.is_err_stream ? "Error: " : "") << item.content;
-    }
-    last_index += output.size();
-  }
-
-  std::cin.ignore();
+  std::string json = "{\"user_uuid\":\"doesntmatter\",\"minecraft_username\":\"alth3531\",\"dimension\":0,\"target\": \"move\",\"json\":{\"direction\":\"Forward\"}}";
+  LOG(INFO) << Http::PostContent("192.168.59.3:2500", json).GetOrDie();
+  //LOG(INFO) << Http::PostContent("http://posttestserver.com/post.php",
+                                 //"{ \"Hello\":\"World\" }").GetOrDie();
   return 0;
 }

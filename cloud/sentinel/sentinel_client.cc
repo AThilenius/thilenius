@@ -141,7 +141,6 @@ bool SentinelClient::SaveProjectToken(const ::sentinel::proto::Token& token,
   std::string sentinel_key_json_path =
       Path::Combine(sentinel_dir_path, FLAGS_sentinel_key_file_name);
   Directory::Create(sentinel_dir_path);
-  LOG(INFO) << "Creting keyfile at " << sentinel_key_json_path;
   return File::WriteToFile(sentinel_key_json_path,
                            sentinel_mapper_.token_mapper.to_json(token));
 }

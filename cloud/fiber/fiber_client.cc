@@ -58,6 +58,7 @@ ValueOf<::fiber::proto::Cord> FiberClient::GetCord(
 ValueOf<void> FiberClient::WriteCord(
     const ::fiber::proto::Cord& cord,
     const std::vector<::fiber::proto::Grain>& grains) {
+  std::unique_lock<std::mutex> lock(mutex_);
   auto client = http_client_ptr_->ConnectOrDie();
   try {
     client->WriteCord(cord, grains);
@@ -70,6 +71,7 @@ ValueOf<void> FiberClient::WriteCord(
 }
 
 ValueOf<void> FiberClient::CloseCord(const ::fiber::proto::Cord& cord) {
+  std::unique_lock<std::mutex> lock(mutex_);
   auto client = http_client_ptr_->ConnectOrDie();
   try {
     client->CloseCord(cord);

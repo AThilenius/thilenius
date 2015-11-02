@@ -3,6 +3,7 @@
 //==============================================================================
 namespace cpp crucible.proto
 namespace java com.thilenius.crucible.proto
+namespace py crucible.proto
 
 include "cloud/sentinel/sentinel.thrift"
 include "utils/differencer/differencer.thrift"

@@ -63,7 +63,8 @@ public class GuiHandler implements IGuiHandler {
             TileEntityTeleportPad tileEntityTeleportPad = tileEntityWoodenSpark.getTeleportPad();
             return new GuiWoodenSpark(player.inventory, tileEntityTeleportPad);
         } else if (tileEntity instanceof TileEntityTeleportPad) {
-            return new GuiTeleportPad((TileEntityTeleportPad)tileEntity);
+            TileEntityTeleportPad tileEntityTeleportPad = (TileEntityTeleportPad) tileEntity;
+            return new GuiWoodenSpark(player.inventory, tileEntityTeleportPad);
         }
         return null;
 

@@ -28,3 +28,12 @@ RUN apt-get install -y wget
 
 #===  UNZIP  ===================================================================
 RUN apt-get install -y unzip
+
+#===  THRIFT PYTHON  ===========================================================
+RUN wget https://pypi.python.org/packages/source/t/thrift/thrift-0.9.2.tar.gz
+RUN tar -xvf thrift-0.9.2.tar.gz
+RUN cd thrift-0.9.2 && python setup.py install
+ADD packages/ /etc/scorch/packages/
+RUN cp -r /etc/scorch/packages/anvil/python/* /usr/local/lib/python2.7/dist-packages
+
+CMD /bin/bash billet_run.sh

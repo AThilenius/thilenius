@@ -17,6 +17,9 @@ public class TileEntityWoodenSpark extends TileEntity {
     private boolean m_isSuppressingDrop = false;
 
     public TileEntityTeleportPad getTeleportPad() {
+        if (m_teleportPadLocation == null) {
+            return null;
+        }
         TileEntity tileEntity = worldObj.getTileEntity(m_teleportPadLocation.X, m_teleportPadLocation.Y,
                 m_teleportPadLocation.Z);
         if (tileEntity != null && tileEntity instanceof TileEntityTeleportPad) {
@@ -24,10 +27,6 @@ public class TileEntityWoodenSpark extends TileEntity {
         } else {
             return null;
         }
-    }
-
-    static {
-        addMapping(TileEntityTeleportPad.class, "woodenTeleportPad");
     }
 
     public void setTeleportPadLocation(Location3D teleportPadLocation) {

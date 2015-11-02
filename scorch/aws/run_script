@@ -21,13 +21,17 @@ export LD_LIBRARY_PATH="/etc/scorch/packages/crucible_package";
 
 echo 'Starting Billet'
 export LD_LIBRARY_PATH="/etc/scorch/packages/billet_package";
-(while true; do /etc/scorch/packages/billet_package/server > billet.log 2>&1; sleep 1; done)  &
+(while true; do /etc/scorch/packages/billet_package/server --host_billet_mount_point /home/ubuntu/billet > billet.log 2>&1; sleep 1; done)  &
 
 echo 'Starting Fiber'
 export LD_LIBRARY_PATH="/etc/scorch/packages/fiber_package";
 (while true; do /etc/scorch/packages/fiber_package/server > fiber.log 2>&1; sleep 1; done)  &
 
+echo 'Starting Blaze'
+export LD_LIBRARY_PATH="/etc/scorch/packages/blaze_package";
+(while true; do /etc/scorch/packages/blaze_package/blaze --flame_ip $(/sbin/ip route|awk '/default/ { print $3  }') > blaze.log 2>&1; sleep 1; done)  &
+
 echo 'Sleeping. Forever... Sheee, go to sleep.'
 while true; do
-  sleep 10000000
+  sleep 1000000000
 done

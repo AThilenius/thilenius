@@ -159,11 +159,19 @@ bool Process::Execute(bool blocking, int timeout_ms) {
     } else {
       // Source from cout
       blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
-        return ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+        if (this) {
+          return ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+        } else {
+          return {OStreamToken(), "Process was destroyed"};
+        }
       });
       // Source from cerr
       blocking_ostream_.SourceFrom([this]() -> ValueOf<OStreamToken> {
-        return ReadLineFrom(&cerr_read_ahead_buffer_, pipes_[CERR][READ]);
+        if (this) {
+          return ReadLineFrom(&cout_read_ahead_buffer_, pipes_[COUT][READ]);
+        } else {
+          return {OStreamToken(), "Process was destroyed"};
+        }
       });
       blocking_ostream_.EndFrom(
           [this, timeout_ms]() { exit_code = Wait(timeout_ms); });

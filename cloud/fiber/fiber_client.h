@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/mutex.h"
 #include "base/value_of.hh"
 #include "cloud/fiber/Fiber.h"
 #include "cloud/fiber/fiber_constants.h"
@@ -21,6 +22,9 @@ using ::thilenius::cloud::utils::ThriftHttpClient;
 namespace thilenius {
 namespace cloud {
 namespace fiber {
+
+class FiberClient;
+typedef std::shared_ptr<FiberClient> FiberClientPtr;
 
 class FiberClient {
  public:
@@ -46,6 +50,7 @@ class FiberClient {
   typedef std::shared_ptr<ThriftHttpClient<::fiber::proto::FiberClient>>
       ProtoFiberClientPtr;
 
+  std::mutex mutex_;
   FiberMapper fiber_mapper_;
   ProtoFiberClientPtr http_client_ptr_;
   bool connected_;

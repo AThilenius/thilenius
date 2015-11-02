@@ -25,7 +25,7 @@ public class RendererTeleportPad extends TileEntitySpecialRenderer {
             = AdvancedModelLoader.loadModel(new ResourceLocation("flame:models/SparkRotor.obj"));
     private ResourceLocation m_magicaColorsTexture
             = new ResourceLocation("flame:textures/blocks/MagicaVoxelColors.png");
-    private AnimationCycle m_sparkAnimationCycle = new AnimationCycle(8.0f, 0.2f);
+    private AnimationCycle m_sparkAnimationCycle = new AnimationCycle(8.0f, 0.15f);
     private AnimationCycle m_rotorAnimationCycle = new AnimationCycle(15.0f, 360.0f);
 
     // Can render both a TeleportPadTileEntity and a WoodenSparkTileEntity
@@ -73,14 +73,14 @@ public class RendererTeleportPad extends TileEntitySpecialRenderer {
         float rotation = 0.0f;
         switch (faceDirection) {
             case North: rotation = 0.0f; break;
-            case East: rotation = 90.0f; break;
+            case West: rotation = 90.0f; break;
             case South: rotation = 180.0f; break;
-            case West: rotation = 270.0f; break;
+            case East: rotation = 270.0f; break;
         }
         if (fractionTime > 0.0f) {
             switch (animationType) {
-                case TurnLeft: rotation += MathUtils.lerp(0.0f, 90.0f, fractionTime); break;
-                case TurnRight: rotation += MathUtils.lerp(0.0f, -90.0f, fractionTime); break;
+                case TurnLeft: rotation += MathUtils.lerp(0.0f, -90.0f, fractionTime); break;
+                case TurnRight: rotation += MathUtils.lerp(0.0f, 90.0f, fractionTime); break;
             }
         }
         // Compute Offset

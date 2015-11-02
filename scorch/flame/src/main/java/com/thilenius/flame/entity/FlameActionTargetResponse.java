@@ -1,16 +1,25 @@
 package com.thilenius.flame.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.thilenius.blaze.proto.OperationFailure;
 import com.thilenius.flame.Flame;
 
 import java.io.IOException;
 
 // An instance of a FlameActionTargetResponse is returned by all FlameActionTargets
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public class FlameActionTargetResponse {
+
+    @JsonProperty("is_exception")
+    public boolean IsException;
+
+    @JsonProperty("json")
+    public JsonNode Json;
+
     public boolean IsOnCoolDown = false;
-    public OperationFailure OperationFailure;
-    public JsonNode ReturnJson;
 
     public static FlameActionTargetResponse fromOnCoolDown() {
         FlameActionTargetResponse flameActionTargetResponse = new FlameActionTargetResponse();
@@ -20,13 +29,19 @@ public class FlameActionTargetResponse {
 
     public static FlameActionTargetResponse fromOperationFailure(String message) {
         FlameActionTargetResponse flameActionTargetResponse = new FlameActionTargetResponse();
-        flameActionTargetResponse.OperationFailure = new OperationFailure(message);
+        flameActionTargetResponse.IsException = true;
+        try {
+            flameActionTargetResponse.Json =
+                    Flame.Globals.JsonObjectMapper.readTree("{\"user_message\":\"" + message + "\"}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return flameActionTargetResponse;
     }
 
     public static FlameActionTargetResponse fromJson(JsonNode json) {
         FlameActionTargetResponse flameActionTargetResponse = new FlameActionTargetResponse();
-        flameActionTargetResponse.ReturnJson = json;
+        flameActionTargetResponse.Json = json;
         return flameActionTargetResponse;
     }
 
@@ -39,7 +54,7 @@ public class FlameActionTargetResponse {
             return null;
         }
         FlameActionTargetResponse flameActionTargetResponse = new FlameActionTargetResponse();
-        flameActionTargetResponse.ReturnJson = jsonNode;
+        flameActionTargetResponse.Json = jsonNode;
         return flameActionTargetResponse;
     }
 

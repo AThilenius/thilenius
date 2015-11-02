@@ -14,6 +14,7 @@ public class FlameTileEntity extends TileEntity {
     private String m_playerUsername;
     private String m_entityUuid = UUID.randomUUID().toString();
     private HashMap<String, FlameActionTarget> m_actionTargetsByName = new HashMap<String, FlameActionTarget>();
+    private boolean m_InitCalled = false;
 
     @Override
     public void writeToNBT(NBTTagCompound nbt)
@@ -33,6 +34,15 @@ public class FlameTileEntity extends TileEntity {
         super.readFromNBT(nbt);
         m_playerUsername = nbt.getString("player_username");
         m_entityUuid = nbt.getString("entity_uuid");
+    }
+
+    @Override
+    public void updateEntity() {
+        if (!worldObj.isRemote &&!m_InitCalled && m_playerUsername != null) {
+            m_InitCalled = true;
+            initialize();
+            registerActionPaths();
+        }
     }
 
     public void registerActionPaths() {
@@ -74,4 +84,6 @@ public class FlameTileEntity extends TileEntity {
     public String getUuid() {
         return m_entityUuid;
     }
+
+    protected void initialize() { }
 }

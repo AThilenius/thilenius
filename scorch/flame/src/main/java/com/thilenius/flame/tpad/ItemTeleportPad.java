@@ -45,7 +45,6 @@ public class ItemTeleportPad extends Item {
             if (!world.isRemote) {
                 TileEntityTeleportPad tileEntityTeleportPad = (TileEntityTeleportPad) world.getTileEntity(x, y, z);
                 tileEntityTeleportPad.setPlayerName(entityPlayer.getGameProfile().getName());
-                tileEntityTeleportPad.registerActionPaths();
             }
             return true;
         }

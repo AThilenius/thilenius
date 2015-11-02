@@ -25,7 +25,7 @@ add_custom_command(
     -out /root/thilenius_gen/scorch/cloud/blaze
     /root/thilenius/scorch/cloud/blaze/blaze.thrift
   DEPENDS
-    libthrift
+    thrift
     /root/thilenius/scorch/cloud/blaze/blaze.thrift
 )
 

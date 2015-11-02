@@ -111,7 +111,7 @@ ValueOf<::sentinel::proto::Token> BlazeClient::LoadOrCreateToken() {
     return std::move(token);
   }
   ValueOf<::sentinel::proto::Token> token_value =
-      sentinel_client_.LoadProjectTokenOrLoginFromCin(project_path_);
+      sentinel_client_.LoadProjectToken(project_path_);
   if (!token_value.IsValid()) {
     return token_value;
   }

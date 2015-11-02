@@ -19,8 +19,10 @@ if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
 else
   if [ ${FLAGS_new} -eq ${FLAGS_TRUE} ]; then
     WARN "Creating a new dev container."
-    docker run --privileged -it -v $HOME/thilenius:/root/thilenius \
-      -v /data/mongo:/data/mongo -p 80:80 athilenius/dev_env
+    docker run --privileged -it -v /var/run/docker.sock:/run/docker.sock \
+      -v $(which docker):/bin/docker -v $HOME/thilenius:/root/thilenius \
+      -v $HOME/billet:/billet -v /data/mongo:/data/mongo -p 80:80 \
+      athilenius/dev_env
   else
     # Esiting container
     RUNNING_ID=$(docker ps | grep 'athilenius/dev_env' | awk '{print $1}')
@@ -36,7 +38,10 @@ else
       else
         WARN "Creating a new dev container."
         docker run --privileged -it -v $HOME/thilenius:/root/thilenius \
-          -v /data/mongo:/data/mongo -p 80:80 athilenius/dev_env
+          -v /var/run/docker.sock:/run/docker.sock \
+          -v $(which docker):/bin/docker \
+          -v $HOME/billet:/billet -v /data/mongo:/data/mongo -p 80:80 \
+          athilenius/dev_env
       fi
     fi
   fi

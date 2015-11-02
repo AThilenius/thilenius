@@ -58,7 +58,9 @@ ValueOf<::fiber::proto::Cord> DockerRunHarness::HarnessRunAndDetatch(
   //   --attach=STDOUT
   //   --attach=STDERR
   //   --name=USER_GUID
-  //   athilenius/docker_client:prod
+  //   --workdir="repo_path"
+  //   --volume /billet/<USERID>:/billet/<USERID>
+  //   athilenius/billet_client:prod
   //   /bin/bash -c 'while true; do echo hello; sleep 5; done'
   std::vector<std::string> full_args = {
       "run", "--detach", "--rm", "--tty", "--attach=STDOUT", "--attach=STDERR",

@@ -43,6 +43,7 @@ angular.module('thilenius.blockly_editor', [])
             // DO NOT COMMIT
             window.blockly = scope.workspace;
 
+
             // ===  Interface Implementation  ==================================
             scope.internalControl.canEdit = function(filename) {
               return filename.toLowerCase().endsWith('.pyb');
@@ -82,10 +83,14 @@ angular.module('thilenius.blockly_editor', [])
               }
               scope.workspace.clear();
               scope.workspace.setVisible(true);
-              var xml = scope.getXmlFromCode(code);
-              if (xml) {
-                var xmlDom = Blockly.Xml.textToDom(xml);
-                Blockly.Xml.domToWorkspace(scope.workspace, xmlDom);
+              try {
+                var xml = scope.getXmlFromCode(code);
+                if (xml) {
+                  var xmlDom = Blockly.Xml.textToDom(xml);
+                  Blockly.Xml.domToWorkspace(scope.workspace, xmlDom);
+                }
+              } catch (e) {
+                console.log("Failed to load Blockly file!");
               }
               scope.readOnly = readOnly;
               if (!readOnly) {

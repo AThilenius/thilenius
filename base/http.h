@@ -16,6 +16,8 @@ class Http {
   static ValueOf<std::string> GetContent(const std::string& url);
   static std::string DownloadToFile(const std::string& url,
                                     const std::string& file_path);
+  static ValueOf<std::string> PostContent(const std::string& url,
+                                          const std::string& json);
 };
 
 }  // namespace base

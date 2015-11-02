@@ -12,10 +12,11 @@
 }
 
 .blocklyToolboxDiv {
-    background-color: #202020 !important;
-    color: white !important;
+  background-color: #202020 !important;
+  color: white !important;
+  border-right: 1px solid black;
 }
 
 .blocklyTreeLabel {
-    font-size: 12px !important;
+  font-size: 12px !important;
 }

@@ -18,6 +18,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
@@ -42,10 +43,6 @@ public class TileEntityTeleportPad extends FlameTileEntity implements IEnergyRec
     private Location3D m_sparkLocation = null;
     private ItemStack[] m_inventory = new ItemStack[9];
 
-    static {
-        addMapping(TileEntityTeleportPad.class, "teleportPad");
-    }
-
     // ======   Network / Disk IO Handling / TileEntity Overrides   ====================================================
     @Override
     public void writeToNBT(NBTTagCompound nbt)
@@ -54,6 +51,17 @@ public class TileEntityTeleportPad extends FlameTileEntity implements IEnergyRec
         nbt.setString("sparkFaceDir", m_sparkFaceDir.name());
         nbt.setString("sparkAnimation", m_sparkAnimation.name());
         nbt.setString("sparkLocation", getSparkLocation().toString());
+        NBTTagList itemList = new NBTTagList();
+        for (int i = 0; i < m_inventory.length; i++) {
+            ItemStack stack = m_inventory[i];
+            if (stack != null) {
+                NBTTagCompound tag = new NBTTagCompound();
+                tag.setByte("Slot", (byte) i);
+                stack.writeToNBT(tag);
+                itemList.appendTag(tag);
+            }
+        }
+        nbt.setTag("Inventory", itemList);
     }
 
     @Override
@@ -64,6 +72,14 @@ public class TileEntityTeleportPad extends FlameTileEntity implements IEnergyRec
         m_sparkAnimation = AnimationHelpers.AnimationTypes.valueOf(nbt.getString("sparkAnimation"));
         m_sparkLocation = Location3D.fromString(nbt.getString("sparkLocation"));
         m_animationTimer = new CountdownTimer(ANIMATION_TIME);
+        NBTTagList tagList = nbt.getTagList("Inventory", 10);
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound tag = tagList.getCompoundTagAt(i);
+            byte slot = tag.getByte("Slot");
+            if (slot >= 0 && slot < m_inventory.length) {
+                m_inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
+            }
+        }
     }
 
     @Override
