@@ -122,7 +122,8 @@ angular.module('thilenius.ace_editor', [])
               scope.relativePath = relativePath;
               // Set mode based on file ending
               var aceMode = scope.getValueFromFileEnding(scope.fileToAceMode,
-                                                         relativePath) || 'plain_text';
+                                                         relativePath) ||
+                            'plain_text';
               scope.editor.getSession().setMode('ace/mode/' + aceMode);
               if (syncToClId) {
                 scope.editor.setValue(
@@ -135,6 +136,7 @@ angular.module('thilenius.ace_editor', [])
               scope.editorVisible = true;
               scope.restoreFileSession();
               scope.editor.setReadOnly(readOnly);
+              scope.isReadOnly = readOnly;
               if (!readOnly) {
                 scope.changeHandler = function(e) {
                   if (!scope.lastStash) {
@@ -149,6 +151,13 @@ angular.module('thilenius.ace_editor', [])
                 scope.editor.on(
                     "change", function(e) { scope.changeHandler(e); });
               }
+            };
+
+            scope.internalControl.jumpTo = function(row, column) {
+              $timeout(function() {
+                scope.editor.scrollToLine(row, true, true, function() {});
+                scope.editor.gotoLine(row, column - 1, true);
+              });
             };
 
             scope.internalControl.unload = function() {
@@ -169,19 +178,50 @@ angular.module('thilenius.ace_editor', [])
             $rootScope.$on('billet.activeCord', function(event, cordStream) {
               scope.canRun = false;
               scope.$apply();
-              cordStream.addHandler('close', function() {
-                scope.canRun = true;
-                scope.$apply();
-              });
+              cordStream.onGrain(function(grain) {},
+                                 function() {
+                                   scope.canRun = true;
+                                   scope.$apply();
+                                 });
             });
 
             // Also check Billet directly for old/active cords
             if (billet.currentCord && billet.isOldCordRunning) {
               scope.canRun = false;
-              billet.currentCord.addHandler('close', function() {
-                scope.canRun = true;
-                scope.$apply();
-              });
+              cordStream.onGrain(function(grain) {},
+                                 function() {
+                                   scope.canRun = true;
+                                   scope.$apply();
+                                 });
+            }
+
+            // private
+            scope.parseBilletAlerts = function() {
+              if (scope.relativePath) {
+                var activeAnotations = [];
+                for (var i = 0; scope.alerts && i < scope.alerts.length; i++) {
+                  var alert = scope.alerts[i];
+                  if (alert.file === scope.relativePath) {
+                    // Need to decrement 1 from row and ACE 0 indexes rows
+                    var newAlert = jQuery.extend({}, alert);
+                    newAlert.row -= 1;
+                    activeAnotations.push(newAlert);
+                  }
+                }
+                scope.editor.session.setAnnotations(activeAnotations);
+              }
+            };
+
+            // Watch for billet alerts
+            $rootScope.$on('billet.alerts', function(event, alerts) {
+              scope.alerts = alerts;
+              scope.parseBilletAlerts();
+            });
+
+            // Also check Billet directly for old/active alerts
+            if (billet.currentAlerts) {
+              scope.alerts = billet.currentAlerts;
+              scope.parseBilletAlerts();
             }
 
             // private
@@ -285,6 +325,7 @@ angular.module('thilenius.ace_editor', [])
                 // Set defualts
                 scope.editor.getSession().setUndoManager(new ace.UndoManager());
               }
+              scope.parseBilletAlerts();
             };
 
             // TODO(athilenius): Remove this

@@ -1,32 +1,6 @@
 #!/bin/bash
 . $HOME/thilenius/core/shell/base
 
-# Install Deps
-INFO 'Installing needed apt-get packages'
-apt-get update -y
-apt-get install -y \
-  libdouble-conversion-dev \
-  libssl-dev \
-  make \
-  zip \
-  git \
-  autoconf \
-  libtool \
-  g++ \
-  libboost-all-dev \
-  flex \
-  bison \
-  libgoogle-glog-dev \
-  scons \
-  libkrb5-dev \
-  libsnappy-dev \
-  libsasl2-dev \
-  libnuma-dev \
-  libevent-dev \
-  nginx \
-  default-jdk \
-  git || EROR 'Failed to run apt-get'
-
 INFO 'Buidling Thrift in Release mode'
 pushd /root/thilenius/third_party/thrift
 build --release || EROR 'Failed to build Thrift'

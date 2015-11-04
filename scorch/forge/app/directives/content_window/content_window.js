@@ -72,6 +72,12 @@ angular.module('thilenius.content_window', [
                                           readOnly);
             };
 
+            scope.internalControl.jumpTo = function(row, column) {
+              if (scope.activeEditor && scope.activeEditor.jumpTo) {
+                scope.activeEditor.jumpTo(row, column);
+              }
+            };
+
             // private
             scope.bindEditorForFile = function(filename) {
               if (scope.blocklyEditorControl.canEdit(filename)) {

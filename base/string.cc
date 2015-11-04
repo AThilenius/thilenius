@@ -3,6 +3,8 @@
 
 #include "base/string.h"
 
+#include <algorithm>
+
 using ::thilenius::base::String;
 
 bool Empty(const std::string& str) { return String::Empty(str); }
@@ -64,6 +66,18 @@ std::string String::RemoveFromEnd(const std::string& from_string,
     return from_string;
   }
   return from_string.substr(0, from_string.length() - value.length());
+}
+
+std::string String::ToLower(const std::string& str) {
+  std::string data = str;
+  std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+  return std::move(data);
+}
+
+std::string String::ToUpper(const std::string& str) {
+  std::string data = str;
+  std::transform(data.begin(), data.end(), data.begin(), ::toupper);
+  return std::move(data);
 }
 
 } // namespace base

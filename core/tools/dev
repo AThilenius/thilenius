@@ -9,7 +9,9 @@ FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
 
 # Check that we aren't already in a container
-docker --version &> /dev/null || EROR 'You are already in a container'
+if [ "${USER}" != "Alec"  ]; then
+  EROR 'You are already in a container'
+fi
 
 if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
   INFO 'Removing untagged docker images'
@@ -21,7 +23,7 @@ else
     WARN "Creating a new dev container."
     docker run --privileged -it -v /var/run/docker.sock:/run/docker.sock \
       -v $(which docker):/bin/docker -v $HOME/thilenius:/root/thilenius \
-      -v $HOME/billet:/billet -v /data/mongo:/data/mongo -p 80:80 \
+      -v $HOME/billet:/billet -v $HOME/data:/data -p 80:80 \
       athilenius/dev_env
   else
     # Esiting container
@@ -40,7 +42,7 @@ else
         docker run --privileged -it -v $HOME/thilenius:/root/thilenius \
           -v /var/run/docker.sock:/run/docker.sock \
           -v $(which docker):/bin/docker \
-          -v $HOME/billet:/billet -v /data/mongo:/data/mongo -p 80:80 \
+          -v $HOME/billet:/billet -v $HOME/data:/data -p 80:80 \
           athilenius/dev_env
       fi
     fi

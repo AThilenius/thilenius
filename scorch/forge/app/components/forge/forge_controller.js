@@ -31,6 +31,7 @@ forgeApp.controller('forgeController', [
     $scope.historyExplorerControl = {};
     $scope.anvilWindowControl = {};
     $scope.settingsWindowControl = {};
+    $scope.alertWindowControl = {};
 
     $scope.displayError = null;
 
@@ -50,6 +51,14 @@ forgeApp.controller('forgeController', [
             $scope.fileExplorerControl.selected.relativePath, null, false);
       }
     };
+
+    // Watch for alerts and set alert-eplorer active if there are any
+    $rootScope.$on('billet.alerts', function(event, alerts) {
+      if (alerts.length > 0) {
+        $scope.$apply(function() { $scope.activeSidebarTab = 'alerts'; });
+      }
+    });
+
 
     $rootScope.$on('error', function(event, message) {
       $scope.$apply(function() { $scope.displayError = message; });
@@ -76,6 +85,18 @@ forgeApp.controller('forgeController', [
                 repo, relativePath, changeList.change_list_uuid, true);
           }
         });
+
+    $rootScope.$on('alertExplorer.jumpToAlert', function(event, alert) {
+      // Try to find the repo in crucible
+      for (var i = 0; crucible.repos && i < crucible.repos.length; i++) {
+        var repo = crucible.repos[i];
+        if (repo.repoProto.repo_header.repo_uuid === alert.repoUuid) {
+          // Found it
+          $scope.contentWindowControl.bindFile(repo, alert.file, null, false);
+          $scope.contentWindowControl.jumpTo(alert.row, alert.column);
+        }
+      }
+    });
 
     $rootScope.$on(
         'sentinel.logout', function(event) { crucible.unloadAllRepos(); });

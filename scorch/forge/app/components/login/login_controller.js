@@ -17,16 +17,20 @@ forgeApp.controller('loginController', [
           $scope.$apply(function() {
             $location.path($scope.sentinel.lastUrl);
             $scope.sentinel.lastUrl = null;
+            $scope.error = null;
           });
         } else {
           $scope.$apply(function() { $location.path('/'); });
+          $scope.error = null;
         }
       }
     });
 
     $rootScope.$on('sentinel.error', function(event, message) {
-      $scope.error = message;
-      $scope.password = '';
+      $scope.$apply(function() {
+        $scope.error = message;
+        $scope.password = '';
+      });
       console.log("Sentinel failure: " + message);
     });
 

@@ -99,6 +99,8 @@ class String {
                                          const std::string& value);
   static std::string RemoveFromEnd(const std::string& from_string,
                                    const std::string& value);
+  static std::string ToLower(const std::string& str);
+  static std::string ToUpper(const std::string& str);
 };
 
 } // namespace base

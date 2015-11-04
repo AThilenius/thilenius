@@ -7,6 +7,7 @@ var forgeApp = angular.module('forgeApp', [
   'thilenius.content_window',
   'thilenius.file_explorer',
   'thilenius.history_explorer',
+  'thilenius.alerts_explorer',
   'thilenius.settings_window',
   'thilenius.anvil_window',
   'thilenius.navbar'

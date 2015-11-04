@@ -1,27 +1,28 @@
 <div class="v-flex-wrapper">
   <div class="flex-header editor-header">
-    <div ng-click="run()" ng-show='activeType && canRun'
+    <div ng-click="run()" ng-show='activeType && canRun && !isReadOnly'
          class="btn dark-button">
       <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
       Run
     </div>
-    <div ng-click="stop()" ng-show='activeType && !canRun'
+    <div ng-click="stop()" ng-show='activeType && !canRun && !isReadOnly'
          class="btn dark-button">
       <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
       Stop
     </div>
-    <div ng-click="clean()" ng-disabled='!canRun' ng-show="activeType === 'cpp'"
-         class="btn dark-button">
+    <div ng-click="clean()" ng-disabled='!canRun'
+         ng-show="activeType === 'cpp' && !isReadOnly" class="btn dark-button">
       <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
       Clean Build Cache
     </div>
     <div ng-click="autoFormat()" ng-disabled='!canRun'
-         ng-show="activeType === 'cpp' && !isLockedFile"
+         ng-show="activeType === 'cpp' && !isLockedFile && !isReadOnly"
       class="btn dark-button">
       <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
       Auto Format
     </div>
-    <div ng-click="downloadRepoSnapshot()" class="btn dark-button">
+    <div ng-click="downloadRepoSnapshot()" ng-show="!isReadOnly"
+      class="btn dark-button">
       <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
       Download Project Snapshot
     </div>

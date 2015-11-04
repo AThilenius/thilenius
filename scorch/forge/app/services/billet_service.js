@@ -6,6 +6,7 @@ var forgeApp = angular.module('forgeApp');
 // Fires the events:
 // billet.oldCord        (::fiber::proto::Cord)
 // billet.activeCord     (::fiber::proto::Cord)
+// billet.alerts         ([ {...alert...} ])
 // billet.error          (String)
 // error                 (String)
 var BilletService = function($rootScope, fiber) {
@@ -16,6 +17,7 @@ var BilletService = function($rootScope, fiber) {
   this.client = new BilletClient(protocol);
   this.isOldCordRunning = false;
   this.currentCord = null;
+  this.currentAlerts = null;
 
   // DO NOT COMMIT
   document.billet = this;
@@ -42,6 +44,7 @@ BilletService.prototype.init = function(token) {
                       result.current_or_last_cord.uuid);
           var cordStream = that.fiber.fromCord(result.current_or_last_cord);
           that.currentCord = cordStream;
+          that.watchCordStreamForAlerts(cordStream);
           that.$rootScope.$broadcast(
               result.is_running ? 'billet.activeCord' : 'billet.oldCord',
               cordStream);
@@ -55,10 +58,12 @@ BilletService.prototype.runCMakeRepo = function(repoHeaderProto) {
             "/" + repoHeaderProto.latest_change_list_uuid;
   // Wow, that's fuck ugly
   var echo_repo_command = 'echo \"Synced to Crucible CL: <a href=\'' + url +
-                          '\' target=\'_blank\'>' + url + '</a>\"';
-  var command =
-      echo_repo_command +
-      '&& mkdir --parents build && cd build && cmake .. && make && ./runnable';
+                          '\' target=\'_blank\'>' + url + '</a>\";\n';
+  var echo_region_begin = 'echo \"#region: Compiler Output\";\n';
+  var echo_region_end = 'echo \"#regionend\"';
+  var command = echo_repo_command + echo_region_begin +
+                'mkdir --parents build && cd build && cmake .. && make && ' +
+                echo_region_end + ' && ./runnable;\n';
   this.syncAndExec(repoHeaderProto, command);
 };
 
@@ -66,10 +71,18 @@ BilletService.prototype.runPythonFile = function(repoHeaderProto,
                                                  relativePath) {
   var url = window.location.origin + "#/crucible/" + repoHeaderProto.repo_uuid +
             "/" + repoHeaderProto.latest_change_list_uuid;
-  // Wow, that's fuck ugly
-  var echo_repo_command = 'echo \"Synced to Crucible CL: <a href=\'' + url +
-                          '\' target=\'_blank\'>' + url + '</a>\"';
-  var command = echo_repo_command + '&& python -u ' + relativePath;
+  var echoRepoCommand = 'echo \"Synced to Crucible CL: <a href=\'' + url +
+                        '\' target=\'_blank\'>' + url + '</a>\";\n';
+  var echo_region_begin = 'echo \"#region: Compiler Output\";\n';
+  var echo_region_end = 'echo \"#regionend\";\n';
+  var lintCommand = 'pylint --msg-template="/billet/' +
+                    repoHeaderProto.user_uuid + '/' +
+                    repoHeaderProto.repo_uuid +
+                    '/{path}:{line}:{column}: {category}: {msg}" -r n ' +
+                    relativePath + ' || echo \"\";\n';
+  var pythonCommand = 'python -u ' + relativePath + ';\n';
+  var command = echoRepoCommand + echo_region_begin + lintCommand +
+                echo_region_end + pythonCommand;
   this.syncAndExec(repoHeaderProto, command);
 };
 
@@ -100,6 +113,7 @@ BilletService.prototype.clean = function(repoHeaderProto) {
         console.log("Billet result: " + JSON.stringify(result));
         var cordStream = that.fiber.fromCord(result);
         that.currentCord = cordStream;
+        that.watchCordStreamForAlerts(cordStream);
         that.$rootScope.$broadcast('billet.activeCord', cordStream);
       });
 };
@@ -125,8 +139,36 @@ BilletService.prototype.syncAndExec = function(repoHeaderProto, command) {
       .done(function(result) {
         var cordStream = that.fiber.fromCord(result);
         that.currentCord = cordStream;
+        that.watchCordStreamForAlerts(cordStream);
         that.$rootScope.$broadcast('billet.activeCord', cordStream);
       });
+};
+
+BilletService.prototype.watchCordStreamForAlerts = function(cordStream) {
+  this.$rootScope.$broadcast('billet.alerts', []);
+  this.currentAlerts = [];
+  var that = this;
+  cordStream.onGrain(
+      function(grains) {
+        var regex =
+            /^(.+\.(?:h|cc|py)):(\d+):(\d+):\s(error|warning|note):\s(.+)/;
+        for (var i = 0; i < grains.length; i++) {
+          var matches = regex.exec(grains[i].data);
+          if (matches) {
+            that.currentAlerts.push({
+              repoUuid: matches[1].split('/')[3],
+              file: matches[1].split('/').pop(),
+              row: parseInt(matches[2]),
+              column: parseInt(matches[3]),
+              // 'note' => 'info' for ACE
+              type: matches[4] === 'note' ? 'info' : matches[4],
+              text: matches[5]
+            });
+          }
+        }
+        that.$rootScope.$broadcast('billet.alerts', that.currentAlerts);
+      },
+      function() {});
 };
 
 // private
@@ -134,14 +176,12 @@ BilletService.prototype.firejqXhrErrorFactory = function() {
   var that = this;
   return function(jqXhr, stat, error) {
     if (jqXhr && jqXhr.status === 0) {
-      that.$rootScope.$broadcast('billet.error',
-                                 'Cannot connect to billet');
+      that.$rootScope.$broadcast('billet.error', 'Cannot connect to billet');
     } else if (error && error.user_message && error.user_message.length > 0) {
-      that.$rootScope.$broadcast('billet.error',
-                                 error.user_message);
+      that.$rootScope.$broadcast('billet.error', error.user_message);
     } else {
-      that.$rootScope.$broadcast(
-          'billet.error', 'Billet: Something isnt right here...');
+      that.$rootScope.$broadcast('billet.error',
+                                 'Billet: Something isnt right here...');
     }
   };
 };

@@ -77,6 +77,31 @@ RUN cat /root/env_files/vimrc >> /root/.vimrc
 #===  NPM MODULES  =============================================================
 RUN npm install -g mocha
 
+#===  MISX APT-GET  ============================================================
+RUN apt-get update -q
+RUN apt-get install -y \
+  libdouble-conversion-dev \
+  libssl-dev \
+  make \
+  zip \
+  git \
+  autoconf \
+  libtool \
+  g++ \
+  libboost-all-dev \
+  flex \
+  bison \
+  libgoogle-glog-dev \
+  scons \
+  libkrb5-dev \
+  libsnappy-dev \
+  libsasl2-dev \
+  libnuma-dev \
+  libevent-dev \
+  nginx \
+  default-jdk \
+  git
+
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/
 RUN mv /root/env_files/bashrc /root/.bashrc

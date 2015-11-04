@@ -32,18 +32,6 @@ angular.module('thilenius.blockly_editor', [])
             scope.changeHandler = function() {};
             scope.internalControl = scope.control || {};
 
-            // ===  Blockly Setup  =============================================
-            scope.workspace =
-                Blockly.inject(document.getElementById('blocklyDiv'),
-                               {toolbox: document.getElementById('toolbox')});
-            scope.workspace.addChangeListener(function() {
-              scope.changeHandler();
-            });
-
-            // DO NOT COMMIT
-            window.blockly = scope.workspace;
-
-
             // ===  Interface Implementation  ==================================
             scope.internalControl.canEdit = function(filename) {
               return filename.toLowerCase().endsWith('.pyb');
@@ -70,6 +58,15 @@ angular.module('thilenius.blockly_editor', [])
             // readOnly bool: Set the editor to 'edit' or 'view' mode
             scope.internalControl.bindFile = function(repo, relativePath,
                                                       syncToClId, readOnly) {
+              if (!scope.workspace) {
+                // Blockly Setup
+                scope.workspace = Blockly.inject(
+                    document.getElementById('blocklyDiv'),
+                    {toolbox: document.getElementById('toolbox')});
+                scope.workspace.addChangeListener(function() {
+                  scope.changeHandler();
+                });
+              }
               scope.lastStash = new Date();
               scope.activeRepo = repo;
               scope.relativePath = relativePath;
@@ -129,19 +126,21 @@ angular.module('thilenius.blockly_editor', [])
             $rootScope.$on('billet.activeCord', function(event, cordStream) {
               scope.canRun = false;
               scope.$apply();
-              cordStream.addHandler('close', function() {
-                scope.canRun = true;
-                scope.$apply();
-              });
+              cordStream.onGrain(function(grain) {},
+                                 function() {
+                                   scope.canRun = true;
+                                   scope.$apply();
+                                 });
             });
 
             // Also check Billet directly for old/active cords
             if (billet.currentCord && billet.isOldCordRunning) {
               scope.canRun = false;
-              billet.currentCord.addHandler('close', function() {
-                scope.canRun = true;
-                scope.$apply();
-              });
+              cordStream.onGrain(function(grain) {},
+                                 function() {
+                                   scope.canRun = true;
+                                   scope.$apply();
+                                 });
             }
 
             // private

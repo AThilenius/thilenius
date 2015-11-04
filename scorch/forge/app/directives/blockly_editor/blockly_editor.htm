@@ -1,14 +1,17 @@
 <div class="v-flex-wrapper">
   <div class="flex-header editor-header">
-    <div ng-click="run()" ng-show='canRun' class="btn dark-button">
+    <div ng-click="run()" ng-show='canRun && !readOnly'
+      class="btn dark-button">
       <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
       Run
     </div>
-    <div ng-click="stop()" ng-show='!canRun' class="btn dark-button">
+    <div ng-click="stop()" ng-show='!canRun && !readOnly'
+      class="btn dark-button">
       <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
       Stop
     </div>
-    <div ng-click="downloadRepoSnapshot()" class="btn dark-button">
+    <div ng-click="downloadRepoSnapshot()" ng-show="!readOnly"
+      class="btn dark-button">
       <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
       Download Project Snapshot
     </div>

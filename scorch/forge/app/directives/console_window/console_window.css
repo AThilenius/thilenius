@@ -33,6 +33,14 @@
   white-space: pre-wrap;
 }
 
+.toggle-region-text {
+  background-color: rgba(15, 15, 15, 1);
+  color: darkgrey;
+  font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+  font-size: 12px;
+  line-height: 20px;
+}
+
 .dark-tab {
   color: rgba(200, 200, 200, 1);
   width: 120px;

@@ -6,8 +6,8 @@ FROM ubuntu:14.04
 #===  UPDATE apt-get  ==========================================================
 RUN apt-get update -q
 
-#===  PYTHON 2.7  ==============================================================
-RUN apt-get install -y python python-pip python-dev
+#===  PYTHON 2.7 / PYLINT  =====================================================
+RUN apt-get install -y python python-pip python-dev pylint
 
 #===  CLANG  ===================================================================
 RUN apt-get install -y libc++-dev libc++abi-dev clang-3.6 lldb-3.6

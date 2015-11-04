@@ -15,6 +15,7 @@ angular.module('thilenius.console_window', [])
           link: function(scope, iElement, iAttrs) {
             scope.content = [];
             scope.show = false;
+            scope.activeRegion = null;
             scope.internalControl = scope.control || {};
 
             // private
@@ -41,11 +42,12 @@ angular.module('thilenius.console_window', [])
                               cordStream.fiberUrl + '</a>');
               cordStream.onGrain(
                   function(grains) {
-                    for (var i = 0; i < grains.length; i++) {
-                      scope.writeLine(grains[i].data);
-                    }
-                    scope.$apply();
-                    scope.scrollBottom();
+                    $timeout(function() {
+                      for (var i = 0; i < grains.length; i++) {
+                        scope.writeLine(grains[i].data);
+                      }
+                      scope.scrollBottom();
+                    });
                   },
                   function() {
                     // End of cord
@@ -69,12 +71,38 @@ angular.module('thilenius.console_window', [])
                 // </pre></span>
                 // TODO(athilenius): sanatize oritinal text
                 var line = lines[i] === '' ? ' ' : lines[i];
+                // Check if it matches region regex
+                var regex = /^#region: (.*)/;
+                var matches = regex.exec(line);
+                if (matches) {
+                  scope.activeRegion = {
+                    name: matches[1],
+                    lines: 0
+                  };
+                  scope.content.push({toggleRegion: scope.activeRegion});
+                  continue;
+                }
+                regex = /^Process exited with code:\s+\d+/;
+                matches = regex.exec(line);
+                if (matches) {
+                  scope.activeRegion = null;
+                }
+                regex = /^#regionend/;
+                matches = regex.exec(line);
+                if (matches) {
+                  scope.activeRegion = null;
+                  continue;
+                }
+                if (scope.activeRegion) {
+                  scope.activeRegion.lines++;
+                }
                 for (var escapeCode in scope.escapeCodes) {
                   var htmlCode = scope.escapeCodes[escapeCode];
                   line = line.split(escapeCode).join("</span>" + htmlCode);
                 }
                 line = "<span class='console-text'>" + line + "</span>";
-                scope.content.push($sce.trustAsHtml(line));
+                var html = $sce.trustAsHtml(line);
+                scope.content.push({region: scope.activeRegion, html: html});
               }
             };
 

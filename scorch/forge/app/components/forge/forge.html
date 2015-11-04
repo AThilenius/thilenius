@@ -26,8 +26,8 @@
               ng-click="activeSidebarTab = 'history'; buildHistory();">
             </div>
             <div class="sidebar-header-icon glyphicon glyphicon-exclamation-sign"
-              ng-class="(activeSidebarTab == 'errors') ? 'active' : ''"
-              ng-click="activeSidebarTab = 'errors'">
+              ng-class="(activeSidebarTab == 'alerts') ? 'active' : ''"
+              ng-click="activeSidebarTab = 'alerts'">
             </div>
             <div class="sidebar-header-icon glyphicon glyphicon-cog"
               ng-class="(activeSidebarTab == 'settings') ? 'active' : ''"
@@ -44,6 +44,11 @@
             <div ng-show="activeSidebarTab == 'history'"
               class="fill-flex-box">
               <div control='historyExplorerControl' at-history-explorer></div>
+            </div>
+            <!-- Alerts Explorer -->
+            <div ng-show="activeSidebarTab == 'alerts'"
+              class="fill-flex-box">
+              <div control='alertsExplorerControl' at-alerts-explorer></div>
             </div>
             <!-- Settings Window -->
             <div ng-show="activeSidebarTab == 'settings'">
