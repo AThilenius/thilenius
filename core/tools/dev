@@ -23,7 +23,9 @@ else
     WARN "Creating a new dev container."
     docker run --privileged -it -v /var/run/docker.sock:/run/docker.sock \
       -v $(which docker):/bin/docker -v $HOME/thilenius:/root/thilenius \
-      -v $HOME/billet:/billet -v $HOME/data:/data -p 80:80 \
+      -v $HOME/billet:/billet -v $HOME/data:/data \
+      -p 80:80 -p 8080:8080 -p 3000:3000 -p 2100:2100 -p 2400:2400 \
+      -p 51230:51230 \
       athilenius/dev_env
   else
     # Esiting container
@@ -42,7 +44,9 @@ else
         docker run --privileged -it -v $HOME/thilenius:/root/thilenius \
           -v /var/run/docker.sock:/run/docker.sock \
           -v $(which docker):/bin/docker \
-          -v $HOME/billet:/billet -v $HOME/data:/data -p 80:80 \
+          -v $HOME/billet:/billet -v $HOME/data:/data \
+          -p 80:80 -p 8080:8080 -p 3000:3000 -p 2100:2100 -p 2400:2400 \
+          -p 51230:51230 \
           athilenius/dev_env
       fi
     fi

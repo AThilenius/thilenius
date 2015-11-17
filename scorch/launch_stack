@@ -45,7 +45,7 @@ INFO 'Starting Billet'
 
 INFO 'Starting Blaze'
 /root/thilenius_bin/scorch/cloud/blaze/blaze \
-    --flame_ip $HOST_IP --mongo_ip $HOST_IP &
+    --flame_ip 192.168.59.103 --mongo_ip $HOST_IP &
 
 INFO 'Sleeping. Forever... Sheee, go to sleep.'
 while true; do

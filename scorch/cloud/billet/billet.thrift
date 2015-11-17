@@ -27,7 +27,6 @@ exception OperationFailure {
 
 service Billet {
 
-  // Temporary
   fiber.Cord SyncAndExec(1: sentinel.Token token,
                          2: crucible.RepoHeader repo_header,
                          3: string shell_command)

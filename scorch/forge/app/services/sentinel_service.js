@@ -7,16 +7,17 @@ var FORGE_COOKIE_KEY = 'forge_session_token';
 // sentinel.logout ()
 // sentinel.error  (String)
 // error           (String)
-var SentinelService = function($rootScope, $cookies, $location) {
+var SentinelService = function($rootScope, $cookies, $location, blaze) {
   this.$rootScope = $rootScope;
   this.$cookies = $cookies;
   this.$location = $location;
+  this.blaze = blaze;
   var transport = new Thrift.Transport("/api/sentinel/");
   var protocol = new Thrift.Protocol(transport);
   this.client = new SentinelClient(protocol);
   this.token = null;
   this.user = null;
-
+  this.minecraft_username = null;
   // Error redirect
   $rootScope.$on('sentinel.error', function(event, message) {
     $rootScope.$broadcast('error', message);
@@ -31,6 +32,10 @@ SentinelService.prototype.login = function(login, password) {
         that.token = result;
         that.$cookies.put(FORGE_COOKIE_KEY, JSON.stringify(that.token));
         that.loadUserData();
+        // If we just created an account (aka if we have a minecraft username)
+        if (that.minecraft_username) {
+          that.blaze.setMinecraftAccount(result, that.minecraft_username);
+        }
       });
 };
 
@@ -46,7 +51,7 @@ SentinelService.prototype.logout = function() {
 };
 
 SentinelService.prototype.createAccount = function(firstName, lastName, email,
-                                                   password) {
+                                                   password, minecraft) {
   // Create a user partial
   var user = new User();
   user.first_name = firstName;
@@ -55,7 +60,10 @@ SentinelService.prototype.createAccount = function(firstName, lastName, email,
   var that = this;
   this.client.CreateUser(user, password, null)
       .fail(that.firejqXhrErrorFactory())
-      .done(function(user) { that.login(email, password); });
+      .done(function(user) {
+        that.minecraft_username = minecraft;
+        that.login(email, password);
+      });
 };
 
 SentinelService.prototype.tryLoadingFromCookie = function() {
@@ -124,7 +132,8 @@ forgeApp.factory('sentinel', [
   '$rootScope',
   '$cookies',
   '$location',
-  function($rootScope, $cookies, $location) {
-    return new SentinelService($rootScope, $cookies, $location);
+  'blaze',
+  function($rootScope, $cookies, $location, blaze) {
+    return new SentinelService($rootScope, $cookies, $location, blaze);
   }
 ]);

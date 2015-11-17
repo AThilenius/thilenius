@@ -58,15 +58,17 @@ angular.module('thilenius.blockly_editor', [])
             // readOnly bool: Set the editor to 'edit' or 'view' mode
             scope.internalControl.bindFile = function(repo, relativePath,
                                                       syncToClId, readOnly) {
-              if (!scope.workspace) {
-                // Blockly Setup
-                scope.workspace = Blockly.inject(
-                    document.getElementById('blocklyDiv'),
-                    {toolbox: document.getElementById('toolbox')});
-                scope.workspace.addChangeListener(function() {
-                  scope.changeHandler();
-                });
-              }
+              // Blockly Setup
+              scope.workspace =
+                  Blockly.inject(document.getElementById('blocklyDiv'), {
+                    readOnly: readOnly,
+                    media: 'assets/blockly_media/',
+                    trashcan: true,
+                    toolbox: document.getElementById('toolbox')
+                  });
+              scope.workspace.addChangeListener(function() {
+                scope.changeHandler();
+              });
               scope.lastStash = new Date();
               scope.activeRepo = repo;
               scope.relativePath = relativePath;

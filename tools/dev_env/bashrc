@@ -9,3 +9,5 @@ export CXXFLAGS=--std=c++11
 alias rgrep='GREP_COLOR="1;37;41" LANG=C grep -r --color=auto'
 alias thilenius='cd $HOME/thilenius'
 alias ls='ls -hla --color=auto'
+alias bower='bower --allow-root'
+alias grunt='grunt --allow-root'

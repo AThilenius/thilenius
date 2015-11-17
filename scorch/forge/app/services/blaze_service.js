@@ -22,7 +22,10 @@ var blazeService = function($rootScope) {
 blazeService.prototype.setMinecraftAccount = function(sentinelToken,
                                                       minecraftUsername) {
   var that = this;
-  this.client.SetMinecraftAccount(sentinelToken, minecraftUsername, null)
+  var account = new MinecraftAccount();
+  account.user_uuid = sentinelToken.user_uuid;
+  account.minecraft_username = minecraftUsername;
+  this.client.SetMinecraftAccount(sentinelToken, account, null)
       .fail(this.firejqXhrErrorFactory())
       .done(function(result) {
         that.$rootScope.$broadcast('blaze.account_set', minecraftUsername);

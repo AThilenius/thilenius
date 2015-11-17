@@ -102,6 +102,10 @@ RUN apt-get install -y \
   default-jdk \
   git
 
+#===  NPM packages =============================================================
+RUN npm install -g strongloop bower grunt grunt-cli
+RUN npm install --save loopback-connector-mongodb
+
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/
 RUN mv /root/env_files/bashrc /root/.bashrc

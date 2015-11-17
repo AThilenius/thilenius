@@ -36,7 +36,8 @@ forgeApp.controller('loginController', [
 
     $scope.createAccount = function() {
       sentinel.createAccount($scope.create.firstName, $scope.create.lastName,
-                             $scope.create.email, $scope.create.password);
+                             $scope.create.email, $scope.create.password,
+                             $scope.create.minecraft);
     };
 
     // Finally let Sentinel load from cookie (if we have one)

@@ -93,6 +93,7 @@ let g:lt_height = 10
 
 " CtrlP
 let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+set wildignore+=*/node_modules/*,*/.git/*,*.so,*.swp,*.zip
 
 " DelimMate
 let delimitMate_autoclose            = 1
