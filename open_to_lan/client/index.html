@@ -1,0 +1,25 @@
+<!doctype html>
+<html ng-app="app" ng-controller="loginController"
+      class="{{$root.htmlClass ? $root.htmlClass : 'default-body'}}">
+<head><title ng-bind="$root.title || 'Open To Lan'"></title>
+<link rel="shortcut icon" href="assets/flame-512.png" />
+<link href="vendor/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+<script src="vendor/jquery/dist/jquery.js"></script>
+<script src="vendor/bootstrap/dist/js/bootstrap.js"></script>
+<script src="vendor/angular/angular.js"></script>
+<script src="vendor/angular-resource/angular-resource.js"></script>
+<script src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="vendor/angular-cookies/angular-cookies.js"></script>
+<script>var OTL_VERSION="151117.20.2658";</script>
+<link rel="stylesheet" href="assets/base.css" />
+<script src="gen-files/lb_services.js"></script>
+<link rel="stylesheet" href="app/components/club/club.css" />
+<link rel="stylesheet" href="app/components/login/login.css" />
+<script src="app/app.module.js"></script>
+<script src="app/app.route.js"></script>
+<script src="app/components/club/club_controller.js"></script>
+<script src="app/components/login/login_controller.js"></script>
+</head>
+<body class="{{$root.bodyClass ? $root.bodyClass : 'default-body'}}">
+<div ui-view></div>
+</body></html>

@@ -1,0 +1,11 @@
+{
+  "db": {
+    "host": "172.17.42.1",
+    "port": 27017,
+    "database": "open_to_lan",
+    "password": "",
+    "name": "db",
+    "connector": "mongodb",
+    "user": ""
+  }
+}
