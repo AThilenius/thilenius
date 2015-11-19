@@ -17,12 +17,5 @@ app.controller('loginController', [
       });
     };
 
-    $scope.createAccount = function() {
-      $scope.createCredentials.email =
-          $scope.createCredentials.email.toLowerCase();
-      Person.create($scope.createCredentials, function(result) {
-        console.log("Success: " + JSON.stringify(result));
-      });
-    };
   }
 ]);
