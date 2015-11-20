@@ -102,9 +102,20 @@ RUN apt-get install -y \
   default-jdk \
   git
 
+#===  MONO  ====================================================================
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+RUN echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+RUN apt-get update
+RUN apt-get install -y mono-devel
+
 #===  NPM packages =============================================================
 RUN npm install -g strongloop bower grunt grunt-cli
 RUN npm install --save loopback-connector-mongodb
+# Manually install loopback-skd-lbxm
+RUN cd ~
+    git clone https://github.com/strongloop/loopback-sdk-xamarin.git
+    cd loopback-sdk-xamarin
+    npm install
 
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/

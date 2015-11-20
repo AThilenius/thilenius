@@ -48,5 +48,13 @@
   "Server": {
     "dataSource": "db",
     "public": true
+  },
+  "Container": {
+    "dataSource": "storage",
+    "public": false
+  },
+  "File": {
+    "dataSource": "db",
+    "public": true
   }
 }
