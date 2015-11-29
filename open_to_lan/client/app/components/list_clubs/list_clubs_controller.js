@@ -1,6 +1,6 @@
 var app = angular.module('app');
 
-app.controller('clubController', [
+app.controller('listClubsController', [
   '$rootScope',
   '$scope',
   'Person',

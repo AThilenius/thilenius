@@ -1,0 +1,12 @@
+<div id="club-image-div">
+  <button class="btn btn-info">Set Club Banner Image</button>
+</div>
+<div id="club-title">
+  <a href="#" editable-text="activeClub.name"
+     onbeforesave="updateClub()">
+    {{ activeClub.name }}
+  </a>
+</div>
+<div id="club-description">
+  <p>{{ activeClub.members.length || 0 }} members</p>
+</div>

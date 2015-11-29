@@ -8,15 +8,15 @@
   "properties": {
     "state": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "ttl": {
       "type": "number",
-      "required": true
+      "required": false
     },
     "created": {
       "type": "date",
-      "required": true
+      "required": false
     },
     "config": {
       "type": "string",
@@ -24,17 +24,17 @@
     },
     "ip": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "port": {
       "type": "number",
-      "required": true
+      "required": false
     },
     "container_uuid": {
       "type": "string",
-      "required": true
+      "required": false
     },
-    "resource_path": {
+    "worldId": {
       "type": "string",
       "required": true
     }
@@ -45,18 +45,13 @@
       "type": "belongsTo",
       "model": "Club",
       "foreignKey": ""
-    },
-    "world": {
-      "type": "hasOne",
-      "model": "World",
-      "foreignKey": "world"
     }
   },
   "acls": [
     {
       "principalType": "ROLE",
       "principalId": "$everyone",
-      "permission": "DENY"
+      "permission": "ALLOW"
     },
     {
       "principalType": "ROLE",

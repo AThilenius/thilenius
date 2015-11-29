@@ -1,3 +1,7 @@
+body {
+  background-color: #F1F1F1;
+}
+
 div {
   border-collapse: collapse;
 }
@@ -76,6 +80,10 @@ div {
   height: 100%;
   overflow-y: auto;
   width: 100%;
+}
+
+.vertical-align {
+  vertical-align: middle;
 }
 
 ::-webkit-scrollbar {

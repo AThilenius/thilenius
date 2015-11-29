@@ -51,7 +51,7 @@
   },
   "Container": {
     "dataSource": "storage",
-    "public": false
+    "public": true
   },
   "File": {
     "dataSource": "db",

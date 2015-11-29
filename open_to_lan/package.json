@@ -8,10 +8,12 @@
   "dependencies": {
     "compression": "^1.0.3",
     "cors": "^2.5.2",
+    "dockerode": "2.2.3",
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^2.1.0",
     "loopback-component-storage": "^1.5.0",
+    "loopback-connector-mongodb": "^1.13.0",
     "loopback-datasource-juggler": "^2.39.0",
     "serve-favicon": "^2.0.1"
   },

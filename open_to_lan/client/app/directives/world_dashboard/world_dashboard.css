@@ -1,0 +1,21 @@
+#world-dashboard-title {
+  text-align: center;
+}
+
+.world-dashboard-card {
+  margin: 5px;
+  border: 1px solid lightgrey;
+  height: 70px;
+}
+
+.world-dashboard-card-left {
+  float: left;
+  padding-left: 11px;
+  padding-top: 14px;
+}
+
+.world-dashboard-card-right {
+  float: right;
+  padding-right: 11px;
+  padding-top: 18px;
+}

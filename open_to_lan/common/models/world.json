@@ -6,6 +6,10 @@
     "validateUpsert": true
   },
   "properties": {
+    "owner": {
+      "type": "string",
+      "required": true
+    },
     "name": {
       "type": "string",
       "required": true
@@ -16,24 +20,15 @@
     }
   },
   "validations": [],
-  "relations": {
-    "owner": {
-      "type": "belongsTo",
-      "model": "Person",
-      "foreignKey": ""
-    }
-  },
-  "acls": [
-    {
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "DENY"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW"
-    }
-  ],
+  "relations": {},
+  "acls": [{
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW"
+  }, {
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW"
+  }],
   "methods": {}
 }

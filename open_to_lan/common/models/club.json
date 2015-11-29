@@ -9,6 +9,9 @@
     "name": {
       "type": "string",
       "required": true
+    },
+    "members": {
+      "type": "array"
     }
   },
   "validations": [],
@@ -22,18 +25,13 @@
       "type": "hasMany",
       "model": "Server",
       "foreignKey": ""
-    },
-    "members": {
-      "type": "hasMany",
-      "model": "Person",
-      "foreignKey": ""
     }
   },
   "acls": [
     {
       "principalType": "ROLE",
       "principalId": "$everyone",
-      "permission": "DENY"
+      "permission": "ALLOW"
     },
     {
       "principalType": "ROLE",

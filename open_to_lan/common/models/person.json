@@ -21,11 +21,6 @@
       "type": "hasMany",
       "model": "Club",
       "foreignKey": ""
-    },
-    "worlds": {
-      "type": "hasMany",
-      "model": "World",
-      "foreignKey": ""
     }
   },
   "acls": [

@@ -1,0 +1,42 @@
+<div id="world-dashboard-title">
+  <h2>SERVERS</h2>
+</div>
+<br>
+<div ng-repeat="server in servers" class="world-dashboard-card">
+  <div class="world-dashboard-card-left">
+    <b>{{ server.container_uuid }}</b>
+    <p>{{ server.worldId }}</p>
+  </div>
+  <div class="world-dashboard-card-right">
+    <div class="btn-group" role="group">
+      <button class="btn btn-danger" ng-click="removeServer(server)">
+        Stop
+      </button>
+    </div>
+  </div>
+</div>
+<br>
+
+<div id="world-dashboard-title">
+  <h2>WORLDS</h2>
+</div>
+<br>
+<div ng-repeat="world in worlds" class="world-dashboard-card">
+  <div class="world-dashboard-card-left">
+    <b><a href="#" editable-text="world.name"
+        onbeforesave="saveWorld(world)">
+      {{ world.name }}
+    </a></b>
+    <p>{{ world.owner }}</p>
+  </div>
+  <div class="world-dashboard-card-right">
+    <div class="btn-group" role="group">
+      <button class="btn btn-success" ng-click="launchWorld(world)">
+        Launch
+      </button>
+      <button class="btn btn-danger" ng-click="removeWorld(world)">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

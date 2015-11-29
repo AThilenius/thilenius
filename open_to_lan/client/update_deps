@@ -35,12 +35,15 @@ cat << EOM >> index.html
 <head><title ng-bind="\$root.title || 'Open To Lan'"></title>
 <link rel="shortcut icon" href="assets/flame-512.png" />
 <link href="vendor/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+<link href="vendor/angular-xeditable/dist/css/xeditable.css" rel="stylesheet">
 <script src="vendor/jquery/dist/jquery.js"></script>
 <script src="vendor/bootstrap/dist/js/bootstrap.js"></script>
 <script src="vendor/angular/angular.js"></script>
 <script src="vendor/angular-resource/angular-resource.js"></script>
 <script src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="vendor/angular-cookies/angular-cookies.js"></script>
+<script src="vendor/angular-xeditable/dist/js/xeditable.js"></script>
+<script src="vendor/underscore/underscore-min.js"></script>
 EOM
 echo "<script>var OTL_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
 
@@ -48,10 +51,12 @@ echo "<script>var OTL_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
 pushd /root/thilenius/open_to_lan
 bower --allow-root install \
   angular \
+  angular-cookies \
   angular-resource \
   angular-ui-router \
-  angular-cookies \
-  bootstrap
+  angular-xeditable \
+  bootstrap \
+  underscore
 popd
 
 GlobCssToIndex libs_precomp

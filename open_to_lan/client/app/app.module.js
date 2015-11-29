@@ -1,6 +1,16 @@
 // Copyright 2015 Alec Thilenius
 // All rights reserved.
-var app = angular.module('app', ['lbServices', 'ngCookies', 'ui.router']);
+var app = angular.module('app', [
+  'lbServices',
+  'ngCookies',
+  'ui.router',
+  'xeditable',
+  'thilenius.club_dashboard',
+  'thilenius.navbar',
+  'thilenius.world_dashboard'
+]);
+
+app.run(function(editableOptions) { editableOptions.theme = 'bs3'; });
 
 app.config([
   '$httpProvider',

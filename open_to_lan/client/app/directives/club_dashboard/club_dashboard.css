@@ -1,0 +1,16 @@
+#club-image-div {
+  background-color: #333333;
+  width: 100%;
+  height: 200px;
+  text-align: center;
+  padding-top: 100px;
+}
+
+#club-title {
+  margin: 10px;
+  font-size: 1.3em;
+}
+
+#club-description {
+  margin: 10px;
+}

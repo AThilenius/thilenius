@@ -9,10 +9,10 @@ app.controller('createClubController', [
   function($rootScope, $scope, $location, Person, Club) {
 
     $scope.createClub = function(specs) {
-      Person.createClub({
+      Person.clubs.create({
         id: Person.getCurrentId()
       }, specs, function(result) {
-        $location.path('/club');
+        $location.path('/list_clubs');
       });
     };
 
