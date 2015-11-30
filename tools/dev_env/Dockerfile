@@ -112,10 +112,10 @@ RUN apt-get install -y mono-devel
 RUN npm install -g strongloop bower grunt grunt-cli
 RUN npm install --save loopback-connector-mongodb
 # Manually install loopback-skd-lbxm
-RUN cd ~
-    git clone https://github.com/strongloop/loopback-sdk-xamarin.git
-    cd loopback-sdk-xamarin
-    npm install
+RUN cd ~; \
+    git clone https://github.com/strongloop/loopback-sdk-xamarin.git; \
+    cd loopback-sdk-xamarin; \
+    npm install;
 
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/

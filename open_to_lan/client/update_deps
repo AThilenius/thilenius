@@ -48,16 +48,16 @@ EOM
 echo "<script>var OTL_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
 
 # Bower
-pushd /root/thilenius/open_to_lan
-bower --allow-root install \
-  angular \
-  angular-cookies \
-  angular-resource \
-  angular-ui-router \
-  angular-xeditable \
-  bootstrap \
-  underscore
-popd
+#pushd /root/thilenius/open_to_lan
+#bower --allow-root install \
+  #angular \
+  #angular-cookies \
+  #angular-resource \
+  #angular-ui-router \
+  #angular-xeditable \
+  #bootstrap \
+  #underscore
+#popd
 
 GlobCssToIndex libs_precomp
 GlobJsToIndex libs_precomp

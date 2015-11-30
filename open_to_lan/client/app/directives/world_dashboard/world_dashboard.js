@@ -33,15 +33,21 @@ angular.module('thilenius.world_dashboard', [])
             };
 
             $scope.getWorldFromServer = function(server) {
-              return _($scope.worlds).find(function(world) {
-                return world.id === server.worldId;
-              });
+              return _($scope.worlds)
+                  .find(function(world) {
+                    return world.id === server.worldId;
+                  });
             };
 
             $scope.findServerFromWorld = function(world) {
-              return _($scope.servers).find(function(server) {
-                return server.worldId === world.id;
-              });
+              return _($scope.servers)
+                  .find(function(server) {
+                    return server.worldId === world.id;
+                  });
+            };
+
+            $scope.toDateString = function(date) {
+              return new Date(date).toDateString();
             };
 
           }

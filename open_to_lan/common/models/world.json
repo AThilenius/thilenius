@@ -17,18 +17,29 @@
     "world_guid": {
       "type": "string",
       "required": true
+    },
+    "size": {
+      "type": "number",
+      "required": true
+    },
+    "last_write_time": {
+      "type": "date",
+      "required": true
     }
   },
   "validations": [],
   "relations": {},
-  "acls": [{
-    "principalType": "ROLE",
-    "principalId": "$everyone",
-    "permission": "ALLOW"
-  }, {
-    "principalType": "ROLE",
-    "principalId": "$owner",
-    "permission": "ALLOW"
-  }],
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW"
+    }
+  ],
   "methods": {}
 }

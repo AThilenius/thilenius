@@ -27,7 +27,8 @@
         onbeforesave="saveWorld(world)">
       {{ world.name }}
     </a></b>
-    <p>{{ world.owner }}</p>
+    <p>{{ world.owner }} - {{ (world.size / 1000000.0) + " MB" }}
+    - {{ toDateString(world.last_write_time) }}</p>
   </div>
   <div class="world-dashboard-card-right">
     <div class="btn-group" role="group">
