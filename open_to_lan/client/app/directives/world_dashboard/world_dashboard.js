@@ -32,6 +32,18 @@ angular.module('thilenius.world_dashboard', [])
               server.$delete();
             };
 
+            $scope.getWorldFromServer = function(server) {
+              return _($scope.worlds).find(function(world) {
+                return world.id === server.worldId;
+              });
+            };
+
+            $scope.findServerFromWorld = function(world) {
+              return _($scope.servers).find(function(server) {
+                return server.worldId === world.id;
+              });
+            };
+
           }
         };
       }

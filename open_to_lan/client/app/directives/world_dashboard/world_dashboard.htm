@@ -4,8 +4,8 @@
 <br>
 <div ng-repeat="server in servers" class="world-dashboard-card">
   <div class="world-dashboard-card-left">
-    <b>{{ server.container_uuid }}</b>
-    <p>{{ server.worldId }}</p>
+    <b>{{ getWorldFromServer(server).name }}</b>
+    <p>Port: {{ server.port }}</p>
   </div>
   <div class="world-dashboard-card-right">
     <div class="btn-group" role="group">

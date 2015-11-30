@@ -15,11 +15,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
       templateUrl: 'app/components/create_user/create_user.html',
       controller: 'createUserController'
     })
-    .state('create_club', {
-      url: '/create_club',
-      templateUrl: 'app/components/create_club/create_club.html',
-      controller: 'createClubController'
-    })
     .state('console', {
       url: '/console',
       templateUrl: 'app/components/console/console.html',

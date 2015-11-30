@@ -14,7 +14,7 @@
       "type": "string",
       "required": true
     },
-    "resource_path": {
+    "world_guid": {
       "type": "string",
       "required": true
     }

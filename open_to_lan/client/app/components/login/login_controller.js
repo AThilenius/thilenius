@@ -11,9 +11,7 @@ app.controller('loginController', [
       $scope.loginCredentials.email =
           $scope.loginCredentials.email.toLowerCase();
       Person.login($scope.loginCredentials, function(result) {
-        var next = $location.nextAfterLogin || '/club';
-        location.nextAfterLogin = null;
-        $location.path(next);
+        $location.path('/club');
       });
     };
 
