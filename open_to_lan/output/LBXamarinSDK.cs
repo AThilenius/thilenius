@@ -1,4 +1,4 @@
-/** Generated at 11/20/2015 17:59:34 */
+/** Generated at 11/30/2015 21:39:52 */
 
 /**
  *** Hardcoded Models ***
@@ -396,15 +396,12 @@ namespace LBXamarinSDK
 				{"world/count", "Worlds/count"}, 
 				{"world/prototype$updateattributes", "Worlds/:id"}, 
 				{"server/create", "Servers"}, 
-				{"server/upsert", "Servers"}, 
 				{"server/exists", "Servers/:id/exists"}, 
 				{"server/findbyid", "Servers/:id"}, 
 				{"server/find", "Servers"}, 
 				{"server/findone", "Servers/findOne"}, 
-				{"server/updateall", "Servers/update"}, 
 				{"server/deletebyid", "Servers/:id"}, 
 				{"server/count", "Servers/count"}, 
-				{"server/prototype$updateattributes", "Servers/:id"}, 
 				{"file/create", "Files"}, 
 				{"file/upsert", "Files"}, 
 				{"file/exists", "Files/:id/exists"}, 
@@ -636,49 +633,6 @@ namespace LBXamarinSDK
 			}
 
 			/*
-			 * Find a related item by id for worlds.
-			 */
-			public static async Task<World> findByIdWorlds(string id, string fk)
-			{
-				string APIPath = "People/:id/worlds/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Delete a related item by id for worlds.
-			 */
-			public static async Task destroyByIdWorlds(string id, string fk)
-			{
-				string APIPath = "People/:id/worlds/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Update a related item by id for worlds.
-			 */
-			public static async Task<World> updateByIdWorlds(World data, string id, string fk)
-			{
-				string APIPath = "People/:id/worlds/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
 			 * Queries accessTokens of Person.
 			 */
 			public static async Task<IList<AccessToken>> getAccessTokens(string id, string filter = default(string))
@@ -789,61 +743,6 @@ namespace LBXamarinSDK
 			}
 
 			/*
-			 * Queries worlds of Person.
-			 */
-			public static async Task<IList<World>> getWorlds(string id, string filter = default(string))
-			{
-				string APIPath = "People/:id/worlds";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("filter", filter != null ? filter.ToString() : null);
-				var response = await Gateway.PerformRequest<World[]>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Creates a new instance in worlds of this model.
-			 */
-			public static async Task<World> createWorlds(World data, string id)
-			{
-				string APIPath = "People/:id/worlds";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "POST", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Deletes all worlds of this model.
-			 */
-			public static async Task deleteWorlds(string id)
-			{
-				string APIPath = "People/:id/worlds";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Counts worlds of Person.
-			 */
-			public static async Task<double> countWorlds(string id, string where = default(string))
-			{
-				string APIPath = "People/:id/worlds/count";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("where", where != null ? where.ToString() : null);
-				var response = await Gateway.PerformRequest<object>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return JObject.Parse(response.ToString()).First.First.ToObject<double>();
-			}
-
-			/*
 			 * Login a user with username/email and password.
 			 */
 			public static async Task<JObject> login(Person credentials, string include = default(string))
@@ -910,118 +809,6 @@ namespace LBXamarinSDK
 				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
 				return response;
 			}
-
-			/*
-			 * Find a related item by id for members.
-			 */
-			public static async Task<Person> findByIdForClub(string id, string fk)
-			{
-				string APIPath = "Clubs/:id/members/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Delete a related item by id for members.
-			 */
-			public static async Task destroyByIdForClub(string id, string fk)
-			{
-				string APIPath = "Clubs/:id/members/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Update a related item by id for members.
-			 */
-			public static async Task<Person> updateByIdForClub(Person data, string id, string fk)
-			{
-				string APIPath = "Clubs/:id/members/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Queries members of Club.
-			 */
-			public static async Task<IList<Person>> getForClub1(string id, string filter = default(string))
-			{
-				string APIPath = "Clubs/:id/members";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("filter", filter != null ? filter.ToString() : null);
-				var response = await Gateway.PerformRequest<Person[]>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Creates a new instance in members of this model.
-			 */
-			public static async Task<Person> createForClub(Person data, string id)
-			{
-				string APIPath = "Clubs/:id/members";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "POST", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Deletes all members of this model.
-			 */
-			public static async Task deleteForClub(string id)
-			{
-				string APIPath = "Clubs/:id/members";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Counts members of Club.
-			 */
-			public static async Task<double> countForClub(string id, string where = default(string))
-			{
-				string APIPath = "Clubs/:id/members/count";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("where", where != null ? where.ToString() : null);
-				var response = await Gateway.PerformRequest<object>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return JObject.Parse(response.ToString()).First.First.ToObject<double>();
-			}
-
-			/*
-			 * Fetches belongsTo relation owner.
-			 */
-			public static async Task<Person> getForWorld(string id, bool refresh = default(bool))
-			{
-				string APIPath = "Worlds/:id/owner";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("refresh", refresh != null ? refresh.ToString() : null);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
 		}
 		public class Clubs : CRUDInterface<Club>
 		{
@@ -1037,49 +824,6 @@ namespace LBXamarinSDK
 				APIPath = APIPath.Replace(":id", (string)id);
 				queryStrings.Add("refresh", refresh != null ? refresh.ToString() : null);
 				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Find a related item by id for members.
-			 */
-			public static async Task<Person> findByIdMembers(string id, string fk)
-			{
-				string APIPath = "Clubs/:id/members/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Delete a related item by id for members.
-			 */
-			public static async Task destroyByIdMembers(string id, string fk)
-			{
-				string APIPath = "Clubs/:id/members/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Update a related item by id for members.
-			 */
-			public static async Task<Person> updateByIdMembers(Person data, string id, string fk)
-			{
-				string APIPath = "Clubs/:id/members/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
 				return response;
 			}
 
@@ -1124,61 +868,6 @@ namespace LBXamarinSDK
 				APIPath = APIPath.Replace(":fk", (string)fk);
 				var response = await Gateway.PerformRequest<Server>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
 				return response;
-			}
-
-			/*
-			 * Queries members of Club.
-			 */
-			public static async Task<IList<Person>> getMembers(string id, string filter = default(string))
-			{
-				string APIPath = "Clubs/:id/members";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("filter", filter != null ? filter.ToString() : null);
-				var response = await Gateway.PerformRequest<Person[]>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Creates a new instance in members of this model.
-			 */
-			public static async Task<Person> createMembers(Person data, string id)
-			{
-				string APIPath = "Clubs/:id/members";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "POST", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Deletes all members of this model.
-			 */
-			public static async Task deleteMembers(string id)
-			{
-				string APIPath = "Clubs/:id/members";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Counts members of Club.
-			 */
-			public static async Task<double> countMembers(string id, string where = default(string))
-			{
-				string APIPath = "Clubs/:id/members/count";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("where", where != null ? where.ToString() : null);
-				var response = await Gateway.PerformRequest<object>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return JObject.Parse(response.ToString()).First.First.ToObject<double>();
 			}
 
 			/*
@@ -1350,173 +1039,6 @@ namespace LBXamarinSDK
 		}
 		public class Worlds : CRUDInterface<World>
 		{
-
-			/*
-			 * Fetches belongsTo relation owner.
-			 */
-			public static async Task<Person> getOwner(string id, bool refresh = default(bool))
-			{
-				string APIPath = "Worlds/:id/owner";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("refresh", refresh != null ? refresh.ToString() : null);
-				var response = await Gateway.PerformRequest<Person>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Find a related item by id for worlds.
-			 */
-			public static async Task<World> findByIdForPerson(string id, string fk)
-			{
-				string APIPath = "People/:id/worlds/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Delete a related item by id for worlds.
-			 */
-			public static async Task destroyByIdForPerson(string id, string fk)
-			{
-				string APIPath = "People/:id/worlds/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Update a related item by id for worlds.
-			 */
-			public static async Task<World> updateByIdForPerson(World data, string id, string fk)
-			{
-				string APIPath = "People/:id/worlds/:fk";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				APIPath = APIPath.Replace(":fk", (string)fk);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Queries worlds of Person.
-			 */
-			public static async Task<IList<World>> getForPerson(string id, string filter = default(string))
-			{
-				string APIPath = "People/:id/worlds";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("filter", filter != null ? filter.ToString() : null);
-				var response = await Gateway.PerformRequest<World[]>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Creates a new instance in worlds of this model.
-			 */
-			public static async Task<World> createForPerson(World data, string id)
-			{
-				string APIPath = "People/:id/worlds";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "POST", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Deletes all worlds of this model.
-			 */
-			public static async Task deleteForPerson(string id)
-			{
-				string APIPath = "People/:id/worlds";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
-
-			/*
-			 * Counts worlds of Person.
-			 */
-			public static async Task<double> countForPerson(string id, string where = default(string))
-			{
-				string APIPath = "People/:id/worlds/count";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("where", where != null ? where.ToString() : null);
-				var response = await Gateway.PerformRequest<object>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return JObject.Parse(response.ToString()).First.First.ToObject<double>();
-			}
-
-			/*
-			 * Fetches hasOne relation world.
-			 */
-			public static async Task<World> getForServer(string id, bool refresh = default(bool))
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("refresh", refresh != null ? refresh.ToString() : null);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Creates a new instance in world of this model.
-			 */
-			public static async Task<World> createForServer(World data, string id)
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "POST", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Update world of this model.
-			 */
-			public static async Task<World> updateForServer(World data, string id)
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Deletes world of this model.
-			 */
-			public static async Task destroyForServer(string id)
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
-			}
 		}
 		public class Servers : CRUDInterface<Server>
 		{
@@ -1533,61 +1055,6 @@ namespace LBXamarinSDK
 				queryStrings.Add("refresh", refresh != null ? refresh.ToString() : null);
 				var response = await Gateway.PerformRequest<Club>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
 				return response;
-			}
-
-			/*
-			 * Fetches hasOne relation world.
-			 */
-			public static async Task<World> getWorld(string id, bool refresh = default(bool))
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				queryStrings.Add("refresh", refresh != null ? refresh.ToString() : null);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "GET", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Creates a new instance in world of this model.
-			 */
-			public static async Task<World> createWorld(World data, string id)
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "POST", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Update world of this model.
-			 */
-			public static async Task<World> updateWorld(World data, string id)
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				bodyJSON = JsonConvert.SerializeObject(data);
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<World>(APIPath, bodyJSON, "PUT", queryStrings).ConfigureAwait(false);
-				return response;
-			}
-
-			/*
-			 * Deletes world of this model.
-			 */
-			public static async Task destroyWorld(string id)
-			{
-				string APIPath = "Servers/:id/world";
-				IDictionary<string, string> queryStrings = new Dictionary<string, string>();
-				string bodyJSON = "";
-				APIPath = APIPath.Replace(":id", (string)id);
-				var response = await Gateway.PerformRequest<string>(APIPath, bodyJSON, "DELETE", queryStrings).ConfigureAwait(false);
-				
 			}
 
 			/*
@@ -1897,9 +1364,6 @@ namespace LBXamarinSDK
 		[JsonProperty ("id", NullValueHandling = NullValueHandling.Ignore)]
 		public string id { get; set; }
 
-		[JsonProperty ("clubId", NullValueHandling = NullValueHandling.Ignore)]
-		public String clubId { get; set; }
-
 		
 		// This method identifies the ID field
 		public override string getID()
@@ -1911,6 +1375,9 @@ namespace LBXamarinSDK
 	{
 		[JsonProperty ("name", NullValueHandling = NullValueHandling.Ignore)]
 		public String name { get; set; }
+
+		[JsonProperty ("members", NullValueHandling = NullValueHandling.Ignore)]
+		public Object members { get; set; }
 
 		[JsonProperty ("id", NullValueHandling = NullValueHandling.Ignore)]
 		public string id { get; set; }
@@ -1930,23 +1397,35 @@ namespace LBXamarinSDK
 	}
 	public partial class World : LBModel
 	{
+		[JsonProperty ("owner", NullValueHandling = NullValueHandling.Ignore)]
+		public String owner { get; set; }
+
 		[JsonProperty ("name", NullValueHandling = NullValueHandling.Ignore)]
 		public String name { get; set; }
 
-		[JsonProperty ("resource_path", NullValueHandling = NullValueHandling.Ignore)]
-		public String resource_path { get; set; }
+		[JsonProperty ("world_guid", NullValueHandling = NullValueHandling.Ignore)]
+		public String world_guid { get; set; }
+
+		[JsonIgnore]
+		public double size
+		{
+			get { return _size ?? new double(); }
+			set { _size = value; }
+		}
+		[JsonProperty ("size", NullValueHandling = NullValueHandling.Ignore)]
+		private double? _size { get; set; }
+
+		[JsonIgnore]
+		public DateTime last_write_time
+		{
+			get { return _last_write_time ?? new DateTime(); }
+			set { _last_write_time = value; }
+		}
+		[JsonProperty ("last_write_time", NullValueHandling = NullValueHandling.Ignore)]
+		private DateTime? _last_write_time { get; set; }
 
 		[JsonProperty ("id", NullValueHandling = NullValueHandling.Ignore)]
 		public string id { get; set; }
-
-		[JsonProperty ("ownerId", NullValueHandling = NullValueHandling.Ignore)]
-		public String ownerId { get; set; }
-
-		[JsonProperty ("personId", NullValueHandling = NullValueHandling.Ignore)]
-		public String personId { get; set; }
-
-		[JsonProperty ("world", NullValueHandling = NullValueHandling.Ignore)]
-		public String world { get; set; }
 
 		
 		// This method identifies the ID field
@@ -1996,8 +1475,8 @@ namespace LBXamarinSDK
 		[JsonProperty ("container_uuid", NullValueHandling = NullValueHandling.Ignore)]
 		public String container_uuid { get; set; }
 
-		[JsonProperty ("resource_path", NullValueHandling = NullValueHandling.Ignore)]
-		public String resource_path { get; set; }
+		[JsonProperty ("worldId", NullValueHandling = NullValueHandling.Ignore)]
+		public String worldId { get; set; }
 
 		[JsonProperty ("id", NullValueHandling = NullValueHandling.Ignore)]
 		public string id { get; set; }
