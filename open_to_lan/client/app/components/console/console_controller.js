@@ -33,13 +33,5 @@ app.controller('consoleController', [
       $scope.activeClub.$save();
     };
 
-    // DEBUG
-    window.activePerson = $scope.activePerson;
-    window.Person = Person;
-    window.Club = Club;
-    window.World = World;
-    window.Server = Server;
-    window.clubs = $scope.clubs;
-
   }
 ]);

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. $HOME/thilenius/core/shell/base
+set -e
+
+INFO 'Building C# File'
+pushd /root/thilenius/open_to_lan
+node ~/loopback-sdk-xamarin/bin/lb-xm server/server.js
+popd

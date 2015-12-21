@@ -1,0 +1,24 @@
+<div class="fill-flex-box scroll-vertical" context-menu="explorerDropDown">
+  <div ng-repeat="project in projects">
+    <div class="list-plate-group {{ project.expanded ? 'expanded' : '' }}">
+      <div class="list-plate-header"
+           ng-click="toggleExpanded(project)"
+           context-menu="projectDropDown"
+           editable-text="project.name" e-form="editCtrl"
+           e-style="height: 24px;" buttons="no"
+           onaftersave="saveProjectShallow(project)">
+           {{ project.name }}
+      </div>
+      <div ng-repeat="sourceFile in project.sourceFiles"
+           ng-click="selected = sourceFile"
+           context-menu="fileDropDown"
+           editable-text="sourceFile.fullPath" e-form="fileEditCtrl"
+           e-style="height: 20px;" buttons="no"
+           onaftersave="saveSourceFileShallow(sourceFile)">
+        <div class="list-plate {{ (selected == sourceFile) ? 'active' : '' }}">
+          {{ sourceFile.fullPath }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
