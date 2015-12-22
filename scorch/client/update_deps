@@ -39,6 +39,7 @@ cat << EOM >> index.html
 <script src="vendor/jquery/dist/jquery.js"></script>
 <script src="vendor/bootstrap/dist/js/bootstrap.js"></script>
 <script src="vendor/angular/angular.js"></script>
+<script src="vendor/angular-animate/angular-animate.min.js"></script>
 <script src="vendor/angular-resource/angular-resource.js"></script>
 <script src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="vendor/angular-cookies/angular-cookies.js"></script>
@@ -54,6 +55,7 @@ echo "<script>var FORGE_VERSION=\"${TIMESTAMP}\";</script>" >> index.html
 pushd /root/thilenius/scorch
 bower --allow-root install \
   angular \
+  angular-animate \
   angular-bootstrap-contextmenu \
   angular-cookies \
   angular-resource \

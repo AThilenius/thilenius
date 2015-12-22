@@ -6,10 +6,11 @@
 angular.module('thilenius.file_explorer', [])
     .directive('atFileExplorer', [
       '$rootScope',
+      '$uibModal',
       'Person',
       'Project',
       'SourceFile',
-      function($rootScope, Person, Project, SourceFile) {
+      function($rootScope, $uibModal, Person, Project, SourceFile) {
         return {
           restrict: 'AE',
           templateUrl: 'app/directives/file_explorer/file_explorer.htm',
@@ -29,10 +30,31 @@ angular.module('thilenius.file_explorer', [])
                 'Rename Porject',
                 function($itemScope) { $itemScope.editCtrl.$show(); }
               ],
+              [
+                'Delete Porject',
+                function($itemScope) {
+                  Project.deleteById({id: $itemScope.project.id});
+                  $scope.projects =
+                      _($scope.projects).without($itemScope.project);
+                }
+              ],
               null,
               [
                 'Add New File',
                 function($itemScope) {
+                  //var modalInstance = $uibModal.open({
+                    //size: 'sm',
+                    //templateUrl: 'ModalText.html',
+                    //controller: 'ModalTextController',
+                    //resolve: {text: function() { return $scope.text; }}
+                  //});
+                  //modalInstance.result.then(
+                      //function(text) {
+                        //console.log('After: ' + text);
+                      //},
+                      //function() {
+                        //// STUB - Called when cancel is clicked
+                      //});
                   $itemScope.project.sourceFiles.push(
                       Project.sourceFiles.create({id: $itemScope.project.id},
                                                  {fullPath: 'Unnamed.txt'}));

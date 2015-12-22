@@ -1,20 +1,35 @@
+<script type="text/ng-template" id="ModalText.html">
+  <div class="modal-header">
+    <h3 class="modal-title">
+      Create File
+    </h3>
+  </div>
+  <div class="modal-body">
+    <input type="text" placeholder="full_file_name.cc" ng-model="text">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+  </div>
+</script>
+
 <div class="fill-flex-box scroll-vertical" context-menu="explorerDropDown">
   <div ng-repeat="project in projects">
     <div class="list-plate-group {{ project.expanded ? 'expanded' : '' }}">
       <div class="list-plate-header"
-           ng-click="toggleExpanded(project)"
-           context-menu="projectDropDown"
-           editable-text="project.name" e-form="editCtrl"
-           e-style="height: 24px;" buttons="no"
-           onaftersave="saveProjectShallow(project)">
-           {{ project.name }}
+        ng-click="toggleExpanded(project)"
+        context-menu="projectDropDown"
+        editable-text="project.name" e-form="editCtrl"
+        e-style="height: 24px;" buttons="no"
+        onaftersave="saveProjectShallow(project)">
+        {{ project.name }}
       </div>
       <div ng-repeat="sourceFile in project.sourceFiles"
-           ng-click="selected = sourceFile"
-           context-menu="fileDropDown"
-           editable-text="sourceFile.fullPath" e-form="fileEditCtrl"
-           e-style="height: 20px;" buttons="no"
-           onaftersave="saveSourceFileShallow(sourceFile)">
+        ng-click="selected = sourceFile"
+        context-menu="fileDropDown"
+        editable-text="sourceFile.fullPath" e-form="fileEditCtrl"
+        e-style="height: 20px;" buttons="no"
+        onaftersave="saveSourceFileShallow(sourceFile)">
         <div class="list-plate {{ (selected == sourceFile) ? 'active' : '' }}">
           {{ sourceFile.fullPath }}
         </div>

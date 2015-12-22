@@ -2,9 +2,11 @@
 // All rights reserved.
 var app = angular.module('app', [
   'lbServices',
+  'ngAnimate',
   'ngCookies',
   'ui.router',
   'ui.bootstrap.contextMenu',
+  'ui.bootstrap',
   'xeditable',
   'thilenius.navbar',
   'thilenius.file_explorer',
