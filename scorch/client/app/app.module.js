@@ -4,12 +4,14 @@ var app = angular.module('app', [
   'lbServices',
   'ngAnimate',
   'ngCookies',
+  'ngMaterial',
+  'dndLists',
   'ui.router',
   'ui.bootstrap.contextMenu',
   'ui.bootstrap',
   'xeditable',
   'thilenius.navbar',
-  'thilenius.file_explorer',
+  'thilenius.sidebar',
   'thilenius.content_window'
 ]);
 

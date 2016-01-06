@@ -1,5 +1,5 @@
 {
-  "name": "Project",
+  "name": "Enrolled",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {},
@@ -7,26 +7,15 @@
     "TimeStamp": true
   },
   "properties": {
-    "name": {
+    "role": {
       "type": "string",
       "required": true
-    },
-    "fileTree": {
-      "type": "object"
-    },
-    "config": {
-      "type": "string"
     }
   },
   "validations": [],
   "relations": {
-    "sourceFiles": {
-      "type": "hasMany",
-      "model": "SourceFile",
-      "foreignKey": ""
-    },
     "person": {
-      "type": "belongsTo",
+      "type": "hasOne",
       "model": "Person",
       "foreignKey": ""
     }

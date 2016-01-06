@@ -16,8 +16,6 @@ angular.module('thilenius.navbar', [])
               $location.path('/login');
             };
 
-            $scope.activePerson = Person.getCurrent();
-
           }
         };
       }

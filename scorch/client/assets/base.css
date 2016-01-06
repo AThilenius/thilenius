@@ -1,5 +1,16 @@
+html body {
+  font-family: Optima, Segoe, 'Segoe UI', Candara, Calibri, Arial, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 div {
   border-collapse: collapse;
+}
+
+div:focus {
+  outline: none;
+  border: 0;
 }
 
 .noselect {
@@ -76,6 +87,10 @@ div {
   height: 100%;
   overflow-y: auto;
   width: 100%;
+}
+
+.text-align-center {
+  text-align: center;
 }
 
 ::-webkit-scrollbar {

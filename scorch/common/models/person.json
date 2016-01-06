@@ -2,8 +2,9 @@
   "name": "Person",
   "base": "User",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
+  "options": {},
+  "mixins": {
+    "TimeStamp": true
   },
   "properties": {
     "firstName": {
@@ -13,6 +14,13 @@
     "lastName": {
       "type": "string",
       "required": true
+    },
+    "role": {
+      "type": "string",
+      "default": "student"
+    },
+    "editorState": {
+      "type": "object"
     }
   },
   "validations": [],
@@ -20,6 +28,16 @@
     "projects": {
       "type": "hasMany",
       "model": "Project",
+      "foreignKey": ""
+    },
+    "classes": {
+      "type": "hasMany",
+      "model": "Class",
+      "foreignKey": ""
+    },
+    "assignmentRuns": {
+      "type": "hasMany",
+      "model": "AssignmentRun",
       "foreignKey": ""
     }
   },

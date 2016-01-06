@@ -1,9 +1,10 @@
 <div class="v-flex-wrapper">
   <div class="flex-body">
-    <div ng-show="!activeEditor" class="editor-backdrop fill-flex"></div>
-    <div ng-show="activeEditor" class="fill-flex-box">
-      <div ng-show="activeEditor === aceEditorControl"
-           control="aceEditorControl" at-ace-editor>
+    <div ng-show="!forgeState.selectedFile"
+         class="editor-backdrop fill-flex-box">
+    </div>
+    <div ng-show="forgeState.selectedFile" class="fill-flex-box">
+      <div ng-show="true" file="forgeState.selectedFile" at-ace-editor>
       </div>
       <div ng-show="activeEditor === blocklyEditorControl"
            control="blocklyEditorControl" at-blockly-editor>

@@ -1,0 +1,144 @@
+<script type="text/ng-template" id="directoryTemplate">
+  <div class="directory-plate" mg-nofocus
+       ng-dblclick="directory.isExpanded = !directory.isExpanded">
+    <span class="tone-text-primary-hover glyphicon
+             glyphicon-triangle-{{ directory.isExpanded ? 'bottom' : 'right' }}"
+          style="font-size: 0.8em; margin-right:2px;" aria-hidden="true"
+          ng-click="directory.isExpanded = !directory.isExpanded"></span>
+    <span class="glyphicon
+                 glyphicon-folder-{{ directory.isExpanded ? 'open' : 'close' }}"
+          style="font-size: 0.8em; margin-right:1px;" aria-hidden="true"></span>
+    {{ directory.name }}
+  </div>
+  <div ng-if="directory.isExpanded">
+    <div ng-repeat="directory in directory.directories"
+         ng-include="'directoryTemplate'" style="padding-left: 18px;"
+         ng-init="depth = depth + 1"></div>
+    <div ng-repeat="file in directory.files" ng-include="'fileTemplate'"
+         style="padding-left: 18px;"
+         ng-init="depth = depth + 1"></div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="fileTemplate">
+  <div class="file-plate{{ state.activeFile == file ?
+                           '-active bg-highlight-blue' : '' }}"
+        ng-dblclick="renameDialog($event, file)"
+        style="{{ state.activeFile == file ?
+                  'margin-left: -' + ((depth * 18) + 10) + 'px;
+                  padding-left: ' + ((depth * 18) + 10) + 'px;' : '' }}">
+    <span class="glyphicon glyphicon-file" style="font-size: 0.8em;
+      margin-right:2px;" aria-hidden="true">
+    </span>
+    {{ file.name }}
+    <span class="glyphicon glyphicon-exclamation-sign pull-right alert-icon
+                 small-font"
+          ng-show="false" aria-hidden="true">
+    </span>
+  </div>
+</script>
+
+<script type="text/ng-template" id="renameDialog">
+  <md-dialog aria-label="Rename" ng-cloak>
+    <form ng-submit="rename()">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h3>Rename</h3>
+        </div>
+      </md-toolbar>
+
+      <md-dialog-content>
+        <div class="md-dialog-content">
+          <p>Rename {{ file.name }} ...</p>
+          <input style="width:100%;" ng-model="file.name" md-autofocus></input>
+        </div>
+      </md-dialog-content>
+
+      <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()">
+         Cancel
+        </md-button>
+        <md-button type="submit" style="margin-right:20px;">
+          Okay
+        </md-button>
+      </md-dialog-actions>
+    </form>
+  </md-dialog>
+</script>
+
+<div class="sidebar fill-flex-box tone-cplate-out tone-text-primary">
+
+  <!--Active Project-->
+  <div ng-show="state.activeProject" class="tone-cplate-in noselect">
+    <div class="active-project-header">
+      <div class="active-project-header-title">
+        <span ng-show="activeAssignment" class="glyphicon glyphicon-education"
+              style="margin-right:2px; color: green;" aria-hidden="true">
+        </span>
+        {{ state.activeProject.name }}
+        <div class="glyphicon glyphicon-cog pull-right settings-icon"
+             aria-hidden="true">
+        </div>
+      </div>
+      <div ng-show="activeAssignment">
+        <div class="progress">
+          <div class="progress-bar progress-bar-custom" role="progressbar"
+               aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"
+               style="width: 90%">
+          </div>
+        </div>
+        <div class="small-font">
+          Due in
+          <span style="color: red;">4 hours</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-divider bg-25"></div>
+    <div class="files-plate">
+
+      <div ng-repeat="directory in sampleTree.directories"
+           ng-include="'directoryTemplate'" ng-init="depth = 0"></div>
+      <div ng-repeat="file in sampleTree.files"
+           ng-include="'fileTemplate'" ng-init="depth = 0"></div>
+
+    </div>
+  </div>
+
+  <!--Inavtive Projects-->
+  <div ng-repeat="project in projects">
+    <div class="inactive-project tone-cplate-out-hover tone-text-secondary
+                noselect"
+          ng-show="project.id != state.activeProject.id"
+          ng-click="state.activeProject = project">
+      <span ng-show="activeAssignment" class="glyphicon glyphicon-education
+                     small-font"
+            style="margin-right:2px; color: red;" aria-hidden="true">
+      </span>
+      {{ project.name }}
+      <span ng-show="false" class="tone-text-secondary pull-right small-font"
+            style="padding-top: 2px; padding-right: 10px;">
+        Due in
+        <span style="color: orange;">2 weeks</span>
+      </span>
+    </div>
+  </div>
+
+  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">-->
+    <!--<span class="glyphicon glyphicon-flag" style="font-size: 0.8em; margin-right:2px; color: red;" aria-hidden="true"></span>-->
+    <!--B-Trees-->
+    <!--<span class="tone-text-secondary pull-right" style="padding-top: 2px; padding-right: 10px; font-size: 0.75em;">-->
+      <!--Due in-->
+      <!--<span style="color: orange;">4 weeks</span>-->
+    <!--</span>-->
+  <!--</div>-->
+  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">First Personal Project</div>-->
+  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">Some Other Project</div>-->
+  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">-->
+    <!--<span class="glyphicon glyphicon-flag" style="font-size: 0.8em; margin-right:2px; color: darkgrey;" aria-hidden="true"></span>-->
+    <!--Linked Lists-->
+    <!--<span class="tone-text-secondary pull-right" style="padding-top: 2px; padding-right: 10px; font-size: 0.75em;">-->
+      <!--Closed-->
+    <!--</span>-->
+  <!--</div>-->
+</div>

@@ -17,5 +17,11 @@
   "unused": false,
   "trailing": true,
   "sub": true,
-  "maxlen": 80
+  "maxlen": 80,
+  "globals": {
+    "angular": false,
+    "window": false,
+    "document": false,
+    "_": false
+  }
 }

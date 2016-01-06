@@ -1,9 +1,5 @@
-<nav class="navbar navbar-default">
-  <ul class="nav navbar-nav navbar-left">
-    <!-- Stub -->
-  </ul>
-  <ul class="nav navbar-nav navbar-right" style="padding-right: 10px">
-    <li class="dropdown">
+<div class="fill-flex-box tone-cplate-out tone-text-primary">
+    <button class="dropdown pull-right">
     <a class="dropdown-toggle noselect" data-toggle="dropdown"
       role="button" aria-haspopup="true" aria-expanded="false">
       {{ activePerson.lastName.toPascalCase() }} <span class="caret"></span>
@@ -15,6 +11,5 @@
       <li role="separator" class="divider"></li>
       <li><a class="noselect" ng-click="logout()">Logout</a></li>
     </ul>
-    </li>
-  </ul>
-</nav>
+    </button>
+</div>

@@ -69,5 +69,21 @@
   "Commit": {
     "dataSource": "transient",
     "public": true
+  },
+  "Class": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Enrolled": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Assignment": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AssignmentRun": {
+    "dataSource": "db",
+    "public": true
   }
 }

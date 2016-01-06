@@ -7,10 +7,6 @@
     "TimeStamp": true
   },
   "properties": {
-    "fullPath": {
-      "type": "string",
-      "required": true
-    },
     "state": {
       "type": "string",
       "default": "active"

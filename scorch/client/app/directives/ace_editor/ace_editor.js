@@ -17,7 +17,6 @@ angular.module('thilenius.ace_editor', [])
       function($rootScope, $timeout) {
         return {
           restrict: 'AE',
-          scope: {control: '=', editor: '='},
           templateUrl: 'app/directives/ace_editor/ace_editor.htm',
           link: function(scope, iElement, iAttrs) {
             scope.editor = ace.edit("editor");

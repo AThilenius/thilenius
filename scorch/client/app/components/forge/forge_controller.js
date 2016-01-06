@@ -13,6 +13,11 @@ forgeApp.controller('forgeController', [
     window.Project = Project;
     window.SourceFile = SourceFile;
 
+    // Global state object (not intended for serialization)
+    $scope.state = {
+      viewingAsRole: 'student'
+    };
+
     // Forward the version on
     if (typeof FORGE_VERSION !== 'undefined') {
       $scope.forgeVersion = FORGE_VERSION;
@@ -23,6 +28,10 @@ forgeApp.controller('forgeController', [
     $scope.projects = Person.projects({
       id: Person.getCurrentId(),
       filter: {include: {relation: 'sourceFiles'}}
+    });
+
+    $scope.person = Person.getCurrent(function(person) {
+      $scope.state.viewingAsRole = person.role;
     });
 
     //// Will redirect to login is failed

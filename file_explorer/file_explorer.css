@@ -68,3 +68,22 @@
   padding-left: 10px;
   padding-top: 10px;
 }
+
+/* DEVELOPMENT STUFF BELOW */
+.tone-d3 {
+}
+
+.tone-d4 {
+  background-color: rgba(48, 48, 48, 1);
+}
+
+.active-project {
+  box-shadow: inset 1px 1px 0px 0px rgba(48, 48, 48, 1);
+  margin-bottom: 10px;
+}
+
+.active-project-header {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid darkgrey;
+}
