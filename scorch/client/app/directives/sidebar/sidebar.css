@@ -24,7 +24,6 @@
 .files-plate {
   padding-top: 10px;
   padding-bottom: 10px;
-  padding-left: 18px;
   padding-right: 1px;
 }
 
@@ -69,4 +68,8 @@
   -webkit-transform: rotate(360deg);
   transform: rotate(360deg);
   color: white;
+}
+
+.files-plate .dndDraggingSource {
+  display: none;
 }

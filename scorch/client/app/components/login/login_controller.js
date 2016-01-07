@@ -1,3 +1,6 @@
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
 var app = angular.module('app');
 
 app.controller('loginController', [

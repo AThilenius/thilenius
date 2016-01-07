@@ -1,70 +1,63 @@
-<script type="text/ng-template" id="directoryTemplate">
-  <div class="directory-plate" mg-nofocus
-       ng-dblclick="directory.isExpanded = !directory.isExpanded">
-    <span class="tone-text-primary-hover glyphicon
-             glyphicon-triangle-{{ directory.isExpanded ? 'bottom' : 'right' }}"
-          style="font-size: 0.8em; margin-right:2px;" aria-hidden="true"
-          ng-click="directory.isExpanded = !directory.isExpanded"></span>
-    <span class="glyphicon
-                 glyphicon-folder-{{ directory.isExpanded ? 'open' : 'close' }}"
-          style="font-size: 0.8em; margin-right:1px;" aria-hidden="true"></span>
-    {{ directory.name }}
-  </div>
-  <div ng-if="directory.isExpanded">
-    <div ng-repeat="directory in directory.directories"
-         ng-include="'directoryTemplate'" style="padding-left: 18px;"
-         ng-init="depth = depth + 1"></div>
-    <div ng-repeat="file in directory.files" ng-include="'fileTemplate'"
+<script type="text/ng-template" id="listTemplate">
+  <div dnd-list="list"
+       style="min-height: 20px;">
+    <div ng-repeat="item in list"
+         dnd-draggable="item"
+         dnd-effect-allowed="move"
+         dnd-moved="list.splice($index, 1)"
+         dnd-selected="sidebarState.selected = item"
+         ng-init="depth = depth + 1"
          style="padding-left: 18px;"
-         ng-init="depth = depth + 1"></div>
+         ng-include="item.type + 'Template'">
+    </div>
+    <div class="dndPlaceholder" style="padding-left: 18px;">
+      <strong>Move Here</strong>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="directoryTemplate">
+  <div class="directory-plate"
+       mg-nofocus
+       ng-dblclick="item.isExpanded = !item.isExpanded"
+       context-menu="directoryDropdown">
+    <span class="tone-text-primary-hover glyphicon
+             glyphicon-triangle-{{ item.isExpanded ? 'bottom' : 'right' }}"
+          style="font-size: 0.8em; margin-right:2px;"
+          aria-hidden="true"
+          ng-click="item.isExpanded = !item.isExpanded">
+    </span>
+    <span class="glyphicon
+                 glyphicon-folder-{{ item.isExpanded ? 'open' : 'close' }}"
+          style="font-size: 0.8em; margin-right:1px;"
+          aria-hidden="true">
+    </span>
+    {{ item.name }}
+    <span ng-if="item.isExpanded && item.children"
+      <div ng-repeat="list in [item.children]"
+           ng-include="'listTemplate'">
+      </div>
+    </span>
   </div>
 </script>
 
 <script type="text/ng-template" id="fileTemplate">
-  <div class="file-plate{{ state.activeFile == file ?
+  <div class="file-plate{{ state.activeFile == item ?
                            '-active bg-highlight-blue' : '' }}"
-        ng-dblclick="renameDialog($event, file)"
-        style="{{ state.activeFile == file ?
+        ng-dblclick="renameDialog($event, item)"
+        style="{{ state.activeFile == item ?
                   'margin-left: -' + ((depth * 18) + 10) + 'px;
-                  padding-left: ' + ((depth * 18) + 10) + 'px;' : '' }}">
+                  padding-left: ' + ((depth * 18) + 10) + 'px;' : '' }}"
+        context-menu="fileDropdown">
     <span class="glyphicon glyphicon-file" style="font-size: 0.8em;
       margin-right:2px;" aria-hidden="true">
     </span>
-    {{ file.name }}
+    {{ item.name }}
     <span class="glyphicon glyphicon-exclamation-sign pull-right alert-icon
                  small-font"
           ng-show="false" aria-hidden="true">
     </span>
   </div>
-</script>
-
-<script type="text/ng-template" id="renameDialog">
-  <md-dialog aria-label="Rename" ng-cloak>
-    <form ng-submit="rename()">
-      <md-toolbar>
-        <div class="md-toolbar-tools">
-          <h3>Rename</h3>
-        </div>
-      </md-toolbar>
-
-      <md-dialog-content>
-        <div class="md-dialog-content">
-          <p>Rename {{ file.name }} ...</p>
-          <input style="width:100%;" ng-model="file.name" md-autofocus></input>
-        </div>
-      </md-dialog-content>
-
-      <md-dialog-actions layout="row">
-        <span flex></span>
-        <md-button ng-click="cancel()">
-         Cancel
-        </md-button>
-        <md-button type="submit" style="margin-right:20px;">
-          Okay
-        </md-button>
-      </md-dialog-actions>
-    </form>
-  </md-dialog>
 </script>
 
 <div class="sidebar fill-flex-box tone-cplate-out tone-text-primary">
@@ -95,12 +88,13 @@
       </div>
     </div>
     <div class="header-divider bg-25"></div>
-    <div class="files-plate">
+    <div class="files-plate"
+         context-menu="filesListDropdown">
 
-      <div ng-repeat="directory in sampleTree.directories"
-           ng-include="'directoryTemplate'" ng-init="depth = 0"></div>
-      <div ng-repeat="file in sampleTree.files"
-           ng-include="'fileTemplate'" ng-init="depth = 0"></div>
+      <div ng-repeat="list in [sampleTree]"
+           ng-include="'listTemplate'"
+           ng-init="depth = 0">
+      </div>
 
     </div>
   </div>
@@ -124,21 +118,4 @@
     </div>
   </div>
 
-  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">-->
-    <!--<span class="glyphicon glyphicon-flag" style="font-size: 0.8em; margin-right:2px; color: red;" aria-hidden="true"></span>-->
-    <!--B-Trees-->
-    <!--<span class="tone-text-secondary pull-right" style="padding-top: 2px; padding-right: 10px; font-size: 0.75em;">-->
-      <!--Due in-->
-      <!--<span style="color: orange;">4 weeks</span>-->
-    <!--</span>-->
-  <!--</div>-->
-  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">First Personal Project</div>-->
-  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">Some Other Project</div>-->
-  <!--<div class="inactive-project tone-cplate-out-hover tone-text-secondary noselect">-->
-    <!--<span class="glyphicon glyphicon-flag" style="font-size: 0.8em; margin-right:2px; color: darkgrey;" aria-hidden="true"></span>-->
-    <!--Linked Lists-->
-    <!--<span class="tone-text-secondary pull-right" style="padding-top: 2px; padding-right: 10px; font-size: 0.75em;">-->
-      <!--Closed-->
-    <!--</span>-->
-  <!--</div>-->
 </div>
