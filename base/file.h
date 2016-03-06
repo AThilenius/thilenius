@@ -7,13 +7,16 @@
 #include <string>
 #include <memory>
 
+#include "base/string.h"
 #include "base/types.h"
+#include "value_of.hh"
 
 namespace thilenius {
 namespace base {
 
 class File {
  public:
+  static ValueOf<std::string> ReadContents(const std::string& path);
   static bool AppendToFile(const std::string& file, const std::string& content);
   static bool Exists(const std::string& file);
   static bool Remove(const std::string& file);

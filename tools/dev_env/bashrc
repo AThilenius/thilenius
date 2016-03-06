@@ -4,11 +4,10 @@ PATH=$PATH:$HOME/thilenius/core/tools
 export CC=/usr/bin/clang-3.6
 export CXX=/usr/bin/clang++-3.6
 export CXXFLAGS=--std=c++11
+export CLOSURE_PATH=/root/thilenius/closure
 
 #===  MISX ALIASES  ============================================================
 alias rgrep='GREP_COLOR="1;37;41" LANG=C grep -r --color=auto'
 alias thilenius='cd $HOME/thilenius'
 alias ls='ls -hla --color=auto'
-alias bower='bower --allow-root'
-alias grunt='grunt --allow-root'
 alias lb-xm='node ~/loopback-sdk-xamarin/bin/lb-xm'

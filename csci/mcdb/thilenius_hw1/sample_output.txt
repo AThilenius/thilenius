@@ -1,0 +1,15 @@
+--------------------------------------------------------------------------------
+Command run:
+python thilenius.py -f small_seq_1000.fasta -c seq_102 -k ag
+--------------------------------------------------------------------------------
+seq_102	thilenius	Gene	18	20	100	+	0	.
+seq_102	thilenius	Gene	32	34	100	+	0	.
+seq_102	thilenius	Gene	57	59	100	+	0	.
+seq_102	thilenius	Gene	77	79	100	+	0	.
+seq_102	thilenius	Gene	97	99	100	+	0	.
+seq_102	thilenius	Gene	18	20	100	-	0	.
+seq_102	thilenius	Gene	32	34	100	-	0	.
+seq_102	thilenius	Gene	57	59	100	-	0	.
+seq_102	thilenius	Gene	77	79	100	-	0	.
+seq_102	thilenius	Gene	97	99	100	-	0	.
+GC content:  44.8979591837 %

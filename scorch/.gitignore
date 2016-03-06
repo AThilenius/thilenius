@@ -14,7 +14,15 @@
 .idea
 .project
 .strong-pm
+bin
 coverage
 node_modules
 npm-debug.log
 vendor
+bower_components
+build/
+!/closure/build/
+test_output.js
+dump
+#client/index.html
+server/datasources.json

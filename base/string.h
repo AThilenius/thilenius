@@ -101,9 +101,11 @@ class String {
                                    const std::string& value);
   static std::string ToLower(const std::string& str);
   static std::string ToUpper(const std::string& str);
+  static std::string RemoveAll(const std::string& str,
+                               const std::string& thing_to_remove);
 };
 
-} // namespace base
-} // namespace thilenius
+}  // namespace base
+}  // namespace thilenius
 
 #endif  // BASE_STRING_H_

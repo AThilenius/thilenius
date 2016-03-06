@@ -1,0 +1,7 @@
+#! /bin/bash
+. $HOME/thilenius/core/shell/base
+
+rm -rf $HOME/.vim/swapfiles
+rm -rf $HOME/.vim/bakfiles
+mkdir --parent $HOME/.vim/swapfiles
+mkdir --parent $HOME/.vim/bakfiles

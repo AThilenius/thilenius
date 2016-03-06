@@ -4,6 +4,7 @@
 #include "base/string.h"
 
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 
 using ::thilenius::base::String;
 
@@ -80,5 +81,12 @@ std::string String::ToUpper(const std::string& str) {
   return std::move(data);
 }
 
-} // namespace base
-} // namespace thilenius
+std::string String::RemoveAll(const std::string& str,
+                              const std::string& thing_to_remove) {
+  std::string replace_str = str;
+  ::boost::erase_all(replace_str, thing_to_remove);
+  return std::move(replace_str);
+}
+
+}  // namespace base
+}  // namespace thilenius

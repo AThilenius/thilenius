@@ -17,8 +17,10 @@ set fo +=j  " Be smart about comment leaders when joining lines.
 
 "==== General Settings =========================================================
 set autoindent
+set backupdir=$HOME/.vim/bakfiles//
 set clipboard=unnamed,unnamedplus
 set completeopt-=preview  " disable annoying preview window
+set directory=$HOME/.vim/swapfiles//
 set expandtab
 set history=500
 set ignorecase
@@ -69,13 +71,26 @@ xnoremap p pgvy
 
 "==== Plugin Settings ==========================================================
 
+" Scalariform
+au BufEnter *.scala setl formatprg=java\ -jar\ /root/thilenius/scala/scalariform.jar\ -f\ -q\ --stdin\ --stdout
+"map ,st :%!java -jar /root/thilenius/scala/scalariform.jar -f -q
+      "\ +compactControlReadability
+      "\ +alignParameters
+      "\ +alignSingleLineCaseStatements
+      "\ +doubleIndentClassDeclaration
+      "\ +preserveDanglingCloseParenthesis
+      "\ +rewriteArrowSymbols
+      "\ +preserveSpaceBeforeArguments
+      "\ --stdin
+      "\ --stdout <CR>
+
 " Easytags
 let g:easytags_async = 1
 
 " Syntastic
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_javascript_checkers = ['jscs']
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 
@@ -86,6 +101,11 @@ let g:ycm_confirm_extra_conf = 0
 let g:ycm_min_num_of_chars_for_completion = 1
 let g:ycm_seed_identifiers_with_syntax = 1
 
+" AutoFormat
+noremap <F3> :Autoformat<CR>
+let g:formatdef_yapf = "'yapf --style google --lines '.a:firstline.'-'.a:lastline"
+let g:formatters_python = ['yapf']
+
 " ListToggle
 let g:lt_location_list_toggle_map = ',l'
 let g:lt_quickfix_list_toggle_map = ',q'
@@ -93,7 +113,7 @@ let g:lt_height = 10
 
 " CtrlP
 let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-set wildignore+=*/node_modules/*,*/.git/*,*.so,*.swp,*.zip
+set wildignore+=*/node_modules/*,*/.git/*,*.so,*.swp,*.zip,*/bower_components/*
 
 " DelimMate
 let delimitMate_autoclose            = 1

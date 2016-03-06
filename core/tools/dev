@@ -24,7 +24,7 @@ else
     docker run --privileged -it -v /var/run/docker.sock:/run/docker.sock \
       -v $(which docker):/bin/docker -v $HOME/thilenius:/root/thilenius \
       -v $HOME/billet:/billet -v $HOME/data:/data \
-      -p 80:80 -p 8080:8080 -p 3000:3000 -p 2100:2100 -p 2400:2400 \
+      -p 80:80 -p 443:443 -p 8080:8080 -p 3000:3000 -p 2100:2100 -p 2400:2400 \
       -p 51230:51230 \
       athilenius/dev_env
   else
@@ -35,7 +35,7 @@ else
       docker exec -it $RUNNING_ID /bin/bash
     else
       # Not running, see if we have an old one
-      OLD_ID=$(docker ps -a | grep -m 1 'athilenius/dev_env:' | awk '{print $1}')
+      OLD_ID=$(docker ps -a | grep -m 1 'athilenius/dev_env' | awk '{print $1}')
       if [ "$OLD_ID" != '' ]; then
         INFO "Old dev_env container found [$OLD_ID], restarting..."
         docker start -ai $OLD_ID
@@ -45,7 +45,7 @@ else
           -v /var/run/docker.sock:/run/docker.sock \
           -v $(which docker):/bin/docker \
           -v $HOME/billet:/billet -v $HOME/data:/data \
-          -p 80:80 -p 8080:8080 -p 3000:3000 -p 2100:2100 -p 2400:2400 \
+          -p 80:80 -p 443:443 -p 8080:8080 -p 3000:3000 -p 2100:2100 -p 2400:2400 \
           -p 51230:51230 \
           athilenius/dev_env
       fi

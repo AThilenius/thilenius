@@ -1,0 +1,304 @@
+[0m[[0minfo[0m] [0m[32mLab1Spec:[0m[0m
+[0m[[0minfo[0m] [0m[32mabs[0m[0m
+[0m[[0minfo[0m] [0m[31m- should evaluate to the absolute value of the argument *** FAILED *** (41 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.abs(Lab1.scala:86)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$1.apply$mcV$sp(Lab1Spec.scala:21)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$1.apply(Lab1Spec.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$1.apply(Lab1Spec.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32mxor[0m[0m
+[0m[[0minfo[0m] [0m[31m- should evaluate to the exclusive or of the arguments *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.xor(Lab1.scala:88)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$2.apply$mcV$sp(Lab1Spec.scala:29)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$2.apply(Lab1Spec.scala:28)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$2.apply(Lab1Spec.scala:28)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32mrepeat[0m[0m
+[0m[[0minfo[0m] [0m[31m- should evaluate to repeated concatenation of a string *** FAILED *** (1 millisecond)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.repeat(Lab1.scala:90)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$3.apply$mcV$sp(Lab1Spec.scala:38)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$3.apply(Lab1Spec.scala:37)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$3.apply(Lab1Spec.scala:37)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32mrepeat[0m[0m
+[0m[[0minfo[0m] [0m[31m- should evaluate to an empty string when repeated zero times *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.repeat(Lab1.scala:90)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$4.apply$mcV$sp(Lab1Spec.scala:47)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$4.apply(Lab1Spec.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$4.apply(Lab1Spec.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32mrepeat[0m[0m
+[0m[[0minfo[0m] [0m[31m- should throw an exception when a negative number of repetitions is expected *** FAILED *** (9 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  Expected exception java.lang.IllegalArgumentException to be thrown, but java.lang.UnsupportedOperationException was thrown. (Lab1Spec.scala:54)[0m[0m
+[0m[[0minfo[0m] [0m[32msqrtStep[0m[0m
+[0m[[0minfo[0m] [0m[31m- should evaluate to one iteration of Newton's method *** FAILED *** (1 millisecond)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.sqrtStep(Lab1.scala:92)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$6.apply$mcV$sp(Lab1Spec.scala:62)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$6.apply(Lab1Spec.scala:61)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$6.apply(Lab1Spec.scala:61)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32msqrtN[0m[0m
+[0m[[0minfo[0m] [0m[31m- should perform several iterations of sqrtStep *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.sqrtN(Lab1.scala:94)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$7.apply$mcV$sp(Lab1Spec.scala:68)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$7.apply(Lab1Spec.scala:67)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$7.apply(Lab1Spec.scala:67)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32msqrtN[0m[0m
+[0m[[0minfo[0m] [0m[31m- should evaluate to x0 if n is zero *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.sqrtN(Lab1.scala:94)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$8.apply$mcV$sp(Lab1Spec.scala:75)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$8.apply(Lab1Spec.scala:74)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$8.apply(Lab1Spec.scala:74)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32msqrtErr[0m[0m
+[0m[[0minfo[0m] [0m[31m- should perform iterations until the error is within epsilon *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.sqrtErr(Lab1.scala:97)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$9.apply$mcV$sp(Lab1Spec.scala:80)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$9.apply(Lab1Spec.scala:79)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$9.apply(Lab1Spec.scala:79)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32msqrtN[0m[0m
+[0m[[0minfo[0m] [0m[31m- should throw an exception when n is negative *** FAILED *** (4 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  Expected exception java.lang.IllegalArgumentException to be thrown, but java.lang.UnsupportedOperationException was thrown. (Lab1Spec.scala:89)[0m[0m
+[0m[[0minfo[0m] [0m[32msqrtErr[0m[0m
+[0m[[0minfo[0m] [0m[31m- should throw an exception when using a non-positive epsilon *** FAILED *** (2 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  Expected exception java.lang.IllegalArgumentException to be thrown, but java.lang.UnsupportedOperationException was thrown. (Lab1Spec.scala:95)[0m[0m
+[0m[[0minfo[0m] [0m[32mrepOk[0m[0m
+[0m[[0minfo[0m] [0m[31m- should ensure that a SearchTree is properly ordered *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.check$1(Lab1.scala:113)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.repOk(Lab1.scala:115)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$12.apply$mcV$sp(Lab1Spec.scala:121)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$12.apply(Lab1Spec.scala:119)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$12.apply(Lab1Spec.scala:119)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32minsert[0m[0m
+[0m[[0minfo[0m] [0m[31m- should insert numbers as leaves in SearchTrees at the proper position *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.insert(Lab1.scala:118)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$13.apply$mcV$sp(Lab1Spec.scala:131)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$13.apply(Lab1Spec.scala:130)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$13.apply(Lab1Spec.scala:130)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32mdeleteMin[0m[0m
+[0m[[0minfo[0m] [0m[31m- should remove the smallest value from a tree, and provide the resulting tree *** FAILED *** (10 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.deleteMin(Lab1.scala:126)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$14.apply$mcV$sp(Lab1Spec.scala:143)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$14.apply(Lab1Spec.scala:139)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$14.apply(Lab1Spec.scala:139)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32mdelete[0m[0m
+[0m[[0minfo[0m] [0m[31m- should remove a given value from a tree, if present *** FAILED *** (0 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.delete(Lab1.scala:130)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$15.apply$mcV$sp(Lab1Spec.scala:149)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$15.apply(Lab1Spec.scala:148)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$15.apply(Lab1Spec.scala:148)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:20)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32minsert[0m[0m
+[0m[[0minfo[0m] [0m[31m- should produce trees that satisfy repOk *** FAILED *** (3 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.insert(Lab1.scala:118)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$treeFromList$1.apply(Lab1Spec.scala:165)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$treeFromList$1.apply(Lab1Spec.scala:165)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.immutable.List.foldLeft(List.scala:84)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.TraversableOnce$class.$div$colon(TraversableOnce.scala:138)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.AbstractTraversable.$div$colon(Traversable.scala:105)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec.treeFromList(Lab1Spec.scala:165)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$16.apply$mcV$sp(Lab1Spec.scala:168)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$16.apply(Lab1Spec.scala:167)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32minsert-delete[0m[0m
+[0m[[0minfo[0m] [0m[31m- should produce tress that satisfy repOk *** FAILED *** (11 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.insert(Lab1.scala:118)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$17$$anonfun$23$$anonfun$apply$2.apply(Lab1Spec.scala:175)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$17$$anonfun$23$$anonfun$apply$2.apply(Lab1Spec.scala:175)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$17$$anonfun$apply$mcV$sp$5.apply(Lab1Spec.scala:179)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$17$$anonfun$apply$mcV$sp$5.apply(Lab1Spec.scala:178)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.immutable.List.foldLeft(List.scala:84)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.TraversableOnce$class.$div$colon(TraversableOnce.scala:138)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.collection.AbstractTraversable.$div$colon(Traversable.scala:105)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$17.apply$mcV$sp(Lab1Spec.scala:177)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval+[0m[0m
+[0m[[0minfo[0m] [0m[31m- should perform addition *** FAILED *** (179 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:141)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$18.apply$mcV$sp(Lab1Spec.scala:189)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$18.apply(Lab1Spec.scala:189)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$18.apply(Lab1Spec.scala:189)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval-[0m[0m
+[0m[[0minfo[0m] [0m[31m- should perform subtraction *** FAILED *** (2 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:141)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$19.apply$mcV$sp(Lab1Spec.scala:193)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$19.apply(Lab1Spec.scala:193)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$19.apply(Lab1Spec.scala:193)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval*[0m[0m
+[0m[[0minfo[0m] [0m[31m- should perform multiplication *** FAILED *** (2 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:141)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$20.apply$mcV$sp(Lab1Spec.scala:197)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$20.apply(Lab1Spec.scala:197)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$20.apply(Lab1Spec.scala:197)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval/[0m[0m
+[0m[[0minfo[0m] [0m[31m- should perform division *** FAILED *** (1 millisecond)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:141)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$21.apply$mcV$sp(Lab1Spec.scala:201)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$21.apply(Lab1Spec.scala:201)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$21.apply(Lab1Spec.scala:201)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval/0[0m[0m
+[0m[[0minfo[0m] [0m[31m- should division by 0 should yield Infinity *** FAILED *** (2 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:141)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$22.apply$mcV$sp(Lab1Spec.scala:205)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$22.apply(Lab1Spec.scala:204)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$22.apply(Lab1Spec.scala:204)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer$$anonfun$apply$1.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$class.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval on src/test/resources/lab1/test101_arith.jsy[0m[0m
+[0m[[0minfo[0m] [0m[31m- should match src/test/resources/lab1/test101_arith.ans *** FAILED *** (39 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.processFile(Lab1.scala:159)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8$$anonfun$apply$1.apply$mcV$sp(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8$$anonfun$apply$1.apply(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8$$anonfun$apply$1.apply(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.util.DynamicVariable.withValue(DynamicVariable.scala:57)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.Console$.withOut(Console.scala:126)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8.apply(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8.apply(JsyApplication.scala:40)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$25$$anonfun$apply$1.apply$mcV$sp(Lab1Spec.scala:215)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
+[0m[[0minfo[0m] [0m[32meval on src/test/resources/lab1/test102_divbyzero.jsy[0m[0m
+[0m[[0minfo[0m] [0m[31m- should match src/test/resources/lab1/test102_divbyzero.ans *** FAILED *** (3 milliseconds)[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.UnsupportedOperationException:[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.eval(Lab1.scala:136)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.student.Lab1$.processFile(Lab1.scala:159)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8$$anonfun$apply$1.apply$mcV$sp(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8$$anonfun$apply$1.apply(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8$$anonfun$apply$1.apply(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.util.DynamicVariable.withValue(DynamicVariable.scala:57)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at scala.Console$.withOut(Console.scala:126)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8.apply(JsyApplication.scala:46)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at jsy.util.JsyApplication$$anonfun$8.apply(JsyApplication.scala:40)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at Lab1Spec$$anonfun$25$$anonfun$apply$1.apply$mcV$sp(Lab1Spec.scala:215)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m

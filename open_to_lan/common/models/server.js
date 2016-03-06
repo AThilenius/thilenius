@@ -1,3 +1,6 @@
+// Copyright 2015 Alec Thilenius
+// All rights reserved.
+
 var Docker = require('dockerode');
 
 module.exports = function(Server) {

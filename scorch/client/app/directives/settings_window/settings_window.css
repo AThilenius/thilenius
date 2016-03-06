@@ -1,7 +1,0 @@
-#controls td {
-    text-align: right;
-}
-
-#controls td + td {
-    text-align: left;
-}

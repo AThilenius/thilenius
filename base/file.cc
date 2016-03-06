@@ -20,6 +20,20 @@
 namespace thilenius {
 namespace base {
 
+// Static
+ValueOf<std::string> File::ReadContents(const std::string& path) {
+  if (!File::Exists(path)) {
+    return {"", StrCat("Failed to find file: ", path)};
+  }
+  std::ifstream file_stream(path);
+  if (!file_stream) {
+    return {"", StrCat("Failed to open file: ", path)};
+  }
+  std::string file_contents((std::istreambuf_iterator<char>(file_stream)),
+                            std::istreambuf_iterator<char>());
+  return {std::move(file_contents)};
+}
+
 bool File::AppendToFile(const std::string& file, const std::string& content) {
   std::ofstream file_stream(file, std::ios_base::app);
   if (!file_stream) {
@@ -60,16 +74,7 @@ std::string File::MD5OrDie(const std::string& file) {
 }
 
 std::string File::ReadContentsOrDie(const std::string& path) {
-  if (!File::Exists(path)) {
-    LOG(FATAL) << "Failed to find file: " << path;
-  }
-  std::ifstream file_stream(path);
-  if (!file_stream) {
-    LOG(FATAL) << "Failed to open file: " << path;
-  }
-  std::string file_contents((std::istreambuf_iterator<char>(file_stream)),
-                            std::istreambuf_iterator<char>());
-  return std::move(file_contents);
+  return File::ReadContents(path).GetOrDie();
 }
 
 bool File::Remove(const std::string& file) {

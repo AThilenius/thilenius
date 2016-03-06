@@ -1,0 +1,6 @@
+[0m[[0mdebug[0m] [0mCopy resource mappings: [0m
+[0m[[0mdebug[0m] [0m	(/root/thilenius/csci/ppl/lab1/src/test/resources/lab1,/root/thilenius/csci/ppl/lab1/target/scala-2.10/test-classes/lab1)[0m
+[0m[[0mdebug[0m] [0m	(/root/thilenius/csci/ppl/lab1/src/test/resources/lab1/test101_arith.ans,/root/thilenius/csci/ppl/lab1/target/scala-2.10/test-classes/lab1/test101_arith.ans)[0m
+[0m[[0mdebug[0m] [0m	(/root/thilenius/csci/ppl/lab1/src/test/resources/lab1/test101_arith.jsy,/root/thilenius/csci/ppl/lab1/target/scala-2.10/test-classes/lab1/test101_arith.jsy)[0m
+[0m[[0mdebug[0m] [0m	(/root/thilenius/csci/ppl/lab1/src/test/resources/lab1/test102_divbyzero.ans,/root/thilenius/csci/ppl/lab1/target/scala-2.10/test-classes/lab1/test102_divbyzero.ans)[0m
+[0m[[0mdebug[0m] [0m	(/root/thilenius/csci/ppl/lab1/src/test/resources/lab1/test102_divbyzero.jsy,/root/thilenius/csci/ppl/lab1/target/scala-2.10/test-classes/lab1/test102_divbyzero.jsy)[0m

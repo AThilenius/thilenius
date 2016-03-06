@@ -21,6 +21,7 @@ Plugin 'FelikZ/ctrlp-py-matcher'
 Plugin 'Raimondi/delimitMate'
 Plugin 'bling/vim-airline'
 Plugin 'bronson/vim-trailing-whitespace'
+Plugin 'derekwyatt/vim-scala'
 Plugin 'ekalinin/Dockerfile.vim'
 Plugin 'elzr/vim-json'
 Plugin 'flazz/vim-colorschemes'
@@ -40,8 +41,8 @@ Plugin 'xolox/vim-misc'
 
 if !filereadable(expand('~/.vimrc_google'))
   " Non-Google Only
+  Plugin 'Chiel92/vim-autoformat'
   Plugin 'Valloric/YouCompleteMe'
-  Plugin 'google/vim-codefmt'
   Plugin 'google/vim-maktaba'
   Plugin 'scrooloose/syntastic'
 endif

@@ -8,13 +8,14 @@ RUN apt-get update -q
 
 #===  PYTHON 2.7  ==============================================================
 RUN apt-get install -y python python-pip python-dev
+RUN pip install yapf
 
 #===  NODEJS / NPM  ============================================================
-RUN apt-get install -qy nodejs
-RUN apt-get install -qy nodejs-legacy
-RUN apt-get install -qy npm
+RUN curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+RUN apt-get install -y nodejs
 
 #===  CLANG  ===================================================================
+RUN apt-get install -y build-essential
 RUN apt-get install -y libc++-dev libc++abi-dev clang-3.6 lldb-3.6
 RUN ln -s /usr/bin/clang-3.6 /usr/bin/clang
 RUN ln -s /usr/bin/clang++-3.6 /usr/bin/clang++
@@ -32,6 +33,7 @@ RUN apt-get install -y tmux
 #===  FORMATTERS  ==============================================================
 RUN npm install -g js-beautify
 RUN npm install -g jshint
+RUN npm install -g jscs
 RUN apt-get install -y clang-format-3.6
 RUN ln /usr/bin/clang-format-3.6 /usr/bin/clang-format
 
@@ -50,11 +52,11 @@ RUN export CC=/usr/bin/clang-3.6 && export CXX=/usr/bin/clang++-3.6 && \
     export CXXFLAGS=--std=c++11 && \
     cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
 
-#===  CTAGS  ===================================================================
-RUN apt-get install -y exuberant-ctags
-
 #===  WGET  ====================================================================
 RUN apt-get install -y wget
+
+#===  CTAGS  ===================================================================
+RUN apt-get install -y exuberant-ctags
 
 #===  UNZIP  ===================================================================
 RUN apt-get install -y unzip
@@ -69,10 +71,6 @@ RUN echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen
 RUN apt-get update
 RUN apt-get install -y mongodb-org
 RUN rm -rf /var/lib/apt/lists/*
-
-#===  VIM RC  ==================================================================
-ADD vimrc /root/env_files/
-RUN cat /root/env_files/vimrc >> /root/.vimrc
 
 #===  NPM MODULES  =============================================================
 RUN npm install -g mocha
@@ -105,17 +103,31 @@ RUN apt-get install -y \
 #===  MONO  ====================================================================
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 RUN echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
-RUN apt-get update
+RUN apt-get update -y
 RUN apt-get install -y mono-devel
 
+#===  SCALA / SBT / JAVA  ======================================================
+RUN wget www.scala-lang.org/files/archive/scala-2.11.7.deb
+RUN dpkg -i scala-2.11.7.deb
+
+RUN echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+RUN apt-get update
+RUN apt-get install -y sbt
+
 #===  NPM packages =============================================================
-RUN npm install -g strongloop bower grunt grunt-cli
-RUN npm install --save loopback-connector-mongodb
+RUN npm install -g strongloop bower grunt-cli
 # Manually install loopback-skd-lbxm
 RUN cd ~; \
     git clone https://github.com/strongloop/loopback-sdk-xamarin.git; \
     cd loopback-sdk-xamarin; \
     npm install;
+
+#===  VIM RC  ==================================================================
+ADD vimrc /root/env_files/
+RUN cat /root/env_files/vimrc >> /root/.vimrc
+RUN mkdir --parent /root/.vim/swapfiles
+RUN mkdir --parent /root/.vim/bakfiles
 
 #===  MISX FILES  ==============================================================
 ADD bashrc /root/env_files/

@@ -12,4 +12,5 @@ RUN apt-get install -y mongodb-org
 RUN rm -rf /var/lib/apt/lists/*
 
 #===  MISX  ====================================================================
+RUN mkdir --parent /data/mongodb
 CMD /bin/bash -c 'mkdir -p /data/mongodb && mongod --dbpath=/data/mongodb'
