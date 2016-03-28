@@ -7,7 +7,7 @@ FROM athilenius/base
 RUN apt-get update -q
 
 #===  PYTHON 2.7  ==============================================================
-RUN apt-get install -y python python-pip python-dev
+RUN apt-get install -y python python-pip python-dev pylint
 RUN pip install yapf
 
 #===  NODEJS / NPM  ============================================================
