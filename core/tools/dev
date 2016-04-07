@@ -9,7 +9,7 @@ FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
 
 # Check that we aren't already in a container
-if [ "${USER}" != "Alec"  ]; then
+if [ "${USER,,}" != "alec"  ]; then
   EROR 'You are already in a container'
 fi
 
