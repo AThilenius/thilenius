@@ -4,3 +4,6 @@
 [submodule "scorch"]
 	path = scorch
 	url = https://github.com/AThilenius/scorchforge.git
+[submodule "github_io"]
+	path = github_io
+	url = https://github.com/AThilenius/AThilenius.github.io
