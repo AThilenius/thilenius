@@ -7,3 +7,6 @@
 [submodule "github_io"]
 	path = github_io
 	url = https://github.com/AThilenius/AThilenius.github.io
+[submodule "woodriver"]
+	path = woodriver
+	url = https://athilenius@github.com/AThilenius/woodriver.git

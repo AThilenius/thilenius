@@ -2,8 +2,8 @@
 . $HOME/thilenius/core/shell/base
 
 INFO 'Killing any old Docker Containers'
-docker kill mongo_dev 2> /dev/null
-docker rm mongo_dev 2> /dev/null
+docker kill mongo 2> /dev/null
+docker rm mongo 2> /dev/null
 
 INFO 'Building Docker image'
 docker build -t athilenius/mongo $HOME/thilenius/cloud/mongo_db ||\
@@ -12,7 +12,7 @@ docker build -t athilenius/mongo $HOME/thilenius/cloud/mongo_db ||\
 # Always use default MongoDB port (to prevent orphaned services)
 PORT=27017
 INFO "Starting Docker container on port 27017"
-CONTAINER_ID=$(docker run -d -p 27017:27017 --net=host --name mongo_dev \
+CONTAINER_ID=$(docker run -d -p 27017:27017 --name mongo \
     -e DOCKER_PORT=$PORT athilenius/mongo)
 
 INFO "Started in container [$CONTAINER_ID]. Waiting a few seconds for logs"

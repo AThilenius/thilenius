@@ -15,9 +15,7 @@ fi
 
 if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
   INFO 'Removing untagged docker images'
-  docker rmi $(docker images | grep "^<none>" | awk '{print $3}')
-  INFO 'Removing all docker containers'
-  docker rm $(docker ps -a -q)
+  docker rmi -f $(docker images | grep "^<none>" | awk '{print $3}')
 else
   if [ ${FLAGS_new} -eq ${FLAGS_TRUE} ]; then
     WARN "Creating a new dev container."

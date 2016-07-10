@@ -1,0 +1,15 @@
+{
+  "preset": "google",
+  "maxErrors": 200,
+  "requireObjectKeysOnNewLine": false,
+  "jsDoc": {
+    "checkAnnotations": {
+      "preset": "jsdoc3",
+      "extra": {
+        "ngdoc": true,
+        "restrict": true,
+        "ngInject": true
+      }
+    }
+  }
+}

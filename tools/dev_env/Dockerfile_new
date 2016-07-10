@@ -6,6 +6,34 @@ FROM athilenius/base
 #===  UPDATE apt-get  ==========================================================
 RUN apt-get update -q
 
+#===  MISX APT-GET  ============================================================
+RUN apt-get install -y \
+  autoconf \
+  bison \
+  cmake \
+  default-jdk \
+  exuberant-ctags \
+  flex \
+  g++ \
+  git \
+  libboost-all-dev \
+  libdouble-conversion-dev \
+  libevent-dev \
+  libgoogle-glog-dev \
+  libkrb5-dev \
+  libnuma-dev \
+  libsasl2-dev \
+  libsnappy-dev \
+  libssl-dev \
+  libtool \
+  make \
+  nginx \
+  scons \
+  tmux \
+  unzip \
+  wget \
+  zip
+
 #===  PYTHON 2.7  ==============================================================
 RUN apt-get install -y python python-pip python-dev pylint
 RUN pip install yapf
@@ -14,39 +42,14 @@ RUN pip install yapf
 RUN curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
 RUN apt-get install -y nodejs
 
-#===  rbenv / Ruby / PG / Rails ================================================
-RUN apt-get install -y libpq-dev
-RUN git clone git://github.com/sstephenson/rbenv.git .rbenv
-RUN git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-RUN export PATH="$HOME/.rbenv/bin:$PATH" && \
-    eval "$(rbenv init -)" && \
-    export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH" && \
-    echo "gem: --no-document" > ~/.gemrc && \
-    rbenv install 2.3.1 && \
-    rbenv global 2.3.1 && \
-    gem install bundler
-
-
 #===  CLANG  ===================================================================
 RUN apt-get install -y build-essential
 RUN apt-get install -y libc++-dev libc++abi-dev clang-3.6 lldb-3.6
 RUN ln -s /usr/bin/clang-3.6 /usr/bin/clang
 RUN ln -s /usr/bin/clang++-3.6 /usr/bin/clang++
 
-#===  GIT  =====================================================================
-RUN apt-get install -y git
-
-#===  MAKE / CMAKE  ============================================================
-RUN apt-get install -y make
-RUN apt-get install -y cmake
-
-#===  MISX TOOLS  ==============================================================
-RUN apt-get install -y tmux
-
 #===  FORMATTERS  ==============================================================
-RUN npm install -g js-beautify
-RUN npm install -g jshint
-RUN npm install -g jscs
+RUN npm install -g jscs jscs-angular
 RUN apt-get install -y clang-format-3.6
 RUN ln /usr/bin/clang-format-3.6 /usr/bin/clang-format
 
@@ -61,57 +64,29 @@ RUN vim +PluginInstall +qall
 RUN cd /root/.vim/bundle/tern_for_vim && npm install
 
 #===  YOU COMPLETE ME  =========================================================
-RUN export CC=/usr/bin/clang-3.6 && export CXX=/usr/bin/clang++-3.6 && \
+RUN export CC=/usr/bin/clang-3.6 && \
+    export CXX=/usr/bin/clang++-3.6 && \
     export CXXFLAGS=--std=c++11 && \
-    cd /root/.vim/bundle/YouCompleteMe && ./install.sh --clang-completer
+    cd /root/.vim/bundle/YouCompleteMe && \
+    ./install.py --clang-completer --system-libclang
 
-#===  WGET  ====================================================================
-RUN apt-get install -y wget
+#===  MONO  ====================================================================
+#RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+#RUN echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+#RUN apt-get update -y
+#RUN apt-get install -y mono-devel
 
-#===  CTAGS  ===================================================================
-RUN apt-get install -y exuberant-ctags
+#===  SCALA / SBT / JAVA  ======================================================
+#RUN wget www.scala-lang.org/files/archive/scala-2.11.7.deb
+#RUN dpkg -i scala-2.11.7.deb
 
-#===  UNZIP  ===================================================================
-RUN apt-get install -y unzip
-
-#===  SCONS  ===================================================================
-RUN apt-get install -y scons
-
-#===  NPM MODULES  =============================================================
-RUN npm install -g mocha
-
-#===  MISX APT-GET  ============================================================
-RUN apt-get update -q
-RUN apt-get install -y \
-  libdouble-conversion-dev \
-  libssl-dev \
-  make \
-  zip \
-  git \
-  autoconf \
-  libtool \
-  g++ \
-  libboost-all-dev \
-  flex \
-  bison \
-  libgoogle-glog-dev \
-  scons \
-  libkrb5-dev \
-  libsnappy-dev \
-  libsasl2-dev \
-  libnuma-dev \
-  libevent-dev \
-  nginx \
-  default-jdk \
-  git
+#RUN echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+#RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+#RUN apt-get update
+#RUN apt-get install -y sbt
 
 #===  NPM packages =============================================================
-RUN npm install -g strongloop bower grunt-cli
-# Manually install loopback-skd-lbxm
-RUN cd ~; \
-    git clone https://github.com/strongloop/loopback-sdk-xamarin.git; \
-    cd loopback-sdk-xamarin; \
-    npm install;
+RUN npm install -g strongloop bower grunt-cli --unsafe-perm
 
 #===  VIM RC  ==================================================================
 ADD vimrc /root/env_files/
