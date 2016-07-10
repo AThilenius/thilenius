@@ -1,8 +1,0 @@
-#!/bin/bash
-
-echo 'Starting mognoDB'
-(while true; do sudo mongod --profile=1 --slowms=5 --smallfiles --dbpath=/data/mongo > mongo.log 2>&1; sleep 1; done)  &
-
-echo 'Starting OpenToLan Loopback'
-pushd ~/open_to_lan
-node .
