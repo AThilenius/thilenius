@@ -20,75 +20,75 @@ fi
 
 # Compute relative path
 PWD=$(pwd)
-if [[ $PWD != /root/thilenius*  ]]; then
-  EROR 'You must be inside /root/thilenius to use build'
+if [[ $PWD != $HOME/thilenius*  ]]; then
+  EROR 'You must be inside $HOME/thilenius to use build'
 fi
 
-RPATH=${PWD#/root/thilenius/}
-RPATH=${RPATH#/root/thilenius}
+RPATH=${PWD#$HOME/thilenius/}
+RPATH=${RPATH#$HOME/thilenius}
 PWDD=${PWD##*/}
 
 if [ ${FLAGS_verbose} -eq ${FLAGS_TRUE} ]; then
   INFO "    name: $PWDD"
-  INFO "bin path: /root/thilenius_bin/$RPATH"
-  INFO "gen path: /root/thilenius_gen/$RPATH"
+  INFO "bin path: $HOME/thilenius_bin/$RPATH"
+  INFO "gen path: $HOME/thilenius_gen/$RPATH"
 fi
 
 # Clean
 if [ ${FLAGS_clean} -eq ${FLAGS_TRUE} ]; then
-  INFO "Deleteing: /root/thilenius_bin/$RPATH"
-  INFO "           /root/thilenius_gen/$RPATH"
-  rm -rf /root/thilenius_bin/$RPATH
-  rm -rf /root/thilenius_gen/$RPATH
+  INFO "Deleteing: $HOME/thilenius_bin/$RPATH"
+  INFO "           $HOME/thilenius_gen/$RPATH"
+  rm -rf $HOME/thilenius_bin/$RPATH
+  rm -rf $HOME/thilenius_gen/$RPATH
 fi
 
 # Clean All
 if [ ${FLAGS_clean_all} -eq ${FLAGS_TRUE} ]; then
-  INFO "Deleteing: /root/thilenius_bin"
-  INFO "           /root/thilenius_gen"
-  rm -rf /root/thilenius_bin
-  rm -rf /root/thilenius_gen
+  INFO "Deleteing: $HOME/thilenius_bin"
+  INFO "           $HOME/thilenius_gen"
+  rm -rf $HOME/thilenius_bin
+  rm -rf $HOME/thilenius_gen
 fi
 
 # Build
 INFO 'Running CMake'
 if [ ${FLAGS_release} -eq ${FLAGS_TRUE} ]; then
-  cmake -DCMAKE_BUILD_TYPE=Release -H. -B/root/thilenius_bin/$RPATH \
+  cmake -DCMAKE_BUILD_TYPE=Release -H. -B$HOME/thilenius_bin/$RPATH \
     || EROR 'CMake command failed.'
 else
-  cmake -H. -B/root/thilenius_bin/$RPATH || EROR 'CMake command failed.'
+  cmake -H. -B$HOME/thilenius_bin/$RPATH || EROR 'CMake command failed.'
 fi
 
 INFO 'Running Make'
-cd /root/thilenius_bin/$RPATH
+cd $HOME/thilenius_bin/$RPATH
 make || EROR 'Make command failed.'
 INFO 'Building completed successfully.'
 
 # Run
 if [ ${FLAGS_run} -eq ${FLAGS_TRUE} ]; then
-  if [ ! -e "/root/thilenius_bin/$RPATH/$PWDD" ]; then
-    WARN "No executable found at /root/thilenius_bin/$RPATH/$PWDD"
+  if [ ! -e "$HOME/thilenius_bin/$RPATH/$PWDD" ]; then
+    WARN "No executable found at $HOME/thilenius_bin/$RPATH/$PWDD"
   else
-    INFO "Running executable /root/thilenius_bin/$RPATH/$PWDD ${@:1}"
-    pushd /root/thilenius/$RPATH
-    /root/thilenius_bin/$RPATH/$PWDD ${@:1}
+    INFO "Running executable $HOME/thilenius_bin/$RPATH/$PWDD ${@:1}"
+    pushd $HOME/thilenius/$RPATH
+    $HOME/thilenius_bin/$RPATH/$PWDD ${@:1}
     popd
   fi
 fi
 
 # Test
 if [ ${FLAGS_tests} -eq ${FLAGS_TRUE} ]; then
-  if [ ! -e "/root/thilenius_bin/$RPATH/${PWDD}_test" ]; then
-    WARN "No tests found at /root/thilenius_bin/$RPATH/${PWDD}_test"
+  if [ ! -e "$HOME/thilenius_bin/$RPATH/${PWDD}_test" ]; then
+    WARN "No tests found at $HOME/thilenius_bin/$RPATH/${PWDD}_test"
   else
-    INFO "Running tests at /root/thilenius_bin/$RPATH/${PWDD}_test"
-    /root/thilenius_bin/$RPATH/${PWDD}_test || exit 1
+    INFO "Running tests at $HOME/thilenius_bin/$RPATH/${PWDD}_test"
+    $HOME/thilenius_bin/$RPATH/${PWDD}_test || exit 1
   fi
 fi
 
 # Test All
 if [ ${FLAGS_test_all} -eq ${FLAGS_TRUE} ]; then
-  find /root/thilenius -name "CMakeLists.txt" -print0 | while IFS= read -r \
+  find $HOME/thilenius -name "CMakeLists.txt" -print0 | while IFS= read -r \
       -d $'\0' line; do
     TARGET_DIR=${line%/CMakeLists.txt}
     INFO "Found CMake target at $TARGET_DIR"
@@ -101,16 +101,16 @@ fi
 
 # Package
 if [ ${FLAGS_package} -eq ${FLAGS_TRUE} ]; then
-  mkdir -p /root/thilenius_bin/$RPATH/${PWDD}_package
+  mkdir -p $HOME/thilenius_bin/$RPATH/${PWDD}_package
   INFO "Collecting the shared library dependencies for $PWDD"
-  deps=$(ldd /root/thilenius_bin/$RPATH/$PWDD | awk 'BEGIN{ORS=" "}$1\
-  ~/^\//{print $1}$3~/^\//{print $3}' | sed 's/,$/\n/')
-  INFO "Copying dependencies to /root/thilenius_bin/$RPATH/${PWDD}_package"
+  deps=$(ldd $HOME/thilenius_bin/$RPATH/$PWDD | awk 'BEGIN{ORS=" "}$1\
+  $HOME/^\//{print $1}$3$HOME/^\//{print $3}' | sed 's/,$/\n/')
+  INFO "Copying dependencies to $HOME/thilenius_bin/$RPATH/${PWDD}_package"
   for dep in $deps; do
       INFO " - $dep"
-      cp "$dep" "/root/thilenius_bin/$RPATH/${PWDD}_package/"
+      cp "$dep" "$HOME/thilenius_bin/$RPATH/${PWDD}_package/"
   done
   INFO "Copying ${PWDD} binary"
-  cp "/root/thilenius_bin/${RPATH}/${PWDD}" \
-      "/root/thilenius_bin/$RPATH/${PWDD}_package/"
+  cp "$HOME/thilenius_bin/${RPATH}/${PWDD}" \
+      "$HOME/thilenius_bin/$RPATH/${PWDD}_package/"
 fi

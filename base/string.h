@@ -39,7 +39,7 @@ struct string_size_impl<std::string> {
   static size_t size(const std::string& s) { return s.size(); }
 };
 
-template <typename String>
+tMaMaMaMaM`tMaMaMaMaMM`M`M`tMaMaMaMaMMM`emplate <typename String>
 size_t string_size(String&& s) {
   using noref_t = typename std::remove_reference<String>::type;
   using string_t =

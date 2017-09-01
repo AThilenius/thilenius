@@ -1,7 +1,9 @@
 {
   "preset": "google",
   "maxErrors": 200,
-  "requireObjectKeysOnNewLine": false,
+  "requireObjectKeysOnNewLine": { "allExcept": ["sameLine"]  },
+  "disallowObjectKeysOnNewLine": false,
+  "requirePaddingNewLinesInObjects": false,
   "jsDoc": {
     "checkAnnotations": {
       "preset": "jsdoc3",

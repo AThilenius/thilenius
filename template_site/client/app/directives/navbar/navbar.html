@@ -1,0 +1,95 @@
+<md-toolbar class="md-hue-2" flex>
+  <div class="container">
+    <div class="md-toolbar-tools" style="margin: 0 10px 0 10px;">
+      <md-button ng-click="goToHome()" layout="row" layout-align="center center"><img src="assets/logo.png" height="35"
+                                                                                      width="35">
+        <h2 style="margin-left: 15px; color: white;"><b>Thilenius</b></h2>
+      </md-button>
+
+      <form ng-submit="$event.preventDefault()" layout="row" style="margin: 0 30px;" flex>
+        <md-autocomplete
+            style="background: rgb(43, 90, 177);"
+            md-selected-item="selectedItem"
+            md-selected-item-change="select(match)"
+            md-search-text="searchText"
+            md-items="match in querySearch(searchText)"
+            md-item-text="match.item.name"
+            md-min-length="0"
+            placeholder="Full Text Search"
+            md-menu-class="autocomplete-custom-template"
+            flex>
+          <md-item-template>
+            <span class="item-title">
+              <md-icon aria-label="Notifications" class="material-icons">{{match.item.icon}}</md-icon>
+              <b>{{match.item.name}}</b>
+            </span>
+            <span class="item-metadata">
+              <span ng-repeat="matchHtml in match.matchesHtml" ng-bind-html="matchHtml"
+                    style="margin-right: 10px;"></span>
+            </span>
+          </md-item-template>
+        </md-autocomplete>
+      </form>
+
+      <!--Logged In-->
+      <section ng-if="rootScope.currentUser.email" layout="row" layout-align="center center" layout-wrap>
+        <md-button area-label="Notifications" class="md-icon-button">
+          <md-icon aria-label="Notifications" class="material-icons">notifications</md-icon>
+          <md-tooltip md-delay="250">Notifications</md-tooltip>
+        </md-button>
+
+        <md-menu ng-show="rootScope.currentUser.email">
+          <md-button aria-label="Open user menu" class="md-icon-button" style="padding: 0 0 0 0;"
+                     ng-click="$mdOpenMenu($event)">
+            <md-icon aria-label="Menu" class="material-icons">more_vert</md-icon>
+            <md-tooltip md-delay="250">More</md-tooltip>
+          </md-button>
+          <md-menu-content width="4">
+            <md-menu-item>
+              <md-button class="md-raised md-primary" ng-click="goToState('home')">
+                <md-icon aria-label="Menu" class="material-icons">home</md-icon>
+                Thilenius Welcome Page
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+
+        <md-menu ng-show="rootScope.currentUser.email" style="margin-top: 6px;">
+          <md-button aria-label="Open user menu" class="md-icon-button" style="padding: 0 0 0 0;"
+                     ng-click="$mdOpenMenu($event)">
+            <img src="http://www.gravatar.com/avatar/{{ rootScope.currentUser.email | gravatar  }}?d=mm" height="40" width="40">
+            <md-tooltip md-delay="250">Account</md-tooltip>
+          </md-button>
+          <md-menu-content width="4">
+            <md-menu-item>
+              <md-button class="md-raised md-primary" ng-click="navigate('account')">
+                <md-icon aria-label="Menu" class="material-icons">account_circle</md-icon>
+                Account
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="navigate('policy')">
+                <md-icon aria-label="Menu" class="material-icons">perm_identity</md-icon>
+                Policy
+              </md-button>
+            </md-menu-item>
+            <md-menu-divider></md-menu-divider>
+            <md-menu-item>
+              <md-button ng-click="logout()">
+                Logout
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+      </section>
+
+      <!--No Logged In-->
+      <section ng-if="!rootScope.currentUser.email" layout="row" layout-align="center center" layout-wrap>
+        <md-button area-label="create login" ng-click="navigate('create_login')" class="">Already A Customer?
+        </md-button>
+        <md-button area-label="login" href="/login" class="md-raised">Login</md-button>
+      </section>
+
+    </div>
+  </div>
+</md-toolbar>

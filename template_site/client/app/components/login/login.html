@@ -1,0 +1,30 @@
+<div layout="row" layout-align="center center" class="fill" style="position:fixed;">
+  <div class="center-outline" flex-xs layout="column">
+    <form style="max-width: 400px;" name="loginForm" ng-submit="loginForm.$valid && login(loginCredentials.email, loginCredentials.password)">
+      <img src="/assets/logo sized.png" style="max-width: 400px; margin-bottom: 20px;">
+      <br>
+      <md-input-container class="md-block">
+        <label>Email Address</label>
+        <input ng-model="loginCredentials.email" type="email" name="email" required autofocus>
+        <div ng-messages="loginForm.email.$error">
+          <div ng-message="required">This field is required</div>
+          <div ng-message="email">Invalid Email</div>
+        </div>
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label>Password</label>
+        <input ng-model="loginCredentials.password" type="password" name="password" required>
+        <div ng-messages="loginForm.password.$error">
+          <div ng-message="required">This field is required.</div>
+        </div>
+      </md-input-container>
+      <md-button type="submit" class="md-raised md-primary" ng-disabled="loginForm.$invalid">
+        Sign In
+      </md-button>
+      <md-button class="md-primary pull-right" href="/create_login" ng-disable="true">
+        Create Login
+      </md-button>
+    </form>
+    <h3 ng-show="error" class="text-center" style="margin-top: 20px; color:red;">{{error}}</h3>
+  </div>
+</div>

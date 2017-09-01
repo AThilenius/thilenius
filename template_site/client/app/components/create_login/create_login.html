@@ -1,0 +1,70 @@
+<div layout="row" layout-align="center center">
+
+  <div class="center-outline" layout="column">
+    <form style="max-width: 400px;" name="emailForm" ng-show="!emailSent"
+          ng-submit="emailForm.$valid && createPerson()">
+      <img src="/assets/logo sized.png" style="max-width: 400px; margin-bottom: 20px;">
+      <br>
+      <div layout-gt-xs="row">
+        <md-input-container class="md-block" flex="50">
+          <label>First Name</label>
+          <input ng-model="firstName" type="first-name" name="firstName" required autofocus>
+          <div ng-messages="emailForm.firstName.$error">
+            <div ng-message="required">This field is required</div>
+          </div>
+        </md-input-container>
+        <md-input-container class="md-block" flex="50">
+          <label>Last Name</label>
+          <input ng-model="lastName" type="last-name" name="lastName" required>
+          <div ng-messages="emailForm.lastName.$error">
+            <div ng-message="required">This field is required</div>
+          </div>
+        </md-input-container>
+      </div>
+      <md-input-container class="md-block">
+        <label>Email Address</label>
+        <input ng-model="email" type="email" name="email" required>
+        <div ng-messages="emailForm.email.$error">
+          <div ng-message="required">This field is required</div>
+          <div ng-message="email">Invalid Email</div>
+        </div>
+      </md-input-container>
+      <div layout="row">
+        <md-input-container class="md-block" flex="50">
+          <label>New Password</label>
+          <input ng-model="password" id="pwd" type="password" name="password" minlength="8" required>
+          <div ng-messages="emailForm.password.$error">
+            <div ng-message="required">This field is required</div>
+            <div ng-message="minlength">The password should be at least 8 characters</div>
+          </div>
+        </md-input-container>
+        <md-input-container class="md-block" flex="50">
+          <label>Confirm Password</label>
+          <input ng-model="password_c" type="password" name="password_c" required password-check="pwd">
+          <div ng-messages="emailForm.password_c.$error">
+            <div ng-message="required">This field is required</div>
+            <div ng-message="pwmatch">The passwords do not match</div>
+          </div>
+        </md-input-container>
+      </div>
+      <div layout="row" layout-align="space-between space-between">
+        <md-button class="md-primary" href="/login" ng-disable="true">
+          Use An Existing Account
+        </md-button>
+        <md-button type="submit" class="md-raised md-primary" ng-disabled="emailForm.$invalid">
+          Create Account
+        </md-button>
+      </div>
+    </form>
+    <div ng-show="emailSent" class="fill text-center">
+      <h3 class="text-center">Yay!</h3>
+      <hr>
+      <p ng-show="!emailGood">Give us a second while we send you an email...</p>
+      <p ng-show="emailGood">All done! We sent you an email with a link to continue creating your account!
+        <b>Be sure to check your spam folder.</b>
+      </p>
+    </div>
+    <h3 ng-show="error" class="text-center" style="margin-top: 20px; color:red;">{{error}}</h3>
+  </div>
+
+</div>

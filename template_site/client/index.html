@@ -1,0 +1,69 @@
+<!doctype html>
+<html ng-app="app" ng-controller="indexController" class="{{$root.htmlClass ? $root.htmlClass : 'default-body'}}">
+
+<head>
+  <title ng-bind="$root.title || 'WoodRiver Energy'"></title>
+  <base href="/">
+  <link rel="shortcut icon" href="assets/favicon.png" />
+  <link href="build/_bower.css" rel="stylesheet">
+
+  <style type="text/css">
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+
+<body layout="column">
+  <navbar></navbar>
+  <div class="ui-view-style" layout="column" flex ui-view>
+    <!--This will be replaced once Angular is ready-->
+    <div style="position:absolute; top: 50%; left: 50%; margin-left: -200px; margin-top: -200px; text-align: center;">
+      <div style="width: 400px; height: 400px; vertical-align:middle;">
+        <img src="assets/logo sized.png" width="400">
+      </div>
+    </div>
+  </div>
+</body>
+
+<footer>
+  <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBJ7SwQqX7Zfjh4Yj39LwxHo1n0JUFOhYs"></script>
+
+  <script src="build/compiled_libs.js"></script>
+
+  <script src="app/app.module.js"></script>
+  <script src="app/app.route.js"></script>
+  <script src="app/index.js"></script>
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!--Uncomment this to use debug compiled app-->
+  <!--<script src="build/compiled_app.js"></script>-->
+
+  <!-- DO NOT EDIT!!! Auto-import of source files -->
+  <!-- include: "type": "js", "basePath": "client", "files": ["app/**/*.js", "!app/*.js"] -->
+  <script src="app/base/array.js"></script>
+  <script src="app/base/objects.js"></script>
+  <script src="app/base/string.js"></script>
+  <script src="app/components/create_login/create_login.js"></script>
+  <script src="app/components/home/home.js"></script>
+  <script src="app/components/login/login.js"></script>
+  <script src="app/components/policy/policy.js"></script>
+  <script src="app/components/verify/verify.js"></script>
+  <script src="app/directives/navbar/navbar.js"></script>
+  <script src="app/services/base_data.js"></script>
+  <script src="app/services/search.js"></script>
+  <!-- /include -->
+
+  <!-- include: "type": "css", "basePath": "client", "files": ["app/**/*.css"] -->
+  <link rel="stylesheet" type="text/css" href="app/base/base.css" />
+  <link rel="stylesheet" type="text/css" href="app/components/create_login/create_login.css" />
+  <link rel="stylesheet" type="text/css" href="app/components/home/home.css" />
+  <link rel="stylesheet" type="text/css" href="app/components/login/login.css" />
+  <link rel="stylesheet" type="text/css" href="app/components/policy/policy.css" />
+  <link rel="stylesheet" type="text/css" href="app/components/verify/verify.css" />
+  <link rel="stylesheet" type="text/css" href="app/directives/navbar/navbar.css" />
+  <!-- /include -->
+</footer>
+
+</html>

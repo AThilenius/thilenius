@@ -1,0 +1,26 @@
+{
+  "db": {
+    "host": "localhost",
+    "database": "thilenius",
+    "name": "db",
+    "connector": "postgresql"
+  },
+  "email": {
+    "name": "email",
+    "connector": "mail",
+    "transports": [
+      {
+        "type": "smtp",
+        "host": "smtp.thilenius.com",
+        "port": 587,
+         "tls": {
+           "rejectUnauthorized": false
+         },
+        "auth": {
+          "user": "noreply@thilenius.com",
+          "pass": "Qwe123qwe"
+        }
+      }
+    ]
+  }
+}

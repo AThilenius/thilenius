@@ -1,0 +1,33 @@
+section.module:last-child {
+  margin-bottom: 0;
+}
+
+section.module.parallax {
+  height: 700px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.overlay-panel {
+  max-width: 400px;
+  height: 700px;
+  background-color: rgba(0, 0, 0, 0.3);
+  text-align: center;
+  color: white;
+  padding: 0 20px 0 20px;
+}
+
+.overlay-panel h1 {
+  font-weight: bold;
+  margin-top: 150px;
+  font-size: 4em;
+}
+
+.overlay-panel p {
+  margin-top: 40px;
+}
